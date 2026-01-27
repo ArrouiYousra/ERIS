@@ -29,10 +29,10 @@
 	<properties>
 		<java.version>21</java.version>
 	</properties>
-	
+
 	<dependencies>
 		<!-- ========== DEPENDENCIES ACTIVES ========== -->
-		
+
 		<!-- Spring Boot Web (REST + Tomcat) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -62,39 +62,36 @@
 
 		<!-- ========== DATABASE DEPENDENCIES (COMMENTÉES) ========== -->
 		<!-- Décommenter quand vous aurez besoin de la base de données -->
-		
-		<!-- JPA / Hibernate pour ORM -->
-		<!--
+
+		JPA / Hibernate pour ORM
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		-->
+
 
 		<!-- Flyway pour migrations de base de données -->
-		<!--
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-flyway</artifactId>
 		</dependency>
-		-->
+
 
 		<!-- Driver PostgreSQL -->
-		<!--
+
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		-->
 
 		<!-- Support Flyway pour PostgreSQL -->
-		<!--
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-database-postgresql</artifactId>
 		</dependency>
-		-->
 
 		<!-- Tests JPA -->
 		<!--
@@ -106,13 +103,12 @@
 		-->
 
 		<!-- Tests Flyway -->
-		<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-flyway-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		-->
+
 	</dependencies>
 
 	<build>
