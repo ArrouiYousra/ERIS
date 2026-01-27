@@ -1,4 +1,4 @@
-package Fourth.Argument.eris;
+package Fourth_Argument.eris;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
