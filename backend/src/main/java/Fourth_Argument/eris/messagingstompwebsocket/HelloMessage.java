@@ -1,4 +1,4 @@
-package Fourth_Argument.messagingstompwebsocket;
+package Fourth_Argument.eris.messagingstompwebsocket;
 
 public class HelloMessage {
     private String name;

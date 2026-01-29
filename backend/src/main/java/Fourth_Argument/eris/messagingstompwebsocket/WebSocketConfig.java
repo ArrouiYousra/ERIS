@@ -1,4 +1,4 @@
-package Fourth_Argument.messagingstompwebsocket;
+package Fourth_Argument.eris.messagingstompwebsocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
