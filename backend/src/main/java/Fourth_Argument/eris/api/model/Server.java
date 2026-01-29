@@ -11,18 +11,16 @@ public class Server {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     @NonNull
-    private Long owner_id;
+    @Column(name = "owner_id")
+    private Long ownerId;
+    @NonNull
     private String name;
 
     public Server(){}
 
-    public Server(Long id, Long owner_id) {
-        this(id, owner_id, "New Server");
-    }
-
-    public Server(Long id, Long owner_id, String name) {
+    public Server(Long id, Long ownerId, String name) {
         this.id = id;
-        this.owner_id = owner_id;
+        this.ownerId = ownerId;
         this.name = name;
     }
 }

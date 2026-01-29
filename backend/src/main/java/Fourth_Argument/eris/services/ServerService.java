@@ -1,26 +1,30 @@
 package Fourth_Argument.eris.services;
 
+import org.springframework.stereotype.Service;
+
+import Fourth_Argument.eris.api.dto.ServerDTO;
+import Fourth_Argument.eris.api.mapper.ServerMapper;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.repository.ServerRepository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ServerService {
     private final ServerRepository serverRepository;
+    private final ServerMapper serverMapper;
 
-    @Autowired
-    public ServerService(ServerRepository serverRepository) {
-        this.serverRepository = serverRepository;
+    public ServerService(ServerRepository ServerRepository, ServerMapper ServerMapper) {
+        this.serverRepository = ServerRepository;
+        this.serverMapper = ServerMapper;
     }
 
-    // public ServerRequestDto getServerDtoById(Long id) {
-    //     Server serverEntity = serverRepository.findFirstById(id);
-    //     // return serverEntity.builder()
-    // }
+    public ServerDTO getServerById(Long id) {
+        Server Server = serverRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Server not found"));
+        return serverMapper.toDTO(Server);
+    }
+
+    public void saveServer(ServerDTO ServerDTO) {
+        Server server = serverMapper.toEntity(ServerDTO);
+        serverRepository.save(server);
+    }
 }
