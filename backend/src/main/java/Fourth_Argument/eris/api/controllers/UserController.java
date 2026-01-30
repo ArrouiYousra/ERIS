@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
+import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.services.UserService;
-import Fourth_Argument.eris.api.dto.UserDTO;
 
 @RestController
 @RequestMapping("/api")
@@ -25,15 +26,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        UserDTO user = userService.getUserById(id);
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        UserResponseDTO user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
 
     @PostMapping("/auth/signup")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        UserDTO newUser = userService.createUser(userDTO);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userDTO) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userService.createUser(userDTO));
     }
 
 }
