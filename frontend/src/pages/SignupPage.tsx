@@ -1,8 +1,10 @@
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import "../styles/signup.css";
 
 export function SignupPage() {
+  const { signup } = useAuth();
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
@@ -32,12 +34,9 @@ export function SignupPage() {
     setLoading(true);
 
     try {
-      // TODO: Reconnecter useAuth quand le back sera prêt
       const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
-      console.log("Signup attempt:", { email, displayName, username, password, birthDate });
-      // await signup(email, username, password, displayName, birthDate);
-      // navigate("/");
-      setError("Backend not available yet");
+      await signup(email, username, password, displayName, birthDate);
+      navigate("/");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Error during registration. Please try again.");
     } finally {
@@ -47,6 +46,11 @@ export function SignupPage() {
 
   return (
     <div className="signup-page">
+      <div className="signup-background">
+        <div className="signup-blob signup-blob--1"></div>
+        <div className="signup-blob signup-blob--2"></div>
+        <div className="signup-blob signup-blob--3"></div>
+      </div>
       <div className="signup-container">
         <div className="signup-header">
           <h1 className="signup-title">Create an account</h1>

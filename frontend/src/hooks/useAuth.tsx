@@ -16,7 +16,7 @@ type AuthContextValue = {
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, username: string, password: string) => Promise<void>;
+  signup: (email: string, username: string, password: string, displayName: string, birthDate: string) => Promise<void>;
   logout: () => void;
 };
 
@@ -45,8 +45,8 @@ function useProvideAuth(): AuthContextValue {
     setUser(me);
   };
 
-  const signup = async (email: string, username: string, password: string) => {
-    await signupApi({ email, username, password });
+  const signup = async (email: string, username: string, password: string, displayName: string, birthDate: string) => {
+    await signupApi({ email, username, password, displayName, birthDate });
     await login(email, password);
   };
 

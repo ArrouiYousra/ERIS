@@ -6,7 +6,7 @@ export function Header() {
     <header className="site-header">
       <div className="header-container">
         <Link to="/" className="header-logo">
-          <span className="header-logo-text">chatapp</span>
+          <span className="header-logo-text">εris</span>
         </Link>
         <nav className="header-nav">
           <Link to="/login" className="header-button">

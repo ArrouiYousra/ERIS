@@ -1,7 +1,7 @@
 .signup-page {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,16 +16,61 @@
   bottom: 0;
 }
 
-.signup-page::before {
-  content: "";
+.signup-background {
   position: absolute;
+  width: 100%;
+  height: 100%;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(236, 72, 153, 0.4) 0%, transparent 50%),
-              radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.4) 0%, transparent 50%);
-  pointer-events: none;
+  z-index: 0;
+}
+
+.signup-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.25;
+  animation: float 20s ease-in-out infinite;
+}
+
+.signup-blob--1 {
+  width: 600px;
+  height: 600px;
+  background: #a855f7;
+  top: -200px;
+  left: -200px;
+  animation-delay: 0s;
+}
+
+.signup-blob--2 {
+  width: 500px;
+  height: 500px;
+  background: #ec4899;
+  bottom: -150px;
+  right: -150px;
+  animation-delay: 7s;
+}
+
+.signup-blob--3 {
+  width: 400px;
+  height: 400px;
+  background: #a855f7;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 14s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(40px, -40px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
 }
 
 .signup-container {

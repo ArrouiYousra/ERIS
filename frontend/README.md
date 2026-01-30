@@ -1,6 +1,8 @@
-# RTC Frontend - Real Time Chat
+# Eris Frontend
 
-Frontend React pour l'application RTC (Real Time Chat), inspiré de Discord.
+Frontend React pour l'application Eris, un chat en temps réel inspiré de Discord.
+
+> **Note** : Eris est la déesse grecque de la discorde dans la mythologie. Le nom de l'application fait référence à Discord tout en conservant une identité unique.
 
 ## 🚀 Stack Technique
 

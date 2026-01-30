@@ -1,9 +1,10 @@
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Header } from "../components/Header";
+import { useAuth } from "../hooks/useAuth";
 import "../styles/login.css";
 
 export function LoginPage() {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -16,11 +17,8 @@ export function LoginPage() {
     setLoading(true);
 
     try {
-      // TODO: Reconnecter useAuth quand le back sera prêt
-      console.log("Login attempt:", { email, password });
-      // await login(email, password);
-      // navigate("/");
-      setError("Backend non disponible pour l'instant");
+      await login(email, password);
+      navigate("/");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Erreur de connexion. Vérifiez vos identifiants.");
     } finally {
@@ -30,6 +28,11 @@ export function LoginPage() {
 
   return (
     <div className="login-page">
+      <div className="login-background">
+        <div className="login-blob login-blob--1"></div>
+        <div className="login-blob login-blob--2"></div>
+        <div className="login-blob login-blob--3"></div>
+      </div>
       <div className="login-container">
         <div className="login-header">
           <h1 className="login-title">Welcome back!</h1>
