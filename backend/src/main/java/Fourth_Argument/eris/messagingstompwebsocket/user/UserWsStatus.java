@@ -1,5 +1,5 @@
 package Fourth_Argument.eris.messagingstompwebsocket.user;
 
-public enum  UserStatus {
+public enum UserWsStatus {
     ONLINE, OFFLINE
 }

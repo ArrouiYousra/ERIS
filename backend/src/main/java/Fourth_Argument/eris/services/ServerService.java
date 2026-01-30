@@ -28,7 +28,7 @@ public class ServerService {
 
     public List<ServerDTO> getServers() {
         List<Server> servers = serverRepository.findAll();
-                // .orElseThrow(() -> new RuntimeException("No server found"));
+        // .orElseThrow(() -> new RuntimeException("No server found"));
         List<ServerDTO> serverDTOs = new ArrayList<>();
         for (Server server : servers) {
             serverDTOs.add(serverMapper.toDTO(server));

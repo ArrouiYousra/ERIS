@@ -14,30 +14,27 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 
-public class UserController {
-    private final UserService service;
+public class UserWsController {
+    private final UserWsService service;
 
     @MessageMapping("/user.addUser")
     @SendTo("/user/topic")
-    public User addUser(
-        @Payload User user
-    ) {
+    public UserWs addUser(
+            @Payload UserWs user) {
         service.saveUser(user);
         return user;
     }
 
     @MessageMapping("/user.disconnectUser")
     @SendTo("/user/topic")
-    public User disconnect(
-        @Payload User user
-    ) {
+    public UserWs disconnect(
+            @Payload UserWs user) {
         service.disconnect(user);
         return user;
     }
 
-
     @GetMapping("/user")
-    public ResponseEntity<List<User>> findConnectedUsers() {
+    public ResponseEntity<List<UserWs>> findConnectedUsers() {
         return ResponseEntity.ok(service.findConnectedUsers());
-    }   
+    }
 }
