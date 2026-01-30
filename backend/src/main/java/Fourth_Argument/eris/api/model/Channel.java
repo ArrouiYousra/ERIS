@@ -24,31 +24,16 @@ public class Channel {
 
     @ManyToOne
     @JoinColumn(name = "server_id")
-    private Long serverId;
+    private Server server;
 
-    private Date created_at;
+    @Column(name = "created_at")
+    private Date createdAt;
 
     public Channel() {
     }
 
     public Channel(Long id, String name) {
         this.id = id;
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Date getCreated_at() {
-        return created_at;
-    }
-
-    public void setName(String name) {
         this.name = name;
     }
 

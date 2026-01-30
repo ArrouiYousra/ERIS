@@ -18,9 +18,9 @@ public class ServerService {
     }
 
     public ServerDTO getServerById(Long id) {
-        Server Server = serverRepository.findById(id)
+        Server server = serverRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Server not found"));
-        return serverMapper.toDTO(Server);
+        return serverMapper.toDTO(server);
     }
 
     public void saveServer(ServerDTO ServerDTO) {

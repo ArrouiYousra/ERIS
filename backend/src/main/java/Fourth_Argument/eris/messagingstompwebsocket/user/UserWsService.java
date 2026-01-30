@@ -6,28 +6,27 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserWsService {
 
-    private final UserRepository userRepository;
-    
-    public void saveUser(User user) {
-        user.setStatus(UserStatus.ONLINE);
+    private final UserWsRepository userRepository;
+
+    public void saveUser(UserWs user) {
+        user.setStatus(UserWsStatus.ONLINE);
         userRepository.save(user);
     }
 
-    public void disconnect(User user) {
+    public void disconnect(UserWs user) {
         var storeUser = userRepository.findById(user.getDisplayName())
                 .orElse(null);
         if (storeUser != null) {
-            storeUser.setStatus(UserStatus.OFFLINE);
+            storeUser.setStatus(UserWsStatus.OFFLINE);
             userRepository.save(storeUser);
         }
     }
 
-    public List<User> findConnectedUsers() {
-        return userRepository.findAllByStatus(UserStatus.ONLINE);
+    public List<UserWs> findConnectedUsers() {
+        return userRepository.findAllByStatus(UserWsStatus.ONLINE);
     }
 }

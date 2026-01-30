@@ -5,10 +5,10 @@ import lombok.*;
 
 @Data
 @Entity
-@Table(name = "server")
+@Table(name = "servers")
 public class Server {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NonNull
     @Column(name = "owner_id")
@@ -16,7 +16,8 @@ public class Server {
     @NonNull
     private String name;
 
-    public Server(){}
+    public Server() {
+    }
 
     public Server(Long id, Long ownerId, String name) {
         this.id = id;

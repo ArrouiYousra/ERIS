@@ -9,9 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Document
-public class User {
+public class UserWs {
     @Id
     private String displayName;
-    private UserStatus status;
+    private UserWsStatus status;
     private TypingStatus typing;
 }
