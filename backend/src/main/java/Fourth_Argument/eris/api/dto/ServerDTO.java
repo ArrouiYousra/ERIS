@@ -9,6 +9,5 @@ import lombok.Setter;
 public class ServerDTO {
     private Long id;
     private Long ownerId;
-    @NonNull
     private String name;
 }
