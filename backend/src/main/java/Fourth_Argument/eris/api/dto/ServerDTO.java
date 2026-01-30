@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ServerDTO {
+    private long id;
     private long ownerId;
     @NonNull
     private String name;

@@ -1,5 +1,8 @@
 package Fourth_Argument.eris.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ServerDTO;
@@ -18,9 +21,19 @@ public class ServerService {
     }
 
     public ServerDTO getServerById(Long id) {
-        Server Server = serverRepository.findById(id)
+        Server server = serverRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Server not found"));
-        return serverMapper.toDTO(Server);
+        return serverMapper.toDTO(server);
+    }
+
+    public List<ServerDTO> getServers() {
+        List<Server> servers = serverRepository.findAll();
+                // .orElseThrow(() -> new RuntimeException("No server found"));
+        List<ServerDTO> serverDTOs = new ArrayList<>();
+        for (Server server : servers) {
+            serverDTOs.add(serverMapper.toDTO(server));
+        }
+        return serverDTOs;
     }
 
     public void saveServer(ServerDTO ServerDTO) {
