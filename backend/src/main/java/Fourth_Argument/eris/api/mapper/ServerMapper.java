@@ -10,6 +10,7 @@ public class ServerMapper {
 
     public ServerDTO toDTO(Server server) {
         ServerDTO dto = new ServerDTO();
+        dto.setId(server.getId());
         dto.setOwnerId(server.getOwnerId());
         dto.setName(server.getName());
         return dto;
@@ -17,6 +18,7 @@ public class ServerMapper {
 
     public Server toEntity(ServerDTO dto) {
         Server server = new Server();
+        server.setId(dto.getId());
         server.setOwnerId(dto.getOwnerId());
         server.setName(dto.getName());
         return server;
