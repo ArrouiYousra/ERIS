@@ -1,5 +1,8 @@
 package Fourth_Argument.eris.services;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,50 @@ public class ChannelService {
 
         return channelMapper.toDTO(savedChannel);
 
+    }
+
+    public List<ChannelDTO> getChannelByServer(Long serverId) {
+
+        List<Channel> channels = channelRepository.findByServerId(serverId);
+
+        if (channels == null) {
+            throw new RuntimeException("Aucun channel dans ce serveur !");
+        }
+
+        List<ChannelDTO> dtoList = channels.stream()
+                .map(channelMapper::toDTO)
+                .toList();
+
+        return dtoList;
+    }
+
+    public ChannelDTO findById(Long id) {
+
+        Channel channel = channelRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pas de channel existant"));
+
+        return channelMapper.toDTO(channel);
+
+    }
+
+    public ChannelDTO update(ChannelDTO dto, Long id) {
+
+        Channel channel = channelRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pas de channel existant"));
+
+        channel.setName(dto.name());
+
+        Channel updatedChannel = channelRepository.save(channel);
+
+        return channelMapper.toDTO(updatedChannel);
+    }
+
+    public void delete(Long id) {
+
+        Channel channel = channelRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pas de channel existant"));
+
+        channelRepository.delete(channel);
     }
 
 }
