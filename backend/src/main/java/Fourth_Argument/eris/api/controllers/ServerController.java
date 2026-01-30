@@ -20,7 +20,7 @@ public class ServerController {
 
     @PostMapping
     public ResponseEntity<String> createServer(@RequestBody ServerDTO ServerDTO) {
-        serverService.saveServer(ServerDTO);
+        serverService.createServer(ServerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Server created");
     }
 
@@ -35,9 +35,15 @@ public class ServerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateServer(@RequestBody ServerDTO ServerDTO) {
-        serverService.saveServer(ServerDTO);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Server updated");
+    public ResponseEntity<String> updateServer(@PathVariable Long id, @RequestBody ServerDTO ServerDTO) {
+        serverService.updateServer(id, ServerDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Server updated");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteServer(@PathVariable Long id) {
+        serverService.deleteServer(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Server deleted");
     }
 }
 /*
@@ -45,7 +51,7 @@ public class ServerController {
  * ✓? GET /servers - List user's servers
  * ✓ GET /server/{id} - Get server details
  * ✓ PUT /servers/{id} - Update server
- * DELETE /servers/{id} - Delete server
+ * ✓ DELETE /servers/{id} - Delete server
  * POST /servers/{id}/join - Join a server
  * DELETE /servers/{id}/leave - Leave a server
  * GET /servers/{id}/members - List server members

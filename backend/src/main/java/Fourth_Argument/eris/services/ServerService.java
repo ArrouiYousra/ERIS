@@ -36,8 +36,24 @@ public class ServerService {
         return serverDTOs;
     }
 
-    public void saveServer(ServerDTO ServerDTO) {
+    public void createServer(ServerDTO ServerDTO) {
         Server server = serverMapper.toEntity(ServerDTO);
         serverRepository.save(server);
+    }
+
+    public void updateServer(Long id, ServerDTO ServerDTO) {
+        if (serverRepository.existsById(id)) {
+            ServerDTO.setId(id);
+            Server server = serverMapper.toEntity(ServerDTO);
+            serverRepository.save(server);
+        } else
+            throw new RuntimeException("Server not found");
+    }
+
+    public void deleteServer(Long id) {
+        if (serverRepository.existsById(id)) {
+            serverRepository.deleteById(id);
+        } else
+            throw new RuntimeException("Server not found");
     }
 }
