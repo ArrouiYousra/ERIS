@@ -1,6 +1,10 @@
 package Fourth_Argument.eris.api.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +29,26 @@ public class MessageController {
         MessageDTO message = messageService.sendMessage(req, id);
 
         return ResponseEntity.ok(message);
+
+    }
+
+    @GetMapping("/channels/{id}/messages")
+    public ResponseEntity<List<MessageDTO>> getMessageHistory(@RequestBody MessageDTO req,
+            @PathVariable Long id) {
+
+        List<MessageDTO> messages = messageService.getMessageHistory(req, id);
+
+        return ResponseEntity.ok(messages);
+
+    }
+
+    @DeleteMapping("/messages/{id}")
+    public ResponseEntity<String> deleteMessage(
+            @PathVariable Long id) {
+
+        messageService.deleteMessage(id);
+
+        return ResponseEntity.ok("Message supprimé !");
 
     }
 
