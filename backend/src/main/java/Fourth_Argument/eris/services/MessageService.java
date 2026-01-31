@@ -40,9 +40,9 @@ public class MessageService {
 
     }
 
-    public List<MessageDTO> getMessageHistory(MessageDTO dto, Long channelId) {
+    public List<MessageDTO> getMessageHistory(Channel channel) {
 
-        List<Message> messages = messageRepository.findByChannel(channelId);
+        List<Message> messages = messageRepository.findByChannel(channel);
 
         if (messages == null) {
             throw new RuntimeException("Aucun message dans ce serveur !");
