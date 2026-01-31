@@ -1,9 +1,7 @@
 package Fourth_Argument.eris.services;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ChannelDTO;
