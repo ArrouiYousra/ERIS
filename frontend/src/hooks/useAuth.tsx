@@ -32,21 +32,30 @@ function useProvideAuth(): AuthContextValue {
       setLoading(false);
       return;
     }
-    getMe()
-      .then(setUser)
-      .finally(() => setLoading(false));
+    // Pour l'instant, on ne peut pas récupérer l'utilisateur avec /me
+    // car le backend n'a pas encore cet endpoint avec auth
+    // On considère l'utilisateur comme authentifié s'il a un token
+    // On crée un objet user minimal pour maintenir l'authentification
+    setUser({ id: null, authenticated: true });
+    setLoading(false);
+    // TODO: Implémenter /api/me dans le backend avec authentification
   }, []);
 
   const login = async (email: string, password: string) => {
     const data = await loginApi({ email, password });
-    // Tout dépend de ce que vous faites dans le back
-    localStorage.setItem("access_token", data.accessToken ?? data.token);
-    const me = await getMe();
-    setUser(me);
+    // Le backend retourne directement le UserResponseDTO dans le login
+    // On stocke le token si présent, sinon on utilise les données du user
+    if (data.accessToken || data.token) {
+      localStorage.setItem("access_token", data.accessToken ?? data.token);
+    }
+    // Le backend retourne directement l'utilisateur dans la réponse login
+    setUser(data);
   };
 
   const signup = async (email: string, username: string, password: string, displayName: string, birthDate: string) => {
-    await signupApi({ email, username, password, displayName, birthDate });
+    const userData = await signupApi({ email, username, password, displayName, birthDate });
+    // Le backend retourne directement le UserResponseDTO après création
+    // On se connecte automatiquement après l'inscription
     await login(email, password);
   };
 
@@ -55,10 +64,14 @@ function useProvideAuth(): AuthContextValue {
     setUser(null);
   };
 
+  // On considère l'utilisateur comme authentifié s'il a un token OU un user
+  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  const isAuthenticated = !!user || !!token;
+
   return {
     user,
     loading,
-    isAuthenticated: !!user,
+    isAuthenticated,
     login,
     signup,
     logout,
