@@ -16,12 +16,5 @@ public class Server {
     @NonNull
     private String name;
 
-    public Server() {
-    }
-
-    public Server(Long id, Long ownerId, String name) {
-        this.id = id;
-        this.ownerId = ownerId;
-        this.name = name;
-    }
+    public Server(){}
 }

@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS server_member (
     server_id           integer references servers(id),
     role_id             integer references roles(id),
     user_id             integer references users(id),
+    typing_status        boolean,
     joined_at           timestamp DEFAULT CURRENT_TIMESTAMP
 
 );

@@ -1,7 +1,6 @@
 package Fourth_Argument.eris.api.dto;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
@@ -9,6 +8,5 @@ import lombok.Setter;
 public class ServerDTO {
     private Long id;
     private Long ownerId;
-    @NonNull
     private String name;
 }
