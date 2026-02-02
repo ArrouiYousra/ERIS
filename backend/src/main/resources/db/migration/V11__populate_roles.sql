@@ -1,4 +1,4 @@
 INSERT INTO roles (name) VALUES
-('OWNER'),
+('MEMBER'),
 ('ADMIN'),
-('MEMBER');
+('OWNER');
