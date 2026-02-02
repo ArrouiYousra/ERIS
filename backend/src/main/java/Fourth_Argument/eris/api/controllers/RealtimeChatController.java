@@ -1,28 +1,23 @@
-package Fourth_Argument.eris.messagingstompwebsocket.chat;
+package Fourth_Argument.eris.api.controllers;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
+import Fourth_Argument.eris.messagingstompwebsocket.chat.ChatMessage;
+import Fourth_Argument.eris.messagingstompwebsocket.chat.ChatMessageService;
+import Fourth_Argument.eris.messagingstompwebsocket.chat.ChatNotification;
 import lombok.RequiredArgsConstructor;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
-public class ChatController {
+public class RealtimeChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
 
-    //
-
-    @MessageMapping("chat")
-
+    @MessageMapping("/chat")
     public void processMessage(
             @Payload ChatMessage chatMessage) {
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
@@ -36,15 +31,5 @@ public class ChatController {
                         .content(savedMsg.getContent())
                         .build());
     }
-
-    // Methode équivalente au get Messages
-
-    // @GetMapping("/messages/{senderId}/{channelId}")
-    // public ResponseEntity<List<ChatMessage>> findChatMessages(
-    // @PathVariable("senderId") String senderId,
-    // @PathVariable("recipientId") String recipientId) {
-    // return ResponseEntity.ok(chatMessageService.findByChatMessages(senderId,
-    // recipientId));
-    // }
 
 }
