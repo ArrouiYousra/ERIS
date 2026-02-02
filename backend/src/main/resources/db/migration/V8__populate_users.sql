@@ -3,8 +3,7 @@ INSERT INTO users (
     email,
     password,
     display_name,
-    current_statut,
-    current_typing_statut,
+    current_status,
     created_at,
     updated_at
 ) VALUES
@@ -14,7 +13,6 @@ INSERT INTO users (
     '$2a$10$fakehashedpasswordalex',
     'Alex',
     'online',
-    'is not typing',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 ),
@@ -24,7 +22,6 @@ INSERT INTO users (
     '$2a$10$fakehashedpasswordmarie',
     'Marie',
     'offline',
-    'is not typing',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 ),
@@ -34,7 +31,6 @@ INSERT INTO users (
     '$2a$10$fakehashedpasswordthomas',
     'Thomas',
     'absent',
-    'is typing',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 ),
@@ -44,7 +40,6 @@ INSERT INTO users (
     '$2a$10$fakehashedpasswordlucie',
     'Lucie',
     'online',
-    'is typing',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 ),
@@ -54,7 +49,6 @@ INSERT INTO users (
     '$2a$10$fakehashedpasswordkevin',
     'Kevin',
     'offline',
-    'is not typing',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 );
