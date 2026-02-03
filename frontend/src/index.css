@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -44,8 +46,10 @@ a:hover {
 }
 
 #root {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  min-width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -55,6 +59,14 @@ a:hover {
   right: 0;
   bottom: 0;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Enfants de #root prennent toute la largeur pour que le layout s'étende */
+#root > * {
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 0%;
 }
 
 h1 {

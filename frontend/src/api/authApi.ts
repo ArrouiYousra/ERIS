@@ -19,13 +19,15 @@ export async function login(payload: LoginPayload) {
 }
 
 export async function signup(payload: SignupPayload) {
-  const { data } = await api.post("/api/auth/signup", payload);
+  // Le backend n'attend pas birthDate dans UserRequestDTO, on l'enlève
+  const { birthDate, ...payloadWithoutBirthDate } = payload;
+  const { data } = await api.post("/api/auth/signup", payloadWithoutBirthDate);
   return data;
 }
 
 export async function getMe() {
-  // Note: Le backend a /api/{id} pour l'instant, /me nécessite l'auth
-  // On utilisera /me une fois l'auth complète, pour l'instant on peut tester avec un ID
-  const { data } = await api.get("/api/me");
-  return data;
+  // Note: Le backend n'a pas encore /api/me avec authentification
+  // Pour l'instant, on ne peut pas récupérer l'utilisateur avec cet endpoint
+  // TODO: Implémenter /api/me dans le backend avec authentification JWT
+  throw new Error("Endpoint /api/me not implemented yet");
 }

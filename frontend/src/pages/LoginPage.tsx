@@ -18,7 +18,7 @@ export function LoginPage() {
 
     try {
       await login(email, password);
-      navigate("/");
+      navigate("/app");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Erreur de connexion. Vérifiez vos identifiants.");
     } finally {

@@ -35,10 +35,15 @@ export function SignupPage() {
 
     try {
       const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
-      await signup(email, username, password, displayName, birthDate);
-      navigate("/");
+      await signup(email, username, password, displayName || "", birthDate);
+      navigate("/app");
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Error during registration. Please try again.");
+      console.error("Signup error:", err);
+      const errorMessage = err?.response?.data?.message || 
+                          err?.response?.data?.error || 
+                          err?.message || 
+                          "Error during registration. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
