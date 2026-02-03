@@ -21,23 +21,31 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final UserService userService; 
+    private final AuthenticationManager authenticationManager; // vérifie les identifiants
+    private final JwtUtil jwtUtil; // génère le token JWT
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponseDTO> login(
+    // Prend en argument une request http avec le body contenant l'email et le mot de passe
+    // et retourne une response http avec le token JWT
+    public ResponseEntity<UserResponseDTO> login( 
             @RequestBody LoginRequestDTO dto) {
         return ResponseEntity.ok(userService.loginUser(dto));
     }
 
     @PostMapping("/signin")
+    // Prend en argument une request http avec le body contenant l'email et le mot de passe
     public ResponseEntity<String> signin(@RequestBody LoginRequestDTO dto) {
+        // Création d'un token d'authentification en utilisant l'email et le mot de passe en les vérifiant
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
         );
+
+        // Vérification par Spring Security
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        // Génération du token JWT en utilisant l'email de l'utilisateur
         String token = jwtUtil.generateToken(userDetails.getUsername());
+        // Retourne le token JWT dans la response http
         return ResponseEntity.ok(token);
     }
 }
