@@ -27,6 +27,12 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
+    public UserResponseDTO getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toDTO(user);
+    }
+
     public UserResponseDTO createUser(UserRequestDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email déjà utilisé");

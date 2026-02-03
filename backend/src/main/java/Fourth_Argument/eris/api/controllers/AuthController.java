@@ -48,4 +48,10 @@ public class AuthController {
         // Retourne le token JWT dans la response http
         return ResponseEntity.ok(token);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        // JWT stateless : invalidation côté client (supprimer le token).
+        return ResponseEntity.ok().build();
+    }
 }
