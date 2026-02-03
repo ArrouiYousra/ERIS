@@ -39,10 +39,11 @@ export function SignupPage() {
       navigate("/app");
     } catch (err: any) {
       console.error("Signup error:", err);
-      const errorMessage = err?.response?.data?.message || 
-                          err?.response?.data?.error || 
-                          err?.message || 
-                          "Error during registration. Please try again.";
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Error during registration. Please try again.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -175,7 +176,7 @@ export function SignupPage() {
                 <option value="">Year</option>
                 {Array.from(
                   { length: new Date().getFullYear() - 1899 },
-                  (_, i) => new Date().getFullYear() - i
+                  (_, i) => new Date().getFullYear() - i,
                 ).map((year) => (
                   <option key={year} value={year}>
                     {year}
@@ -199,7 +200,11 @@ export function SignupPage() {
             </label>
           </div>
 
-          <button type="submit" className="signup-button" disabled={loading || !acceptedTerms}>
+          <button
+            type="submit"
+            className="signup-button"
+            disabled={loading || !acceptedTerms}
+          >
             {loading ? "Creating account..." : "Sign Up"}
           </button>
         </form>
