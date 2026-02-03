@@ -1,11 +1,12 @@
-package Fourth_Argument.eris.messagingstompwebsocket.chatroom;
+// package Fourth_Argument.eris.messagingstompwebsocket.chatroom;
 
-import java.util.Optional;
+// import java.util.Optional;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+// import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface ChatRoomRepository extends MongoRepository<ChatRoom, String> {
+// public interface ChatRoomRepository extends MongoRepository<ChatRoom, String>
+// {
 
-
-    Optional<ChatRoom> findBySenderIdAndRecipientId(String senderId, String recipientId);
-}
+// Optional<ChatRoom> findBySenderIdAndRecipientId(String senderId, String
+// recipientId);
+// }

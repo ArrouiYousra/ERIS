@@ -14,6 +14,40 @@
 	<name>eris</name>
 	<description>RTC project for Spring Boot</description>
 	<url/>
+
+	<profiles>
+        <profile>
+            <id>reset-db</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.flywaydb</groupId>
+                        <artifactId>flyway-maven-plugin</artifactId>
+                        <version>10.8.1</version>
+
+                        <configuration>
+                            <url>jdbc:postgresql://localhost:5432/mydb</url>
+                            <user>myuser</user>
+                            <password>mypassword</password>
+                            <cleanDisabled>false</cleanDisabled>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>clean-db</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 	<licenses>
 		<license/>
 	</licenses>
@@ -135,6 +169,7 @@
 	</dependencies>
 
 	<build>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
