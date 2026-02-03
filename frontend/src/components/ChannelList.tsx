@@ -68,7 +68,11 @@ export function ChannelList({
             autoFocus
           />
           <div className="channel-create-actions">
-            <button type="submit" className="channel-create-submit" disabled={createChannel.isPending}>
+            <button
+              type="submit"
+              className="channel-create-submit"
+              disabled={createChannel.isPending}
+            >
               Create
             </button>
             <button
