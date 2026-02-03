@@ -4,6 +4,7 @@ import Fourth_Argument.eris.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -48,8 +49,8 @@ public class WebSecurityConfig {
         http
                 // Désactive la protection CSRF (Cross-Site Request Forgery)
                 .csrf(csrf -> csrf.disable())
-                // Désactive la gestion des CORS (Cross-Origin Resource Sharing)
-                .cors(cors -> cors.disable())
+                // CORS activé pour le frontend (CorsConfigurationSource bean)
+                .cors(Customizer.withDefaults())
                 // Gère les erreurs d'authentification
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 // Désactive la gestion des sessions stateless http
@@ -58,6 +59,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // pas besoin de token ici
                         .requestMatchers("/api/auth/**").permitAll()
+                        // Swagger / OpenAPI (accès public en dev)
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         // doit etre authentifier
                         .anyRequest().authenticated());
         // On ajoute le filtre JWT
