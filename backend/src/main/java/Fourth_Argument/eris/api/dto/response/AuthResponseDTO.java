@@ -2,6 +2,7 @@ package Fourth_Argument.eris.api.dto.response;
 
 import com.mongodb.lang.NonNull;
 
+import Fourth_Argument.eris.api.model.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,6 @@ public class AuthResponseDTO {
     private String token;
 
     @NonNull
-    private UserResponseDTO userResponseDTO;
+    private User user;
 
 }
