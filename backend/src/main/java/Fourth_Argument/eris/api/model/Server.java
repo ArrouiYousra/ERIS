@@ -15,6 +15,7 @@ public class Server {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
+
     @NonNull
     private String name;
 

@@ -58,8 +58,20 @@ public class ServerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ServerDTO>> getUserServers(@RequestBody UserResponseDTO userDTO) {
-        return ResponseEntity.ok(serverService.getUserServers(userDTO.getId()));
+    public ResponseEntity<List<ServerDTO>> getUserServers() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String email;
+        if (principal instanceof UserDetails userDetails) {
+            email = userDetails.getUsername();
+        } else {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        User currentUser = userService.getUserEntityByEmail(email);
+
+        List<ServerDTO> servers = serverService.getUserServers(currentUser.getId());
+        return ResponseEntity.ok(servers);
     }
 
     @GetMapping("/{id}")
