@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import Fourth_Argument.eris.api.dto.ServerDTO;
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
+import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.services.ServerMemberService;
 import Fourth_Argument.eris.services.ServerService;
+import Fourth_Argument.eris.services.UserService;
 
 @RestController
 @RequestMapping("/api/servers")
@@ -26,15 +30,30 @@ public class ServerController {
 
     private final ServerService serverService;
     private final ServerMemberService serverMemberService;
+    private final UserService userService;
 
-    public ServerController(ServerService serverService, ServerMemberService serverMemberService) {
+    public ServerController(ServerService serverService, ServerMemberService serverMemberService,
+            UserService userService) {
         this.serverService = serverService;
         this.serverMemberService = serverMemberService;
+        this.userService = userService;
     }
 
     @PostMapping
     public ResponseEntity<String> createServer(@RequestBody ServerDTO serverDTO) {
-        serverService.createServer(serverDTO);
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email;
+
+        if (principal instanceof UserDetails userDetails) {
+            email = userDetails.getUsername(); // usually the email
+        } else {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        // 2. Fetch the actual entity from DB
+        User currentUser = userService.getUserEntityByEmail(email);
+        serverService.createServer(serverDTO, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED).body("Server created");
     }
 
@@ -82,7 +101,8 @@ public class ServerController {
     }
 
     @PutMapping("/{id}/members/{userId}")
-    public ResponseEntity<String> updateServerMember(@PathVariable Long id, @PathVariable Long userId, @RequestBody Long roleId) {
+    public ResponseEntity<String> updateServerMember(@PathVariable Long id, @PathVariable Long userId,
+            @RequestBody Long roleId) {
         serverMemberService.updateServerMember(id, userId, roleId);
         return ResponseEntity.status(HttpStatus.CREATED).body("Server member updated");
     }

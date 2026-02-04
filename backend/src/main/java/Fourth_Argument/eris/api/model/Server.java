@@ -10,11 +10,14 @@ public class Server {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NonNull
-    @Column(name = "owner_id")
-    private Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
     @NonNull
     private String name;
 
-    public Server(){}
+    public Server() {
+    }
 }

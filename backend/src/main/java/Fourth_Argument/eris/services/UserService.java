@@ -27,7 +27,7 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO createUser(UserRequestDTO dto) {
+    public User createUser(UserRequestDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email déjà utilisé");
         }
@@ -43,7 +43,12 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        return userMapper.toDTO(savedUser);
+        return savedUser;
+    }
+
+    public User getUserEntityByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     // À réecrire pour l'adapter au login auth mais c'est auth service alors

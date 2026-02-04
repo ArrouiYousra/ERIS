@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import Fourth_Argument.eris.api.dto.request.LoginRequestDTO;
 import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
 import Fourth_Argument.eris.api.dto.response.AuthResponseDTO;
-import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.security.JwtUtil;
 import Fourth_Argument.eris.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -32,24 +31,22 @@ public class AuthController {
     @PostMapping("/signin")
     // Prend en argument une request http avec le body contenant l'email et le mot
     // de passe
-    public ResponseEntity<String> signin(@RequestBody LoginRequestDTO dto) {
-        // Création d'un token d'authentification en utilisant l'email et le mot de
-        // passe en les vérifiant
+    public ResponseEntity<AuthResponseDTO> signin(@RequestBody LoginRequestDTO dto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
 
-        // Vérification par Spring Security
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        // Génération du token JWT en utilisant l'email de l'utilisateur
         String token = jwtUtil.generateToken(userDetails.getUsername());
-        // Retourne le token JWT dans la response http
-        return ResponseEntity.ok(token);
+
+        User userResponse = userService.getUserEntityByEmail(userDetails.getUsername());
+
+        return ResponseEntity.ok(new AuthResponseDTO(token, userResponse));
     }
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponseDTO> createUser(@RequestBody UserRequestDTO userDTO) {
 
-        UserResponseDTO userDetails = userService.createUser(userDTO);
+        User userDetails = userService.createUser(userDTO);
 
         String token = jwtUtil.generateToken(userDetails.getUsername());
 
