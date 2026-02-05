@@ -36,11 +36,4 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/auth/signup")
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userDTO) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.createUser(userDTO));
-    }
-
 }
