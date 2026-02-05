@@ -12,7 +12,7 @@ export interface CreateServerPayload {
 }
 
 export interface UpdateServerPayload {
-  name?: string;
+  name: string;
 }
 
 export async function createServer(payload: CreateServerPayload) {
@@ -35,7 +35,6 @@ export async function updateServer(id: number, payload: UpdateServerPayload) {
   return data;
 }
 
-/** Rejoindre un serveur via un lien d'invitation (ex: https://.../invite/CODE ou CODE) */
 export async function joinServerByInviteLink(inviteLinkOrCode: string) {
   const { data } = await api.post("/api/servers/join", {
     inviteLink: inviteLinkOrCode.trim(),
