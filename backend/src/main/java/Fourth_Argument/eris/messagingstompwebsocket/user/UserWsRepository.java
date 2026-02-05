@@ -1,11 +1,14 @@
 package Fourth_Argument.eris.messagingstompwebsocket.user;
 
-import java.util.List;
+// import java.util.List;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+// import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface UserWsRepository extends MongoRepository<UserWs, String> {
+// import Fourth_Argument.eris.api.model.UserWs;
+// import Fourth_Argument.eris.api.model.UserStatus;
 
-    List<UserWs> findAllByStatus(UserWsStatus online);
+// public interface UserWsRepository extends MongoRepository<UserWs, String> {
 
-}
+// List<UserWs> findAllByStatus(UserStatus online);
+
+// }

@@ -21,6 +21,9 @@ public class User {
     private String email;
     private String password;
 
+    private UserStatus status;
+    private TypingStatus typing;
+
     @Column(name = "display_name")
     private String displayName;
 

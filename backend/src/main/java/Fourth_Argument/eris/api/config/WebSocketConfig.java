@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.messagingstompwebsocket.config;
+package Fourth_Argument.eris.api.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -12,24 +12,29 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
-    config.enableSimpleBroker("/user");
+    config.enableSimpleBroker("/topic", "/user");
     config.setApplicationDestinationPrefixes("/app");
-    config.setUserDestinationPrefix("/user/");
+    config.setUserDestinationPrefix("/user");
   }
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws")
-          .withSockJS();
+        .setAllowedOriginPatterns("*")
+        .withSockJS();
   }
 
   /* Convertisseur cassé pour l'instant, à réparer plus tard */
 
-  /* @Override
-  public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-    JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter(new ObjectMapper());
-    messageConverters.add(converter);
-    
-    return false;
-  } */
-} 
+  /*
+   * @Override
+   * public boolean configureMessageConverters(List<MessageConverter>
+   * messageConverters) {
+   * JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter(new
+   * ObjectMapper());
+   * messageConverters.add(converter);
+   *
+   * return false;
+   * }
+   */
+}

@@ -9,12 +9,12 @@ export interface SignupPayload {
   email: string;
   password: string;
   username: string;
-  displayName?: string;
+  displayName: string;
   birthDate?: string;
 }
 
 export async function login(payload: LoginPayload) {
-  const { data } = await api.post("/api/auth/login", payload);
+  const { data } = await api.post("/api/auth/signin", payload);
   return data; // token + user (selon le back)
 }
 

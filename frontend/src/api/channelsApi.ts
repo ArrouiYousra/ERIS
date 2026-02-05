@@ -3,7 +3,7 @@ import { api } from "./client";
 export interface Channel {
   id: number;
   name: string;
-  serverId?: number;
+  serverId: number;
   createdAt?: string;
 }
 
@@ -13,13 +13,14 @@ export interface CreateChannelPayload {
 }
 
 export async function getChannelsByServer(serverId: number) {
-  // Note: Le backend n'a pas encore d'endpoint GET pour les channels d'un server
-  // Pour l'instant, on retourne un tableau vide
-  // TODO: Implémenter GET /api/servers/{serverId}/channels dans le backend
-  return [];
+  const { data } = await api.get(`/api/servers/${serverId}/channels`);
+  return data;
 }
 
-export async function createChannel(serverId: number, payload: CreateChannelPayload) {
+export async function createChannel(
+  serverId: number,
+  payload: CreateChannelPayload,
+) {
   const { data } = await api.post(`/api/servers/${serverId}/channels`, payload);
   return data;
 }
