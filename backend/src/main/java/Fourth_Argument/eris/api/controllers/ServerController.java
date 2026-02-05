@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,37 +41,29 @@ public class ServerController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createServer(@RequestBody ServerDTO serverDTO) {
+    public ResponseEntity<String> createServer(
+            @RequestBody ServerDTO serverDTO,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email;
+        String email = userDetails.getUsername();
 
-        if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername(); // usually the email
-        } else {
-            throw new RuntimeException("User not authenticated");
-        }
-
-        // 2. Fetch the actual entity from DB
         User currentUser = userService.getUserEntityByEmail(email);
+
         serverService.createServer(serverDTO, currentUser);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Server created");
     }
 
     @GetMapping
-    public ResponseEntity<List<ServerDTO>> getUserServers() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<List<ServerDTO>> getUserServers(
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        String email;
-        if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        } else {
-            throw new RuntimeException("User not authenticated");
-        }
+        String email = userDetails.getUsername();
 
         User currentUser = userService.getUserEntityByEmail(email);
 
-        List<ServerDTO> servers = serverService.getUserServers(currentUser.getId());
+        List<ServerDTO> servers = serverService.getServersByUser(currentUser);
+
         return ResponseEntity.ok(servers);
     }
 

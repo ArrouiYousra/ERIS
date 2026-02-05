@@ -52,6 +52,20 @@ public class ServerService {
         return serverDTOs;
     }
 
+    public List<ServerDTO> getServersByUser(User user) {
+        List<Server> servers = serverRepository.findByOwner(user);
+
+        if (servers == null) {
+            throw new RuntimeException("No server found");
+        }
+
+        List<ServerDTO> serverDTOs = servers.stream()
+                .map(server -> serverMapper.toDTO(server, server.getOwner()))
+                .toList();
+
+        return serverDTOs;
+    }
+
     public List<ServerDTO> getUserServers(Long id) {
         List<ServerMember> serverMembers = serverMemberRepository.findServerMemberByUserId(id);
 
