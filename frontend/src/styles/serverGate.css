@@ -1,0 +1,194 @@
+/* ======================================================
+   SERVER GATE / ADD SERVER – PANEL VERSION
+   (Modal behavior removed)
+   ====================================================== */
+
+/* Main container – replaces MainContent */
+.server-gate {
+  background: #313338;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  overflow-y: auto;
+
+  padding: 48px 56px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Inner content width */
+.server-gate > * {
+  width: 100%;
+  max-width: 440px;
+}
+
+/* ------------------------------------------------------
+   Navigation
+   ------------------------------------------------------ */
+
+.server-gate-back {
+  background: none;
+  border: none;
+  color: #b5bac1;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+  text-align: left;
+  transition: color 0.15s;
+}
+
+.server-gate-back:hover {
+  color: #ffffff;
+}
+
+/* ------------------------------------------------------
+   Titles
+   ------------------------------------------------------ */
+
+.server-gate-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #f2f3f5;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+}
+
+.server-gate-subtitle {
+  font-size: 15px;
+  color: #b5bac1;
+  margin: 0 0 32px 0;
+  line-height: 1.4;
+}
+
+/* ------------------------------------------------------
+   Choices
+   ------------------------------------------------------ */
+
+.server-gate-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.server-gate-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 20px;
+  background: #2b2d31;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  text-align: left;
+  color: inherit;
+}
+
+.server-gate-choice:hover {
+  background: #3b3d44;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.server-gate-choice:active {
+  transform: scale(0.98);
+}
+
+.server-gate-choice-icon {
+  font-size: 26px;
+  margin-bottom: 4px;
+}
+
+.server-gate-choice-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f2f3f5;
+}
+
+.server-gate-choice-desc {
+  font-size: 13px;
+  color: #b5bac1;
+  line-height: 1.3;
+}
+
+/* ------------------------------------------------------
+   Forms
+   ------------------------------------------------------ */
+
+.server-gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.server-gate-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b5bac1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.server-gate-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  color: #f2f3f5;
+  background: #1e1f22;
+  border: none;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.server-gate-input::placeholder {
+  color: #4e5058;
+}
+
+.server-gate-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #00a8fc;
+}
+
+/* ------------------------------------------------------
+   Errors
+   ------------------------------------------------------ */
+
+.server-gate-error {
+  font-size: 14px;
+  color: #fa777c;
+  margin: 0;
+}
+
+/* ------------------------------------------------------
+   Submit button
+   ------------------------------------------------------ */
+
+.server-gate-submit {
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  background: #5865f2;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.server-gate-submit:hover:not(:disabled) {
+  background: #4752c4;
+}
+
+.server-gate-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.server-gate-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

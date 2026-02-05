@@ -11,14 +11,16 @@ import {
 } from "../components/friends";
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
-import { ServerModal } from "../components/ServerModal";
+import { ServerGate } from "../components/ServerGate";
 import type { MainContentTab } from "../types/friends";
 import "../styles/chat.css";
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
   const [selectedServerId, setSelectedServerId] = useState<number | null>(null);
-  const [selectedChannelId, setSelectedChannelId] = useState<number | null>(null);
+  const [selectedChannelId, setSelectedChannelId] = useState<number | null>(
+    null,
+  );
   const [selectedDMId, setSelectedDMId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<MainContentTab>("ADD");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
@@ -29,7 +31,9 @@ export function ChatLayout() {
   const createServer = useCreateServer();
 
   const serverIds = servers.map((s: { id: number }) => s.id);
-  const serverNames = Object.fromEntries(servers.map((s: { id: number; name: string }) => [s.id, s.name]));
+  const serverNames = Object.fromEntries(
+    servers.map((s: { id: number; name: string }) => [s.id, s.name]),
+  );
 
   const isDMMode = selectedServerId === null;
 
@@ -89,13 +93,16 @@ export function ChatLayout() {
             overflow: "hidden",
           }}
         >
-          {/* Zone 2: Main sidebar — Amis / Messages privés */}
+          {/* Zone 2: Main sidebar — Amis / Messages privés
           <MainSidebar
             selectedDMId={selectedDMId}
             onSelectDM={setSelectedDMId}
-          />
+          /> */}
           {/* Zone 3: Main content — onglets + contenu (prend le reste) */}
-          <MainContent activeTab={activeTab} onTabChange={setActiveTab} />
+          <ServerGate
+            onCreateServer={handleCreateServer}
+            onJoinServer={handleJoinServer}
+          />
           {/* Zone 4: Right panel — repliable sur tablette */}
           <RightPanel
             collapsed={rightPanelCollapsed}
@@ -118,13 +125,6 @@ export function ChatLayout() {
           </div>
         </>
       )}
-
-      <ServerModal
-        isOpen={serverModalOpen}
-        onClose={() => setServerModalOpen(false)}
-        onCreateServer={handleCreateServer}
-        onJoinServer={handleJoinServer}
-      />
     </div>
   );
 }

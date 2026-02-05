@@ -14,6 +14,40 @@
 	<name>eris</name>
 	<description>RTC project for Spring Boot</description>
 	<url/>
+
+	<profiles>
+        <profile>
+            <id>reset-db</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.flywaydb</groupId>
+                        <artifactId>flyway-maven-plugin</artifactId>
+                        <version>10.8.1</version>
+
+                        <configuration>
+                            <url>jdbc:postgresql://localhost:5432/mydb</url>
+                            <user>myuser</user>
+                            <password>mypassword</password>
+                            <cleanDisabled>false</cleanDisabled>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>clean-db</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 	<licenses>
 		<license/>
 	</licenses>
@@ -118,23 +152,48 @@
 		<scope>provided</scope>
 	</dependency>
 
-	<dependency>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-crypto</artifactId>
-</dependency>
+		<!-- Spring Security (JWT + filter chain) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-data-mongodb</artifactId>
-</dependency>
+		<!-- JWT (JJWT) -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
 
-
+		<!-- Swagger / OpenAPI 3 (springdoc) -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.8.5</version>
+		</dependency>
 
 
 	</dependencies>
 
 	<build>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
