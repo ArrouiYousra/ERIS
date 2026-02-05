@@ -27,7 +27,18 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO createUser(UserRequestDTO dto) {
+    public UserResponseDTO getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toDTO(user);
+    }
+
+    public User getUserEntityByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public User createUser(UserRequestDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email déjà utilisé");
         }
@@ -43,23 +54,6 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        return userMapper.toDTO(savedUser);
+        return savedUser;
     }
-
-    public UserResponseDTO loginUser(LoginRequestDTO dto) {
-
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (user == null) {
-            throw new RuntimeException("Ce nom d'utilisateur n'existe pas !");
-        }
-
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
-        }
-
-        return userMapper.toDTO(user);
-    }
-
 }

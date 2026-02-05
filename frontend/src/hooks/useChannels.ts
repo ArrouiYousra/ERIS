@@ -16,11 +16,20 @@ export function useChannels(serverId: number | null) {
 export function useCreateChannel() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ serverId, payload }: { serverId: number; payload: CreateChannelPayload }) =>
-      createChannel(serverId, payload),
+    mutationFn: ({
+      serverId,
+      payload,
+    }: {
+      serverId: number;
+      payload: CreateChannelPayload;
+    }) => createChannel(serverId, payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["servers", variables.serverId] });
-      queryClient.invalidateQueries({ queryKey: ["channels", variables.serverId] });
+      queryClient.invalidateQueries({
+        queryKey: ["servers", variables.serverId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["channels", variables.serverId],
+      });
     },
   });
 }
