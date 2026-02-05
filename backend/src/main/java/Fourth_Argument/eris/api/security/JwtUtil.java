@@ -16,71 +16,71 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
-// Instanciation de la classe JwtUtil au démarrage de l'application
+// JwtUtil class instantiation at application startup
 public class JwtUtil {
 
-    // Lecture de la clé secrète JWT depuis le fichier application.properties
+    // Reads the JWT secret key from application.properties
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    // Lecture de la durée de validité du token JWT depuis le fichier application.properties
+    // Reads the JWT token validity duration from application.properties
     @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
-    // Clé secrète pour signer les tokens JWT
+    // Secret key to sign JWT tokens
     private SecretKey key;
 
-    // PostConstruct est une annotation qui permet de exécuter une méthode après la construction de l'objet
+    // PostConstruct annotation runs this method after the object's construction
     @PostConstruct
     public void init() {
-        // Calcul de la clé secrète pour signer les tokens JWT
-        // On transforme la clé secrète en bytes et on la hache avec l'algorithme HS256
+        // Compute the secret key to sign JWT tokens
+        // Transform the secret into bytes and hash it with the HS256 algorithm
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // Génération du token JWT en utilisant l'email de l'utilisateur
+    // Generates a JWT token using a user's email
     public String generateToken(String email) {
-        // Construction du token
+        // Build the token
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                // On signe le token avec la clé secrète
+                // Sign the token with the secret key
                 .signWith(key, SignatureAlgorithm.HS256)
-                // On compacte le token en une chaîne de caractères
+                // Compact the token into a string
                 .compact();
     }
 
-    // Récupération de l'email de l'utilisateur à partir du token JWT
+    // Extracts the user's email from the JWT token
     public String getEmailFromToken(String token) {
-        // On décompacte le token en une chaîne de caractères
+        // Parse the token from the string
         return Jwts.parser()
                 .setSigningKey(key)
-                // On vérifie la signature du token
+                // Verify the token's signature
                 .parseClaimsJws(token)
-                // On donne accés au corps du token
+                // Access the token body
                 .getBody()
-                // renvoie la valeur (email)
+                // Return the value (email)
                 .getSubject();
     }
 
     // Token validation
     public boolean validateJwtToken(String token) {
         try {
-            // Comme dans getEmailFromToken, on vérifie la signature du token
+            // As in getEmailFromToken, verify the token's signature
             Jwts.parser().setSigningKey(key).parseClaimsJws(token);
             return true;
-        } catch (SignatureException e) { // Si la signature du token est invalide
+        } catch (SignatureException e) { // If the token signature is invalid
             System.err.println("Invalid JWT signature: " + e.getMessage());
-        } catch (MalformedJwtException e) { // Si le token est mal formé
+        } catch (MalformedJwtException e) { // If the token is malformed
             System.err.println("Invalid JWT token: " + e.getMessage());
-        } catch (ExpiredJwtException e) { // Si le token a expiré
+        } catch (ExpiredJwtException e) { // If the token is expired
             System.err.println("JWT token is expired: " + e.getMessage());
-        } catch (UnsupportedJwtException e) { // Si le token n'est pas supporté
+        } catch (UnsupportedJwtException e) { // If the token is unsupported
             System.err.println("JWT token is unsupported: " + e.getMessage());
-        } catch (IllegalArgumentException e) { // Si le token est vide
+        } catch (IllegalArgumentException e) { // If the token is empty
             System.err.println("JWT claims string is empty: " + e.getMessage());
         }
-        return false; // Si le token est invalide, on retourne false
+        return false; // If the token is invalid, return false
     }
 }
