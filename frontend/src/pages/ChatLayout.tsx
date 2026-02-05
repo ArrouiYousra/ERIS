@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useChannels } from "../hooks/useChannels";
-import { useServers, useCreateServer } from "../hooks/useServers";
+import {
+  useServers,
+  useCreateServer,
+  useServerMember,
+} from "../hooks/useServers";
 import { joinServerByInviteLink } from "../api/serversApi";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -14,6 +18,7 @@ import { MessageList } from "../components/MessageList";
 import { ServerGate } from "../components/ServerGate";
 import type { MainContentTab } from "../types/friends";
 import "../styles/chat.css";
+import { LeftPanel } from "../components/friends/LeftPanel";
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -25,6 +30,7 @@ export function ChatLayout() {
   const [activeTab, setActiveTab] = useState<MainContentTab>("ADD");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [serverModalOpen, setServerModalOpen] = useState(false);
+  const [serverMembers, setServerMembers] = useState<number | null>(null);
 
   const { data: servers = [] } = useServers();
   const { data: channels = [] } = useChannels(selectedServerId);
@@ -56,6 +62,10 @@ export function ChatLayout() {
     await joinServerByInviteLink(inviteLink);
     queryClient.invalidateQueries({ queryKey: ["servers"] });
     setServerModalOpen(false);
+  };
+
+  const handleServerMember = async (id: number | null) => {
+    setServerMembers(id);
   };
 
   return (
@@ -121,7 +131,17 @@ export function ChatLayout() {
             />
           </div>
           <div className="chat-main flex-1 flex flex-col min-w-0 bg-[#313338]">
-            <MessageList channelId={selectedChannelId} messages={[]} />
+            <MessageList channelId={selectedChannelId} />
+          </div>
+          <div>
+            {" "}
+            {
+              <LeftPanel
+                serverId={selectedServerId}
+                collapsed={rightPanelCollapsed}
+                onToggle={() => setRightPanelCollapsed((c) => !c)}
+              />
+            }
           </div>
         </>
       )}
