@@ -12,17 +12,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-// On peut déclarer des Bean qui sont créés au démarrage et injectés dans les autres classes
+// Beans can be declared here to be created at startup and injected into other classes
 @Configuration
-// Active la sécurité web Spring, sans ça, les filtres et règles de sécurité ne seront pas appliquées
+// Enables Spring Web security, without this security filters and rules will not be applied
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService; // Filtre utilisateur pour vérifier les identifiants
-    private final AuthEntryPointJwt unauthorizedHandler; // Requête non authentifiée (401)
-    private final JwtUtil jwtUtil; // Validation du token JWT
+    private final CustomUserDetailsService userDetailsService; // User filter to check credentials
+    private final AuthEntryPointJwt unauthorizedHandler; // Unauthenticated request (401)
+    private final JwtUtil jwtUtil; // JWT token validation
 
-    // On injecte les beans dans le constructeur
+    // Beans are injected into the constructor
     public WebSecurityConfig(CustomUserDetailsService userDetailsService,
                              AuthEntryPointJwt unauthorizedHandler,
                              JwtUtil jwtUtil) {
@@ -31,39 +31,39 @@ public class WebSecurityConfig {
         this.jwtUtil = jwtUtil;
     }
 
-    // Filtre pour vérifier le token JWT
+    // Filter to check the JWT token
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter(jwtUtil, userDetailsService);
     }
 
-    // Gestionnaire d'authentification
+    // Authentication manager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    // Filtre de sécurité
+    // Security filter chain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Désactive la protection CSRF (Cross-Site Request Forgery)
+                // Disable CSRF (Cross-Site Request Forgery) protection
                 .csrf(csrf -> csrf.disable())
-                // CORS activé pour le frontend (CorsConfigurationSource bean)
+                // Enable CORS for the frontend (CorsConfigurationSource bean)
                 .cors(Customizer.withDefaults())
-                // Gère les erreurs d'authentification
+                // Handles authentication errors
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                // Désactive la gestion des sessions stateless http
+                // Disable session management for stateless http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // On définit les règles d'authorisation (public/authentifié)
+                // Define authorization rules (public/authenticated)
                 .authorizeHttpRequests(auth -> auth
-                        // pas besoin de token ici
+                        // No token needed here
                         .requestMatchers("/api/auth/**").permitAll()
-                        // Swagger / OpenAPI (accès public en dev)
+                        // Swagger / OpenAPI (public access in dev)
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        // doit etre authentifier
+                        // Must be authenticated
                         .anyRequest().authenticated());
-        // On ajoute le filtre JWT
+        // Add the JWT filter before the UsernamePasswordAuthenticationFilter
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
