@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import Fourth_Argument.eris.api.dto.MessageDTO;
 import Fourth_Argument.eris.api.model.Message;
 import Fourth_Argument.eris.api.repository.MessageRepository;
+import Fourth_Argument.eris.exceptions.ChannelException;
+import Fourth_Argument.eris.exceptions.UserException;
 import Fourth_Argument.eris.services.ChannelService;
 import Fourth_Argument.eris.services.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ public class RealtimeChatController {
     @MessageMapping("/chat/{channelId}")
     public void processMessage(
             @Payload MessageDTO messageDTO,
-            @PathVariable Long channelId) {
+            @PathVariable Long channelId) throws ChannelException, UserException {
 
         // 1️⃣ Persist message (same logic as REST)
         MessageDTO savedMessage = messageService.sendMessage(messageDTO, channelId);

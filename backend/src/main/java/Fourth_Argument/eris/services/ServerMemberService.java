@@ -8,6 +8,7 @@ import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.mapper.ServerMemberMapper;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
+import Fourth_Argument.eris.exceptions.ServerMemberException;
 
 @Service
 public class ServerMemberService {
@@ -20,32 +21,32 @@ public class ServerMemberService {
         this.serverMemberMapper = ServerMemberMapper;
     }
 
-    public void createServerMember(Long serverId, Long userId) {
+    public void createServerMember(Long serverId, Long userId) throws ServerMemberException {
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserIdAndServerId(userId, serverId);
 
         if (serverMember != null) {
-            throw new RuntimeException("ServerMember already exists");
+            throw new ServerMemberException("ServerMember already exists");
         }
 
         serverMember = new ServerMember(userId, serverId);
         serverMemberRepository.save(serverMember);
     }
 
-    public void deleteServerMember(Long serverId, Long userId) {
+    public void deleteServerMember(Long serverId, Long userId) throws ServerMemberException {
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserIdAndServerId(userId, serverId);
 
         if (serverMember == null) {
-            throw new RuntimeException("ServerMember not found");
+            throw new ServerMemberException("ServerMember not found");
         }
 
         serverMemberRepository.deleteById(serverMember.getId());
     }
 
-    public List<ServerMemberDTO> getServerMembers(Long id) {
+    public List<ServerMemberDTO> getServerMembers(Long id) throws ServerMemberException {
         List<ServerMember> serverMembers = serverMemberRepository.findServerMemberByServerId(id);
 
         if (serverMembers == null) {
-            throw new RuntimeException("No member found");
+            throw new ServerMemberException("No member found");
         }
 
         List<ServerMemberDTO> serverMemberDTOs = serverMembers.stream()
@@ -55,11 +56,11 @@ public class ServerMemberService {
         return serverMemberDTOs;
     }
 
-    public void updateServerMember(Long id, Long userId, Long roleId) {
+    public void updateServerMember(Long id, Long userId, Long roleId) throws ServerMemberException {
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserIdAndServerId(userId, id);
 
         if (serverMember == null) {
-            throw new RuntimeException("ServerMember not found");
+            throw new ServerMemberException("ServerMember not found");
         }
 
         // tu ne peux pas changer le tien, il faut toujours un owner

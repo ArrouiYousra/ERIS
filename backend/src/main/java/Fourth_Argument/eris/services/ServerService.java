@@ -1,11 +1,8 @@
 package Fourth_Argument.eris.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ServerDTO;
@@ -17,7 +14,10 @@ import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
-import Fourth_Argument.eris.api.repository.UserRepository;
+import Fourth_Argument.eris.exceptions.ChannelException;
+import Fourth_Argument.eris.exceptions.ServerException;
+import Fourth_Argument.eris.exceptions.ServerMemberException;
+import Fourth_Argument.eris.exceptions.UserException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -30,19 +30,18 @@ public class ServerService {
     private final ServerMemberService serverMemberService;
     private final ChannelRepository channelRepository;
     private final ChannelService channelService;
-    private final UserService userService;
 
-    public ServerDTO getServerById(Long id) {
+    public ServerDTO getServerById(Long id) throws ServerException {
         Server server = serverRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Server not found"));
+                .orElseThrow(() -> new ServerException("Server not found"));
         return serverMapper.toDTO(server, null);
     }
 
-    public List<ServerDTO> getServers() {
+    public List<ServerDTO> getServers() throws ServerException {
         List<Server> servers = serverRepository.findAll();
 
         if (servers == null) {
-            throw new RuntimeException("No server found");
+            throw new ServerException("No server found");
         }
 
         List<ServerDTO> serverDTOs = servers.stream()
@@ -52,16 +51,17 @@ public class ServerService {
         return serverDTOs;
     }
 
-    public List<ServerDTO> getUserServers(Long id) {
+    public List<ServerDTO> getUserServers(Long id) throws ServerException {
         List<ServerMember> serverMembers = serverMemberRepository.findServerMemberByUserId(id);
 
         if (serverMembers == null) {
-            throw new RuntimeException("No server found");
+            throw new ServerException("No server found");
         }
 
-        List<ServerDTO> serverDTOs = serverMembers.stream()
-                .map(member -> getServerById(member.getServerId()))
-                .toList();
+        List<ServerDTO> serverDTOs = new ArrayList<>();
+        for (ServerMember serverMember : serverMembers) {
+            serverDTOs.add(getServerById(serverMember.getServerId()));
+        }
 
         return serverDTOs;
     }
@@ -73,28 +73,32 @@ public class ServerService {
         serverRepository.save(server);
     }
 
-    public void updateServer(Long id, ServerDTO serverDTO) {
+    public void updateServer(Long id, ServerDTO serverDTO) throws ServerException, UserException {
         if (serverRepository.existsById(id)) {
 
-            Server server = serverRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+            Server server = serverRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
             serverRepository.save(server);
         } else {
-            throw new RuntimeException("Server not found");
+            throw new ServerException("Server not found");
         }
     }
 
-    public void deleteServer(Long id) {
+    public void deleteServer(Long id) throws ChannelException, ServerException, ServerMemberException {
         if (serverRepository.existsById(id)) {
 
-            serverMemberRepository.findServerMemberByServerId(id).stream()
-                    .forEach(member -> serverMemberService.deleteServerMember(id, member.getUserId()));
+            List<ServerMember> serverMembers = serverMemberRepository.findServerMemberByServerId(id);
+            for (ServerMember serverMember : serverMembers) {
+                serverMemberService.deleteServerMember(id, serverMember.getUserId());
+            }
 
-            channelRepository.findByServerId(id).stream()
-                    .forEach(channel -> channelService.delete(channel.getId()));
+            List<Channel> channels = channelRepository.findByServerId(id);
+            for (Channel channel : channels) {
+                channelService.delete(channel.getId());
+            }
 
             serverRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Server not found");
+            throw new ServerException("Server not found");
         }
     }
 }
