@@ -21,6 +21,10 @@ public class Channel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String topic;
+    
+    @Column(name = "is_private")
+    private Boolean isPrivate = false;
 
     @ManyToOne
     @JoinColumn(name = "server_id")

@@ -1,5 +1,5 @@
 package Fourth_Argument.eris.api.dto;
 
-public record ChannelDTO(String name) {
+public record ChannelDTO(Long id, String name, String topic, Boolean isPrivate, Long serverId) {
 
 }
