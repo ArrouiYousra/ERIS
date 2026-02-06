@@ -27,24 +27,27 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    public User createUser(UserRequestDTO dto) {
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email déjà utilisé");
-        }
+    // Signup in AuthService do the same
 
-        if (!dto.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
-            throw new RuntimeException(
-                    "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre");
-        }
+    // public User createUser(UserRequestDTO dto) {
+    // if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+    // throw new RuntimeException("Email déjà utilisé");
+    // }
 
-        User user = userMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
+    // if (!dto.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
+    // throw new RuntimeException(
+    // "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une
+    // minuscule et un chiffre");
+    // }
 
-        User savedUser = userRepository.save(user);
+    // User user = userMapper.toEntity(dto);
+    // user.setPassword(passwordEncoder.encode(dto.getPassword()));
+    // user.setCreatedAt(LocalDateTime.now());
 
-        return savedUser;
-    }
+    // User savedUser = userRepository.save(user);
+
+    // return savedUser;
+    // }
 
     public User getUserEntityByEmail(String email) {
         return userRepository.findByEmail(email)
