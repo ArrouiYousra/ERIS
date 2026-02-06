@@ -80,11 +80,19 @@ public class ServerService {
         return serverDTOs;
     }
 
-    public void createServer(ServerDTO serverDTO, User owner) {
+    public ServerDTO createServer(ServerDTO serverDTO, User owner) {
         Server server = new Server();
         server.setName(serverDTO.getName());
         server.setOwner(owner);
-        serverRepository.save(server);
+        Server savedServer = serverRepository.save(server);
+        
+        // Create default "général" channel
+        Channel defaultChannel = new Channel();
+        defaultChannel.setName("général");
+        defaultChannel.setServer(savedServer);
+        channelRepository.save(defaultChannel);
+        
+        return serverMapper.toDTO(savedServer, owner);
     }
 
     public void updateServer(Long id, ServerDTO serverDTO) {

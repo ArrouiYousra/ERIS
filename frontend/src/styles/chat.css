@@ -64,9 +64,11 @@
 .chat-main {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   background: #313338;
   min-height: 0;
+  min-width: 0;
+  height: 100%;
 }
 
 /* Vue d'accueil quand aucun canal / conversation sélectionné */

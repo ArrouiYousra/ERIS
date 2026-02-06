@@ -12,8 +12,10 @@ import {
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
 import { ServerGate } from "../components/ServerGate";
+import { ServerWizard, type ServerWizardData } from "../components/ServerWizard";
 import type { MainContentTab } from "../types/friends";
 import "../styles/chat.css";
+import "../styles/serverWizard.css";
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -25,6 +27,7 @@ export function ChatLayout() {
   const [activeTab, setActiveTab] = useState<MainContentTab>("ADD");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [serverModalOpen, setServerModalOpen] = useState(false);
+  const [showMemberList, setShowMemberList] = useState(true);
 
   const { data: servers = [] } = useServers();
   const { data: channels = [] } = useChannels(selectedServerId);
@@ -46,10 +49,25 @@ export function ChatLayout() {
     }
   };
 
+  // Handler for ServerWizard modal (full data object)
+  const handleCreateServerFromWizard = async (data: ServerWizardData): Promise<number | null> => {
+    const result = await createServer.mutateAsync({ name: data.name });
+    console.log("Server created, API response:", result);
+    console.log("Server ID from response:", result?.id);
+    return result?.id ?? null;
+  };
+
+  // Handler for navigating to a newly created server
+  const handleGoToServer = (serverId: number) => {
+    console.log("handleGoToServer called with serverId:", serverId);
+    console.log("Current serverIds in list:", serverIds);
+    setSelectedServerId(serverId);
+  };
+
+  // Handler for ServerGate (simple string name - legacy)
   const handleCreateServer = async (name: string) => {
     const result = await createServer.mutateAsync({ name });
     if (result?.id) setSelectedServerId(result.id);
-    setServerModalOpen(false);
   };
 
   const handleJoinServer = async (inviteLink: string) => {
@@ -110,21 +128,66 @@ export function ChatLayout() {
           />
         </div>
       ) : (
-        <>
+        <div className="flex flex-row flex-1 h-full min-w-0 overflow-hidden">
           {/* Mode serveur : sidebar canaux + zone messages */}
-          <div className="chat-sidebar chat-sidebar--channels w-[240px] min-w-[240px] shrink-0">
+          <div className="chat-sidebar chat-sidebar--channels w-[240px] min-w-[240px] shrink-0 h-full">
             <ChannelList
               serverId={selectedServerId}
               channels={channels}
               onSelectChannel={setSelectedChannelId}
               selectedChannelId={selectedChannelId}
+              serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
             />
           </div>
-          <div className="chat-main flex-1 flex flex-col min-w-0 bg-[#313338]">
-            <MessageList channelId={selectedChannelId} messages={[]} />
+          <div className="chat-main flex-1 flex flex-row min-w-0 h-full bg-[#313338]">
+            <div className="flex-1 flex flex-col min-w-0 h-full">
+              <MessageList 
+                channelId={selectedChannelId} 
+                channelName={channels.find((c: any) => c.id === selectedChannelId)?.name}
+                channelTopic={(channels.find((c: any) => c.id === selectedChannelId) as any)?.topic}
+                isPrivate={(channels.find((c: any) => c.id === selectedChannelId) as any)?.isPrivate}
+                serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
+                messages={[]}
+                showMemberList={showMemberList}
+                onToggleMemberList={() => setShowMemberList(!showMemberList)}
+              />
+            </div>
+            {/* Member list */}
+            {showMemberList && (
+              <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
+                <div className="p-4">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                    En ligne — 1
+                  </h3>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer">
+                      <div className="relative">
+                        <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
+                          Y
+                        </div>
+                        <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#23a55a] rounded-full border-2 border-[#2b2d31]" />
+                      </div>
+                      <span className="text-gray-300 text-sm">Yousra</span>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase mt-4 mb-2">
+                    Hors ligne — 0
+                  </h3>
+                </div>
+              </div>
+            )}
           </div>
-        </>
+        </div>
       )}
+
+      {/* Server creation wizard modal */}
+      <ServerWizard
+        isOpen={serverModalOpen}
+        onClose={() => setServerModalOpen(false)}
+        onCreateServer={handleCreateServerFromWizard}
+        onGoToServer={handleGoToServer}
+      />
     </div>
   );
 }

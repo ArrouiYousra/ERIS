@@ -41,7 +41,7 @@ public class ServerController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createServer(
+    public ResponseEntity<ServerDTO> createServer(
             @RequestBody ServerDTO serverDTO,
             @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -49,9 +49,9 @@ public class ServerController {
 
         User currentUser = userService.getUserEntityByEmail(email);
 
-        serverService.createServer(serverDTO, currentUser);
+        ServerDTO createdServer = serverService.createServer(serverDTO, currentUser);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Server created");
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdServer);
     }
 
     @GetMapping

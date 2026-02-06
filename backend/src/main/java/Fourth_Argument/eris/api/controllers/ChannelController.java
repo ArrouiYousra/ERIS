@@ -27,13 +27,13 @@ public class ChannelController {
     }
 
     @PostMapping("/servers/{serverId}/channels")
-    public ResponseEntity<String> createChannel(@PathVariable Long serverId,
+    public ResponseEntity<ChannelDTO> createChannel(@PathVariable Long serverId,
             @RequestBody ChannelDTO dto) {
 
-        channelService.createChannel(serverId, dto);
+        ChannelDTO createdChannel = channelService.createChannel(serverId, dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("Channel created");
+                .body(createdChannel);
     }
 
     @GetMapping("/servers/{serverId}/channels")
@@ -51,11 +51,11 @@ public class ChannelController {
     }
 
     @PutMapping("/channels/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody ChannelDTO dto) {
+    public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto) {
 
-        channelService.update(dto, id);
+        ChannelDTO updatedChannel = channelService.update(dto, id);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Le nom du channel a été modifié !");
+        return ResponseEntity.ok(updatedChannel);
     }
 
     @DeleteMapping("/channels/{id}")
