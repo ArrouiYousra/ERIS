@@ -43,10 +43,11 @@ public class SecurityConfig {
                 .cors(cors -> {
                 }) // picks up corsConfigurationSource
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT //
                                                                                                               // stateless
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // allow signup/login
+                        .requestMatchers("/servers/**").authenticated() // allow all logged-in users
                         .anyRequest().authenticated() // protect all other endpoints
                 );
 
