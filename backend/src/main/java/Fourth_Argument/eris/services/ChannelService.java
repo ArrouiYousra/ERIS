@@ -10,6 +10,8 @@ import Fourth_Argument.eris.api.model.Channel;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
+import Fourth_Argument.eris.exceptions.ChannelException;
+import Fourth_Argument.eris.exceptions.ServerException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,28 +22,28 @@ public class ChannelService {
     private final ChannelRepository channelRepository;
     private final ServerRepository serverRepository;
 
-    public ChannelDTO createChannel(Long serverId, ChannelDTO dto) {
+    public ChannelDTO createChannel(Long serverId, ChannelDTO dto) throws ChannelException, ServerException {
 
         Server server = serverRepository.findById(serverId)
-                .orElseThrow(() -> new RuntimeException("Pas de serveur existant"));
+                .orElseThrow(() -> new ServerException("Pas de serveur existant"));
 
         Channel channel = channelMapper.toEntity(dto, server);
         Channel savedChannel = channelRepository.save(channel);
 
         if (channel.getName().isEmpty()) {
-            throw new RuntimeException("Le channel doit avoir un nom !");
+            throw new ChannelException("Le channel doit avoir un nom !");
         }
 
         return channelMapper.toDTO(savedChannel);
 
     }
 
-    public List<ChannelDTO> getChannelByServer(Long serverId) {
+    public List<ChannelDTO> getChannelByServer(Long serverId) throws ChannelException {
 
         List<Channel> channels = channelRepository.findByServerId(serverId);
 
         if (channels == null) {
-            throw new RuntimeException("Aucun channel dans ce serveur !");
+            throw new ChannelException("Aucun channel dans ce serveur !");
         }
 
         List<ChannelDTO> dtoList = channels.stream()
@@ -51,19 +53,19 @@ public class ChannelService {
         return dtoList;
     }
 
-    public ChannelDTO findById(Long id) {
+    public ChannelDTO findById(Long id) throws ChannelException {
 
         Channel channel = channelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pas de channel existant"));
+                .orElseThrow(() -> new ChannelException("Pas de channel existant"));
 
         return channelMapper.toDTO(channel);
 
     }
 
-    public ChannelDTO update(ChannelDTO dto, Long id) {
+    public ChannelDTO update(ChannelDTO dto, Long id) throws ChannelException {
 
         Channel channel = channelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pas de channel existant"));
+                .orElseThrow(() -> new ChannelException("Pas de channel existant"));
 
         channel.setName(dto.name());
 
@@ -72,10 +74,10 @@ public class ChannelService {
         return channelMapper.toDTO(updatedChannel);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id) throws ChannelException {
 
         Channel channel = channelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pas de channel existant"));
+                .orElseThrow(() -> new ChannelException("Pas de channel existant"));
 
         channelRepository.delete(channel);
     }
