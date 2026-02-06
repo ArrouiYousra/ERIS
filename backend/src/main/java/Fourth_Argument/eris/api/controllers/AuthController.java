@@ -16,6 +16,7 @@ import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
 import Fourth_Argument.eris.api.dto.response.AuthResponseDTO;
 import Fourth_Argument.eris.api.security.JwtUtil;
 import Fourth_Argument.eris.exceptions.UserException;
+import Fourth_Argument.eris.services.AuthService;
 import Fourth_Argument.eris.services.UserService;
 import lombok.RequiredArgsConstructor;
 import Fourth_Argument.eris.api.model.User;
@@ -28,6 +29,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager; // vérifie les identifiants
     private final JwtUtil jwtUtil; // génère le token JWT
     private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/signin")
     // Prend en argument une request http avec le body contenant l'email et le mot
@@ -47,7 +49,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<AuthResponseDTO> createUser(@RequestBody UserRequestDTO userDTO) throws UserException {
 
-        User userDetails = userService.createUser(userDTO);
+        User userDetails = authService.signup(userDTO);
 
         String token = jwtUtil.generateToken(userDetails.getUsername());
 
