@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Hash, Lock, Users, Search, UserPlus, ImagePlus, Send, ChevronRight, Plus } from "lucide-react";
+import { Hash, Lock, Users, Search, Plus } from "lucide-react";
 
 interface Message {
   id: number;
@@ -142,44 +142,11 @@ export function MessageList({
               )}
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              Bienvenue sur
+              Bienvenue sur #{channelName || "général"}
             </h1>
-            <h2 className="text-3xl font-bold text-white mb-4">
-              {serverName}
-            </h2>
-            <p className="text-gray-400 text-center max-w-md mb-8">
-              Voilà ton nouveau serveur, tout beau tout propre. Tu peux voir ici quelques étapes pour t'aider dans tes débuts.
+            <p className="text-gray-400 text-center max-w-md">
+              C'est le début du salon #{channelName || "général"}. Commence à discuter !
             </p>
-
-            {/* Suggested actions */}
-            <div className="w-full max-w-md space-y-2">
-              {/* Invite friends */}
-              <button className="w-full flex items-center gap-3 p-3 bg-[#2b2d31] hover:bg-[#35373c] rounded-lg transition-colors group">
-                <div className="w-10 h-10 rounded-lg bg-[#5865F2] flex items-center justify-center">
-                  <UserPlus className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-white font-medium flex-1 text-left">Invite tes amis</span>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-              </button>
-
-              {/* Customize server */}
-              <button className="w-full flex items-center gap-3 p-3 bg-[#2b2d31] hover:bg-[#35373c] rounded-lg transition-colors group">
-                <div className="w-10 h-10 rounded-lg bg-[#f47b67] flex items-center justify-center">
-                  <ImagePlus className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-white font-medium flex-1 text-left">Personnalise ton serveur avec une icône</span>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-              </button>
-
-              {/* Send first message */}
-              <button className="w-full flex items-center gap-3 p-3 bg-[#2b2d31] hover:bg-[#35373c] rounded-lg transition-colors group">
-                <div className="w-10 h-10 rounded-lg bg-[#3ba55d] flex items-center justify-center">
-                  <Send className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-white font-medium flex-1 text-left">Envoie ton premier message</span>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-              </button>
-            </div>
           </div>
         )}
       </div>

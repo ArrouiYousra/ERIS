@@ -97,7 +97,7 @@ export function ChannelList({
             e.stopPropagation();
             // TODO: Open invite modal
           }}
-          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-white transition-all"
+          className="icon-btn opacity-0 group-hover:opacity-100 text-gray-400 hover:text-white transition-all"
           title="Inviter des personnes"
         >
           <UserPlus className="w-5 h-5" />
@@ -125,7 +125,7 @@ export function ChannelList({
                 e.stopPropagation();
                 setShowChannelWizard(true);
               }}
-              className="ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-200 transition-all bg-transparent border-none outline-none cursor-pointer"
+              className="icon-btn ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-200 transition-all"
               title="Créer un salon"
             >
               <Plus className="w-[18px] h-[18px]" />
@@ -162,7 +162,7 @@ export function ChannelList({
                           e.stopPropagation();
                           // TODO: Invite functionality
                         }}
-                        className="text-gray-400 hover:text-gray-200 transition-colors"
+                        className="icon-btn text-gray-400 hover:text-gray-200 transition-colors"
                         title="Créer une invitation"
                       >
                         <UserPlus className="w-4 h-4" />
@@ -172,7 +172,7 @@ export function ChannelList({
                           e.stopPropagation();
                           setChannelToEdit(channel);
                         }}
-                        className="text-gray-400 hover:text-gray-200 transition-colors"
+                        className="icon-btn text-gray-400 hover:text-gray-200 transition-colors"
                         title="Modifier le salon"
                       >
                         <Settings className="w-4 h-4" />

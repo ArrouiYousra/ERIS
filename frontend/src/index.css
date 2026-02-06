@@ -94,8 +94,8 @@ button.btn-primary:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Reset pour les boutons icône (sans style) */
-button {
+/* Reset pour les boutons icône uniquement (classe .icon-btn ou boutons sans classes de fond) */
+button.icon-btn {
   background: transparent;
   border: none;
   padding: 0;
