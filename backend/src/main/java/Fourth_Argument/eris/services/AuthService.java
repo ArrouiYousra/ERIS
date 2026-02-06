@@ -11,14 +11,14 @@ import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.UserRepository;
 
 @Service
-public class AuthenticationService {
+public class AuthService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationService(
+    public AuthService(
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder) {
