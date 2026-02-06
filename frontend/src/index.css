@@ -74,7 +74,8 @@ h1 {
   line-height: 1.1;
 }
 
-button {
+/* Style pour les boutons principaux (formulaires, modals, etc.) */
+button.btn-primary {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -85,12 +86,23 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+button.btn-primary:hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible {
+button.btn-primary:focus,
+button.btn-primary:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Reset pour les boutons icône uniquement (classe .icon-btn ou boutons sans classes de fond) */
+button.icon-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
 }
 
 @media (prefers-color-scheme: light) {
