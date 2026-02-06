@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import Fourth_Argument.eris.api.dto.ServerDTO;
 import Fourth_Argument.eris.api.mapper.ServerMapper;
 import Fourth_Argument.eris.api.model.Channel;
+import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
+import Fourth_Argument.eris.api.repository.RoleRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.api.repository.UserRepository;
@@ -31,6 +33,7 @@ public class ServerService {
     private final ChannelRepository channelRepository;
     private final ChannelService channelService;
     private final UserService userService;
+    private final RoleRepository roleRepository;
 
     public ServerDTO getServerById(Long id) {
         Server server = serverRepository.findById(id)
@@ -66,25 +69,26 @@ public class ServerService {
         return serverDTOs;
     }
 
-    public List<ServerDTO> getUserServers(Long id) {
-        List<ServerMember> serverMembers = serverMemberRepository.findServerMemberByUserId(id);
-
-        if (serverMembers == null) {
-            throw new RuntimeException("No server found");
-        }
-
-        List<ServerDTO> serverDTOs = serverMembers.stream()
-                .map(member -> getServerById(member.getServerId()))
-                .toList();
-
-        return serverDTOs;
-    }
-
     public void createServer(ServerDTO serverDTO, User owner) {
         Server server = new Server();
         server.setName(serverDTO.getName());
         server.setOwner(owner);
+
         serverRepository.save(server);
+
+        ServerMember member = new ServerMember();
+        member.setServer(server);
+        member.setUser(owner);
+        member.setNickname(owner.getUsername());
+        member.setTypingStatus(false);
+
+        Role ownerRole = roleRepository.findByName("OWNER")
+                .orElseThrow(() -> new RuntimeException("Role OWNER not found"));
+
+        member.setRole(ownerRole);
+
+        // 4. Save membership
+        serverMemberRepository.save(member);
     }
 
     public void updateServer(Long id, ServerDTO serverDTO) {
@@ -97,18 +101,22 @@ public class ServerService {
         }
     }
 
-    public void deleteServer(Long id) {
-        if (serverRepository.existsById(id)) {
+    // public void deleteServer(Long id) {
+    // if (serverRepository.existsById(id)) {
 
-            serverMemberRepository.findServerMemberByServerId(id).stream()
-                    .forEach(member -> serverMemberService.deleteServerMember(id, member.getUserId()));
+    // Server server = serverRepository.findById(id)
+    // .orElseThrow(() -> new RuntimeException("Server not found"));
 
-            channelRepository.findByServerId(id).stream()
-                    .forEach(channel -> channelService.delete(channel.getId()));
+    // serverMemberRepository.findServerMembersByServer(server).stream()
+    // .forEach(member -> serverMemberService.deleteServerMember(server,
+    // member.getUserId()));
 
-            serverRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Server not found");
-        }
-    }
+    // channelRepository.findByServerId(id).stream()
+    // .forEach(channel -> channelService.delete(channel.getId()));
+
+    // serverRepository.deleteById(id);
+    // } else {
+    // throw new RuntimeException("Server not found");
+    // }
+    // }
 }
