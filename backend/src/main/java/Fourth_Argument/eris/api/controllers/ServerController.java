@@ -20,6 +20,7 @@ import Fourth_Argument.eris.api.dto.ServerDTO;
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.exceptions.UserException;
 import Fourth_Argument.eris.services.ServerMemberService;
 import Fourth_Argument.eris.services.ServerService;
 import Fourth_Argument.eris.services.UserService;
@@ -40,7 +41,7 @@ public class ServerController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createServer(@RequestBody ServerDTO serverDTO) {
+    public ResponseEntity<String> createServer(@RequestBody ServerDTO serverDTO) throws UserException {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email;
@@ -58,7 +59,7 @@ public class ServerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ServerDTO>> getUserServers() {
+    public ResponseEntity<List<ServerDTO>> getUserServers() throws UserException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         String email;

@@ -1,4 +1,4 @@
-package Fourth_Argument.exceptions;
+package Fourth_Argument.eris.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ public class GlobalExceptions {
 
     @ExceptionHandler(ChannelException.class)
     public ResponseEntity<ErrorDetails> channelExceptionHandler(ChannelException e, WebRequest request) {
-        ErrorDetails error = new ErrorDetails(e.getMessage(), request.getDescription(false),
+        ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(),
                 LocalDateTime.now());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -24,7 +24,7 @@ public class GlobalExceptions {
 
     @ExceptionHandler(MessageException.class)
     public ResponseEntity<ErrorDetails> messageExceptionHandler(MessageException e, WebRequest request) {
-        ErrorDetails error = new ErrorDetails(e.getMessage(), request.getDescription(false),
+        ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(),
                 LocalDateTime.now());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -32,7 +32,7 @@ public class GlobalExceptions {
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<ErrorDetails> serverExceptionHandler(ServerException e, WebRequest request) {
-        ErrorDetails error = new ErrorDetails(e.getMessage(), request.getDescription(false),
+        ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(),
                 LocalDateTime.now());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -40,7 +40,7 @@ public class GlobalExceptions {
 
     @ExceptionHandler(ServerMemberException.class)
     public ResponseEntity<ErrorDetails> serverMemberExceptionHandler(ServerMemberException e, WebRequest request) {
-        ErrorDetails error = new ErrorDetails(e.getMessage(), request.getDescription(false),
+        ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(),
                 LocalDateTime.now());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -48,7 +48,7 @@ public class GlobalExceptions {
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ErrorDetails> userExceptionHandler(UserException e, WebRequest request) {
-        ErrorDetails error = new ErrorDetails(e.getMessage(), request.getDescription(false),
+        ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(),
                 LocalDateTime.now());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -74,7 +74,7 @@ public class GlobalExceptions {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> exceptionHandler(Exception e, WebRequest request) {
-        ErrorDetails error = new ErrorDetails(e.getMessage(), request.getDescription(false), LocalDateTime.now());
+        ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(), LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
