@@ -1,4 +1,4 @@
-package Fourth_Argument.exceptions;
+package Fourth_Argument.eris.exceptions;
 
 public class ServerMemberException extends Exception {
 

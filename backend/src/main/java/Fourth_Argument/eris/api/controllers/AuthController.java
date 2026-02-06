@@ -15,6 +15,7 @@ import Fourth_Argument.eris.api.dto.request.LoginRequestDTO;
 import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
 import Fourth_Argument.eris.api.dto.response.AuthResponseDTO;
 import Fourth_Argument.eris.api.security.JwtUtil;
+import Fourth_Argument.eris.exceptions.UserException;
 import Fourth_Argument.eris.services.UserService;
 import lombok.RequiredArgsConstructor;
 import Fourth_Argument.eris.api.model.User;
@@ -31,7 +32,7 @@ public class AuthController {
     @PostMapping("/signin")
     // Prend en argument une request http avec le body contenant l'email et le mot
     // de passe
-    public ResponseEntity<AuthResponseDTO> signin(@RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<AuthResponseDTO> signin(@RequestBody LoginRequestDTO dto) throws UserException {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
 
@@ -44,7 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponseDTO> createUser(@RequestBody UserRequestDTO userDTO) {
+    public ResponseEntity<AuthResponseDTO> createUser(@RequestBody UserRequestDTO userDTO) throws UserException {
 
         User userDetails = userService.createUser(userDTO);
 

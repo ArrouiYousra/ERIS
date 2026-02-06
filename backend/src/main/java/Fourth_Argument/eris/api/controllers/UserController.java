@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
 import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
+import Fourth_Argument.eris.exceptions.UserException;
 import Fourth_Argument.eris.services.UserService;
 
 @RestController
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) throws UserException {
         if (authentication == null || authentication.getName() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

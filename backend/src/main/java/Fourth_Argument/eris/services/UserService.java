@@ -11,6 +11,7 @@ import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.mapper.UserMapper;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.UserRepository;
+import Fourth_Argument.eris.exceptions.*;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,30 +22,30 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponseDTO getUserById(Long id) {
+    public UserResponseDTO getUserById(Long id) throws UserException {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserException("User not found"));
         return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO getUserByEmail(String email) {
+    public UserResponseDTO getUserByEmail(String email) throws UserException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserException("User not found"));
         return userMapper.toDTO(user);
     }
 
-    public User getUserEntityByEmail(String email) {
+    public User getUserEntityByEmail(String email) throws UserException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserException("User not found"));
     }
 
-    public User createUser(UserRequestDTO dto) {
+    public User createUser(UserRequestDTO dto) throws UserException {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email déjà utilisé");
+            throw new UserException("Email déjà utilisé");
         }
 
         if (!dto.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
-            throw new RuntimeException(
+            throw new UserException(
                     "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre");
         }
 
