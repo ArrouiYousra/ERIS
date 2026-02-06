@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.api.security;
+package Fourth_Argument.eris.api.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
