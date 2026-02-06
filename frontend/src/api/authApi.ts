@@ -14,7 +14,7 @@ export interface SignupPayload {
 }
 
 export async function login(payload: LoginPayload) {
-  const { data } = await api.post("/api/auth/signin", payload);
+  const { data } = await api.post("/api/auth/login", payload);
   return data; // token + user (selon le back)
 }
 
