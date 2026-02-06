@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import Fourth_Argument.eris.api.dto.ServerDTO;
 import Fourth_Argument.eris.api.mapper.ServerMapper;
 import Fourth_Argument.eris.api.model.Channel;
+import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
+import Fourth_Argument.eris.api.repository.RoleRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.api.repository.UserRepository;
@@ -31,6 +33,7 @@ public class ServerService {
     private final ChannelRepository channelRepository;
     private final ChannelService channelService;
     private final UserService userService;
+    private final RoleRepository roleRepository;
 
     public ServerDTO getServerById(Long id) {
         Server server = serverRepository.findById(id)
@@ -92,6 +95,18 @@ public class ServerService {
         defaultChannel.setServer(savedServer);
         channelRepository.save(defaultChannel);
         
+        // Create server member for owner
+        ServerMember member = new ServerMember();
+        member.setServer(savedServer);
+        member.setUser(owner);
+        member.setNickname(owner.getUsername());
+        member.setTypingStatus(false);
+
+        Role ownerRole = roleRepository.findByName("OWNER")
+                .orElseThrow(() -> new RuntimeException("Role OWNER not found"));
+        member.setRole(ownerRole);
+        serverMemberRepository.save(member);
+        
         return serverMapper.toDTO(savedServer, owner);
     }
 
@@ -105,18 +120,4 @@ public class ServerService {
         }
     }
 
-    public void deleteServer(Long id) {
-        if (serverRepository.existsById(id)) {
-
-            serverMemberRepository.findServerMemberByServerId(id).stream()
-                    .forEach(member -> serverMemberService.deleteServerMember(id, member.getUserId()));
-
-            channelRepository.findByServerId(id).stream()
-                    .forEach(channel -> channelService.delete(channel.getId()));
-
-            serverRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Server not found");
-        }
-    }
 }

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useChannels } from "../hooks/useChannels";
-import { useServers, useCreateServer } from "../hooks/useServers";
+import {
+  useServers,
+  useCreateServer,
+  useServerMember,
+} from "../hooks/useServers";
 import { joinServerByInviteLink } from "../api/serversApi";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -111,11 +115,6 @@ export function ChatLayout() {
             overflow: "hidden",
           }}
         >
-          {/* Zone 2: Main sidebar — Amis / Messages privés
-          <MainSidebar
-            selectedDMId={selectedDMId}
-            onSelectDM={setSelectedDMId}
-          /> */}
           {/* Zone 3: Main content — onglets + contenu (prend le reste) */}
           <ServerGate
             onCreateServer={handleCreateServer}
