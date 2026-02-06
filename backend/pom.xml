@@ -48,6 +48,8 @@
             </build>
         </profile>
     </profiles>
+
+
 	<licenses>
 		<license/>
 	</licenses>
@@ -65,6 +67,10 @@
     	<maven.compiler.source>21</maven.compiler.source>
     	<maven.compiler.target>21</maven.compiler.target>
 	</properties>
+
+
+
+
 
 	<dependencies>
 		<!-- ========== DEPENDENCIES ACTIVES ========== -->
@@ -88,6 +94,8 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+
+
 
 		<!-- Tests -->
 		<dependency>
@@ -191,11 +199,7 @@
 
 
 
-   <dependency>
-     <groupId>org.springframework.security</groupId>
-     <artifactId>spring-security-core</artifactId>
-     <version>5.1.6.RELEASE</version>
-   </dependency>
+
  </dependencies>
 
 	<build>
