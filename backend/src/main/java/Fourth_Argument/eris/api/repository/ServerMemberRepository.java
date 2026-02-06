@@ -19,4 +19,6 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
     List<ServerMember> findServerMembersByServer(Server server, User user);
 
     boolean existsByUserAndServer(User user, Server server);
+
+    List<ServerMember> findServerMemberByUserId(Long id);
 }

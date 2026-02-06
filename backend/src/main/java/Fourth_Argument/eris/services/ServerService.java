@@ -69,32 +69,33 @@ public class ServerService {
         return serverDTOs;
     }
 
-    public List<ServerDTO> getUserServers(Long id) {
-        List<ServerMember> serverMembers = serverMemberRepository.findServerMemberByUserId(id);
+    // public List<ServerDTO> getUserServers(Long id) {
+    // List<ServerMember> serverMembers =
+    // serverMemberRepository.findServerMemberByUserId(id);
 
-        if (serverMembers == null) {
-            throw new RuntimeException("No server found");
-        }
+    // if (serverMembers == null) {
+    // throw new RuntimeException("No server found");
+    // }
 
-        List<ServerDTO> serverDTOs = serverMembers.stream()
-                .map(member -> getServerById(member.getServerId()))
-                .toList();
+    // List<ServerDTO> serverDTOs = serverMembers.stream()
+    // .map(member -> getServerById(member.getServerId()))
+    // .toList();
 
-        return serverDTOs;
-    }
+    // return serverDTOs;
+    // }
 
     public ServerDTO createServer(ServerDTO serverDTO, User owner) {
         Server server = new Server();
         server.setName(serverDTO.getName());
         server.setOwner(owner);
         Server savedServer = serverRepository.save(server);
-        
+
         // Create default "général" channel
         Channel defaultChannel = new Channel();
         defaultChannel.setName("général");
         defaultChannel.setServer(savedServer);
         channelRepository.save(defaultChannel);
-        
+
         // Create server member for owner
         ServerMember member = new ServerMember();
         member.setServer(savedServer);
@@ -106,7 +107,7 @@ public class ServerService {
                 .orElseThrow(() -> new RuntimeException("Role OWNER not found"));
         member.setRole(ownerRole);
         serverMemberRepository.save(member);
-        
+
         return serverMapper.toDTO(savedServer, owner);
     }
 
