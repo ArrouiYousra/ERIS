@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,11 +17,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import Fourth_Argument.eris.api.dto.ServerDTO;
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
+import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.api.repository.ServerMemberRepository;
+import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.services.ServerMemberService;
 import Fourth_Argument.eris.services.ServerService;
 import Fourth_Argument.eris.services.UserService;
@@ -31,13 +36,18 @@ public class ServerController {
 
     private final ServerService serverService;
     private final ServerMemberService serverMemberService;
+    private final ServerRepository serverRepository;
     private final UserService userService;
+    private final ServerMemberRepository serverMemberRepository;
 
     public ServerController(ServerService serverService, ServerMemberService serverMemberService,
-            UserService userService) {
+            UserService userService, ServerRepository serverRepository, ServerMemberRepository serverMemberRepository) {
         this.serverService = serverService;
         this.serverMemberService = serverMemberService;
+        this.serverMemberRepository = serverMemberRepository;
         this.userService = userService;
+        this.serverRepository = serverRepository;
+
     }
 
     @PostMapping
@@ -78,39 +88,82 @@ public class ServerController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Server updated");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteServer(@PathVariable Long id) {
-        serverService.deleteServer(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Server deleted");
-    }
+    @GetMapping("/servers/{serverId}/members")
+    public ResponseEntity<List<ServerMemberDTO>> getServerMembers(
+            @PathVariable Long serverId,
+            Authentication authentication) {
 
-    @PostMapping("/{id}/join")
-    public ResponseEntity<String> joinServer(@PathVariable Long id, @RequestBody UserResponseDTO userDTO) {
-        serverMemberService.createServerMember(id, userDTO.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body("Server joined");
-    }
+        // 1️⃣ Log the serverId received
+        System.out.println("Fetching members for serverId: " + serverId);
 
-    @DeleteMapping("/{id}/leave")
-    public ResponseEntity<String> leaveServer(@PathVariable Long id, @RequestBody UserResponseDTO userDTO) {
-        Long userId = userDTO.getId();
-        if (Objects.equals(serverService.getServerById(id).getOwnerId(), userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The owner cannot leave the server");
+        // 2️⃣ Log the authenticated user
+        String email = authentication.getName();
+        System.out.println("Authenticated user email: " + email);
+        User user = userService.getUserEntityByEmail(email);
+        System.out.println("Authenticated user entity: " + user);
+
+        // 3️⃣ Optional: log server existence
+        Server server = serverRepository.findById(serverId)
+                .orElseThrow(() -> {
+                    System.out.println("Server not found for id: " + serverId);
+                    return new RuntimeException("Server not found");
+                });
+        System.out.println("Server found: " + server);
+
+        // 4️⃣ If you add a membership check (forbidden if not member)
+        boolean isMember = serverMemberRepository.existsByUserAndServer(user, server);
+        System.out.println("Is user a member? " + isMember);
+        if (!isMember) {
+            System.out.println("User " + email + " is not a member of server " + serverId);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a member of this server");
         }
-        serverMemberService.deleteServerMember(id, userId);
-        return ResponseEntity.status(HttpStatus.OK).body("Server left");
+
+        // 5️⃣ Log members fetched
+        List<ServerMemberDTO> members = serverMemberService.getMembersByServerId(serverId);
+        System.out.println("Members fetched: " + members);
+
+        return ResponseEntity.ok(members);
     }
 
-    @GetMapping("/{id}/members")
-    public ResponseEntity<List<ServerMemberDTO>> getServerMembers(@PathVariable Long id) {
-        return ResponseEntity.ok(serverMemberService.getServerMembers(id));
-    }
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<String> deleteServer(@PathVariable Long id) {
+    // serverService.deleteServer(id);
+    // return ResponseEntity.status(HttpStatus.OK).body("Server deleted");
+    // }
 
-    @PutMapping("/{id}/members/{userId}")
-    public ResponseEntity<String> updateServerMember(@PathVariable Long id, @PathVariable Long userId,
-            @RequestBody Long roleId) {
-        serverMemberService.updateServerMember(id, userId, roleId);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Server member updated");
-    }
+    // @PostMapping("/{id}/join")
+    // public ResponseEntity<String> joinServer(@PathVariable Long id, @RequestBody
+    // UserResponseDTO userDTO) {
+    // serverMemberService.createServerMember(id, userDTO.getId());
+    // return ResponseEntity.status(HttpStatus.CREATED).body("Server joined");
+    // }
+
+    // @DeleteMapping("/{id}/leave")
+    // public ResponseEntity<String> leaveServer(@PathVariable Long id, @RequestBody
+    // UserResponseDTO userDTO) {
+    // Long userId = userDTO.getId();
+    // if (Objects.equals(serverService.getServerById(id).getOwnerId(), userId)) {
+    // return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The owner cannot
+    // leave the server");
+    // }
+    // serverMemberService.deleteServerMember(id, userId);
+    // return ResponseEntity.status(HttpStatus.OK).body("Server left");
+    // }
+
+    // @GetMapping("/{id}/members")
+    // public ResponseEntity<List<ServerMemberDTO>> getServerMembers(@PathVariable
+    // Long id) {
+    // return ResponseEntity.ok(serverMemberService.getServerMembers(id));
+    // }
+
+    // @PutMapping("/{id}/members/{userId}")
+    // public ResponseEntity<String> updateServerMember(@PathVariable Long id,
+    // @PathVariable Long userId,
+    // @RequestBody Long roleId) {
+    // serverMemberService.updateServerMember(id, userId, roleId);
+    // return ResponseEntity.status(HttpStatus.CREATED).body("Server member
+    // updated");
+    // }
 }
 /*
  * ✓ POST /servers - Create a new server

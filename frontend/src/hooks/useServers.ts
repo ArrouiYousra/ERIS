@@ -8,6 +8,7 @@ import {
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
+import { getServerMember } from "../api/serverMembersApi";
 
 export function useServers() {
   return useQuery({
@@ -37,11 +38,24 @@ export function useCreateServer() {
 export function useUpdateServer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: UpdateServerPayload }) =>
-      updateServer(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: UpdateServerPayload;
+    }) => updateServer(id, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["servers"] });
       queryClient.invalidateQueries({ queryKey: ["servers", variables.id] });
     },
+  });
+}
+
+export function useServerMember(id: number | null) {
+  return useQuery({
+    queryKey: ["serverMembers", id],
+    queryFn: () => (id ? getServerMember(id) : null),
+    enabled: !!id,
   });
 }
