@@ -69,26 +69,45 @@ public class ServerService {
         return serverDTOs;
     }
 
-    public void createServer(ServerDTO serverDTO, User owner) {
+    public List<ServerDTO> getUserServers(Long id) {
+        List<ServerMember> serverMembers = serverMemberRepository.findServerMemberByUserId(id);
+
+        if (serverMembers == null) {
+            throw new RuntimeException("No server found");
+        }
+
+        List<ServerDTO> serverDTOs = serverMembers.stream()
+                .map(member -> getServerById(member.getServerId()))
+                .toList();
+
+        return serverDTOs;
+    }
+
+    public ServerDTO createServer(ServerDTO serverDTO, User owner) {
         Server server = new Server();
         server.setName(serverDTO.getName());
         server.setOwner(owner);
-
-        serverRepository.save(server);
-
+        Server savedServer = serverRepository.save(server);
+        
+        // Create default "général" channel
+        Channel defaultChannel = new Channel();
+        defaultChannel.setName("général");
+        defaultChannel.setServer(savedServer);
+        channelRepository.save(defaultChannel);
+        
+        // Create server member for owner
         ServerMember member = new ServerMember();
-        member.setServer(server);
+        member.setServer(savedServer);
         member.setUser(owner);
         member.setNickname(owner.getUsername());
         member.setTypingStatus(false);
 
         Role ownerRole = roleRepository.findByName("OWNER")
                 .orElseThrow(() -> new RuntimeException("Role OWNER not found"));
-
         member.setRole(ownerRole);
-
-        // 4. Save membership
         serverMemberRepository.save(member);
+        
+        return serverMapper.toDTO(savedServer, owner);
     }
 
     public void updateServer(Long id, ServerDTO serverDTO) {
@@ -101,22 +120,4 @@ public class ServerService {
         }
     }
 
-    // public void deleteServer(Long id) {
-    // if (serverRepository.existsById(id)) {
-
-    // Server server = serverRepository.findById(id)
-    // .orElseThrow(() -> new RuntimeException("Server not found"));
-
-    // serverMemberRepository.findServerMembersByServer(server).stream()
-    // .forEach(member -> serverMemberService.deleteServerMember(server,
-    // member.getUserId()));
-
-    // channelRepository.findByServerId(id).stream()
-    // .forEach(channel -> channelService.delete(channel.getId()));
-
-    // serverRepository.deleteById(id);
-    // } else {
-    // throw new RuntimeException("Server not found");
-    // }
-    // }
 }

@@ -65,7 +65,15 @@ public class ChannelService {
         Channel channel = channelRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pas de channel existant"));
 
-        channel.setName(dto.name());
+        if (dto.name() != null) {
+            channel.setName(dto.name());
+        }
+        if (dto.topic() != null) {
+            channel.setTopic(dto.topic());
+        }
+        if (dto.isPrivate() != null) {
+            channel.setIsPrivate(dto.isPrivate());
+        }
 
         Channel updatedChannel = channelRepository.save(channel);
 
