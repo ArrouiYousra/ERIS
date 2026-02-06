@@ -6,57 +6,64 @@ import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.mapper.ServerMemberMapper;
+import Fourth_Argument.eris.api.model.Role;
+import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
+import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
+import Fourth_Argument.eris.api.repository.ServerRepository;
 
 @Service
 public class ServerMemberService {
 
     private final ServerMemberRepository serverMemberRepository;
     private final ServerMemberMapper serverMemberMapper;
+    private final ServerRepository serverRepository;
 
-    public ServerMemberService(ServerMemberRepository ServerMemberRepository, ServerMemberMapper ServerMemberMapper) {
-        this.serverMemberRepository = ServerMemberRepository;
-        this.serverMemberMapper = ServerMemberMapper;
+    public ServerMemberService(
+            ServerMemberRepository serverMemberRepository,
+            ServerRepository serverRepository,
+            ServerMemberMapper mapper) {
+        this.serverMemberRepository = serverMemberRepository;
+        this.serverRepository = serverRepository;
+        this.serverMemberMapper = mapper;
     }
 
-    public void createServerMember(Long serverId, Long userId) {
-        ServerMember serverMember = serverMemberRepository.findServerMemberByUserIdAndServerId(userId, serverId);
+    public void createServerMember(Server server, User user, Role role) {
+        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
 
         if (serverMember != null) {
             throw new RuntimeException("ServerMember already exists");
         }
 
-        serverMember = new ServerMember(userId, serverId);
+        serverMember = new ServerMember(user, server, role);
         serverMemberRepository.save(serverMember);
     }
 
-    public void deleteServerMember(Long serverId, Long userId) {
-        ServerMember serverMember = serverMemberRepository.findServerMemberByUserIdAndServerId(userId, serverId);
+    public void deleteServerMember(Server server, User user) {
+        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
 
         if (serverMember == null) {
             throw new RuntimeException("ServerMember not found");
         }
 
-        serverMemberRepository.deleteById(serverMember.getId());
+        serverMemberRepository.delete(serverMember);
     }
 
-    public List<ServerMemberDTO> getServerMembers(Long id) {
-        List<ServerMember> serverMembers = serverMemberRepository.findServerMemberByServerId(id);
+    public List<ServerMemberDTO> getMembersByServerId(Long serverId) {
 
-        if (serverMembers == null) {
-            throw new RuntimeException("No member found");
-        }
+        Server server = serverRepository.findById(serverId)
+                .orElseThrow(() -> new RuntimeException("Server not found"));
 
-        List<ServerMemberDTO> serverMemberDTOs = serverMembers.stream()
+        List<ServerMember> members = serverMemberRepository.findByServer(server);
+
+        return members.stream()
                 .map(serverMemberMapper::toDTO)
                 .toList();
-
-        return serverMemberDTOs;
     }
 
-    public void updateServerMember(Long id, Long userId, Long roleId) {
-        ServerMember serverMember = serverMemberRepository.findServerMemberByUserIdAndServerId(userId, id);
+    public void updateServerMember(Server server, User user, Role role) {
+        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
 
         if (serverMember == null) {
             throw new RuntimeException("ServerMember not found");
@@ -64,7 +71,7 @@ public class ServerMemberService {
 
         // tu ne peux pas changer le tien, il faut toujours un owner
         // si tu changes en owner, le tien change en admin
-        serverMember.setRoleId(roleId);
+        serverMember.setRole(role);
         serverMemberRepository.save(serverMember);
     }
 }

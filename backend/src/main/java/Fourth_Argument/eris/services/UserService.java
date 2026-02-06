@@ -28,33 +28,49 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO getUserByEmail(String email) throws UserException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException("User not found"));
-        return userMapper.toDTO(user);
-    }
+    // Signup in AuthService do the same
 
-    public User getUserEntityByEmail(String email) throws UserException {
+    // public User createUser(UserRequestDTO dto) {
+    // if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+    // throw new RuntimeException("Email déjà utilisé");
+    // }
+
+    // if (!dto.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
+    // throw new RuntimeException(
+    // "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une
+    // minuscule et un chiffre");
+    // }
+
+    // User user = userMapper.toEntity(dto);
+    // user.setPassword(passwordEncoder.encode(dto.getPassword()));
+    // user.setCreatedAt(LocalDateTime.now());
+
+    // User savedUser = userRepository.save(user);
+
+    // return savedUser;
+    // }
+
+    public User getUserEntityByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User createUser(UserRequestDTO dto) throws UserException {
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new UserException("Email déjà utilisé");
-        }
+    // À réecrire pour l'adapter au login auth mais c'est auth service alors
 
-        if (!dto.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
-            throw new UserException(
-                    "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre");
-        }
+    // public UserResponseDTO loginUser(LoginRequestDTO dto) {
 
-        User user = userMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
+    // User user = userRepository.findByEmail(dto.getEmail())
+    // .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User savedUser = userRepository.save(user);
+    // if (user == null) {
+    // throw new RuntimeException("Ce nom d'utilisateur n'existe pas !");
+    // }
 
-        return savedUser;
-    }
+    // if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+    // throw new RuntimeException("Invalid credentials");
+    // }
+
+    // return userMapper.toDTO(user);
+    // }
+
 }

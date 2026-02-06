@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NonNull;
@@ -19,15 +21,18 @@ public class ServerMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NonNull
-    @Column(name = "server_id")
-    private Long serverId;
-    @NonNull
-    @Column(name = "role_id")
-    private Long roleId = 1L;
-    @NonNull
-    @Column(name = "user_id")
-    private Long userId;
+
+    @ManyToOne
+    @JoinColumn(name = "server_id", nullable = false)
+    private Server server;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     private String nickname;
     @NonNull
     @Column(name = "typing_status")
@@ -37,14 +42,15 @@ public class ServerMember {
     private final LocalDateTime joinedAt;
 
     public ServerMember() {
-        this.roleId = 1L;
         this.joinedAt = LocalDateTime.now();
     }
 
-    public ServerMember(Long userId, Long serverId) {
-        this.serverId = serverId;
-        this.roleId = 1L;
-        this.userId = userId;
+    public ServerMember(User user, Server server, Role role) {
+        this.user = user;
+        this.role = role;
+        this.server = server;
+
         this.joinedAt = LocalDateTime.now();
+
     }
 }
