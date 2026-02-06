@@ -27,9 +27,9 @@
                         <version>10.8.1</version>
 
                         <configuration>
-                            <url>jdbc:postgresql://localhost:5432/mydb</url>
-                            <user>myuser</user>
-                            <password>mypassword</password>
+                            <url>${env.DB_URL}</url>
+                            <user>${env.DB_USER}</user>
+                            <password>${env.DB_PASSWORD}</password>
                             <cleanDisabled>false</cleanDisabled>
                         </configuration>
 
@@ -48,6 +48,8 @@
             </build>
         </profile>
     </profiles>
+
+
 	<licenses>
 		<license/>
 	</licenses>
@@ -65,6 +67,10 @@
     	<maven.compiler.source>21</maven.compiler.source>
     	<maven.compiler.target>21</maven.compiler.target>
 	</properties>
+
+
+
+
 
 	<dependencies>
 		<!-- ========== DEPENDENCIES ACTIVES ========== -->
@@ -88,6 +94,8 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+
+
 
 		<!-- Tests -->
 		<dependency>
@@ -190,7 +198,9 @@
 		</dependency>
 
 
-	</dependencies>
+
+
+ </dependencies>
 
 	<build>
 
