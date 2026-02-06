@@ -21,6 +21,13 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Skip JWT filter for auth endpoints (public routes)
+        return path.startsWith("/api/auth/");
+    }
     private final HandlerExceptionResolver handlerExceptionResolver;
 
     private final JwtService jwtService;
