@@ -1,16 +1,11 @@
 package Fourth_Argument.eris.api.controllers;
 
 import java.util.List;
-import java.util.Objects;
 
-import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion.Use;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +20,11 @@ import Fourth_Argument.eris.api.dto.ServerDTO;
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.dto.request.JoinInviteRequestDTO;
 import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
-import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
-import Fourth_Argument.eris.api.model.Invitation;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
-import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.RoleException;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
@@ -71,7 +63,6 @@ public class ServerController {
             @AuthenticationPrincipal UserDetails userDetails) throws UserException {
 
         String email = userDetails.getUsername();
-
         User currentUser = userService.getUserEntityByEmail(email);
 
         ServerDTO createdServer = serverService.createServer(serverDTO, currentUser);
@@ -80,16 +71,10 @@ public class ServerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ServerDTO>> getUserServers() throws ServerException, UserException {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<List<ServerDTO>> getUserServers(@AuthenticationPrincipal UserDetails userDetails)
+            throws ServerException, UserException {
 
-        String email;
-        if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        } else {
-            throw new UserException("User not authenticated");
-        }
-
+        String email = userDetails.getUsername();
         User currentUser = userService.getUserEntityByEmail(email);
 
         List<ServerDTO> servers = serverService.getServersByUser(currentUser);
@@ -103,22 +88,44 @@ public class ServerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateServer(@PathVariable Long id, @RequestBody ServerDTO serverDTO)
-            throws ServerException, UserException {
+    public ResponseEntity<String> updateServer(@PathVariable Long id, @RequestBody ServerDTO serverDTO,
+            @AuthenticationPrincipal UserDetails userDetails) throws ServerException, UserException {
+
+        String email = userDetails.getUsername();
+        User user = userService.getUserEntityByEmail(email);
+
+        Server server = serverRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new ServerException("Server not found");
+                });
+
+        boolean isMember = serverMemberRepository.existsByUserAndServer(user, server);
+        if (!isMember) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a member of this server");
+        }
+
+        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
+        String roleName = serverMember.getRole().getName();
+
+        if (roleName != "OWNER") {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't update this server");
+        }
+
         serverService.updateServer(id, serverDTO);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Server updated");
     }
 
     @GetMapping("/servers/{serverId}/members")
     public ResponseEntity<List<ServerMemberDTO>> getServerMembers(
             @PathVariable Long serverId,
-            Authentication authentication) throws ServerException, UserException {
+            @AuthenticationPrincipal UserDetails userDetails) throws ServerException, UserException {
 
         // 1️⃣ Log the serverId received
         System.out.println("Fetching members for serverId: " + serverId);
 
         // 2️⃣ Log the authenticated user
-        String email = authentication.getName();
+        String email = userDetails.getUsername();
         System.out.println("Authenticated user email: " + email);
         User user = userService.getUserEntityByEmail(email);
         System.out.println("Authenticated user entity: " + user);
@@ -204,14 +211,3 @@ public class ServerController {
     // updated");
     // }
 }
-/*
- * ✓ POST /servers - Create a new server
- * ✓ GET /servers - List user's servers
- * ✓ GET /server/{id} - Get server details
- * ✓ PUT /servers/{id} - Update server
- * ✓ DELETE /servers/{id} - Delete server
- * ✓ POST /servers/{id}/join - Join a server
- * ✓ DELETE /servers/{id}/leave - Leave a server
- * ✓ GET /servers/{id}/members - List server members
- * PUT /servers/{id}/members/:userId - Update member role
- */
