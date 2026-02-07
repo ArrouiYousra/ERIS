@@ -65,4 +65,10 @@ public class MessageService {
 
     }
 
+    public void deleteMessages(List<Message> messages) {
+
+        messageRepository.deleteAll(messages);
+
+    }
+
 }
