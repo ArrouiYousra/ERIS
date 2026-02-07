@@ -14,6 +14,7 @@ import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.InvitationRepository;
+import Fourth_Argument.eris.api.repository.RoleRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.api.repository.UserRepository;
@@ -31,11 +32,12 @@ public class InvitationService {
     private final ServerMemberService serverMemberService;
     private final UserService userService;
     private final ServerRepository serverRepository;
+    private final RoleRepository roleRepository;
 
     public InvitationService(InvitationRepository invitationRepository, InvitationMapper invitationMapper,
             UserRepository userRepository, ServerMemberRepository serverMemberRepository,
             ServerMemberService serverMemberService, UserService userService,
-            ServerRepository serverRepository) {
+            ServerRepository serverRepository, RoleRepository roleRepository) {
         this.invitationRepository = invitationRepository;
         this.invitationMapper = invitationMapper;
         this.userRepository = userRepository;
@@ -43,6 +45,7 @@ public class InvitationService {
         this.serverRepository = serverRepository;
         this.serverMemberService = serverMemberService;
         this.userService = userService;
+        this.roleRepository = roleRepository;
 
     }
 
@@ -69,13 +72,17 @@ public class InvitationService {
 
         String role = member.getRole().getName();
 
-        if (!role.equals("OWNER") && !role.equals("ADMIN")) {
-            throw new RuntimeException("Not allowed to create invites");
-        }
+        // if (!role.equals("OWNER") && !role.equals("ADMIN")) {
+        // throw new RuntimeException("Not allowed to create invites");
+        // }
         String code = generateCode();
 
         Invitation invite = new Invitation();
         invite.setCode(code);
+        invite.setCode(code);
+        invite.setServer(server); // ✅ associate server
+        invite.setCreatedAt(LocalDateTime.now()); // ✅ creation date
+        invite.setExpiresAt(LocalDateTime.now().plusDays(1)); // ✅ example: 7-day expiration
 
         Invitation saved = invitationRepository.save(invite);
 
@@ -95,8 +102,8 @@ public class InvitationService {
             throw new RuntimeException("Invite expired");
         }
 
-        Role role = new Role();
-        role.setName("MEMBER");
+        Role role = roleRepository.findByName("MEMBER")
+                .orElseThrow(() -> new RuntimeException("Role MEMBER not found"));
 
         // ✅ Add user as MEMBER
         serverMemberService.createServerMember(invite.getServer(), user, role);

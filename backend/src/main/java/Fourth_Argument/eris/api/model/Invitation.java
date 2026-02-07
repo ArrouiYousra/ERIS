@@ -3,6 +3,8 @@ package Fourth_Argument.eris.api.model;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import org.springframework.cglib.core.Local;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +32,7 @@ public class Invitation {
     private String code;
 
     @Column(name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;

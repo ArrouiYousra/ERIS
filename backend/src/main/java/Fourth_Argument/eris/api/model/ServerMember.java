@@ -49,6 +49,7 @@ public class ServerMember {
         this.user = user;
         this.role = role;
         this.server = server;
+        this.nickname = user.getUsername();
 
         this.joinedAt = LocalDateTime.now();
 
