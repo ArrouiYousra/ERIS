@@ -157,7 +157,7 @@ public class ServerController {
 
     }
 
-    @PostMapping("/{id}/join")
+    @PostMapping("/join")
     public ResponseEntity<JoinInviteResponseDTO> joinServer(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody JoinInviteRequestDTO request) throws UserException, ServerMemberException {
