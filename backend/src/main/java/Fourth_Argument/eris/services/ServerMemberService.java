@@ -37,7 +37,11 @@ public class ServerMemberService {
     }
 
     public void createServerMember(Server server, User user, Role role) throws ServerMemberException {
+<<<<<<< HEAD
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
+=======
+        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
+>>>>>>> Invitation
 
         if (serverMember != null) {
             throw new ServerMemberException("ServerMember already exists");
@@ -48,7 +52,11 @@ public class ServerMemberService {
     }
 
     public void deleteServerMember(Server server, User user) throws ServerMemberException {
+<<<<<<< HEAD
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
+=======
+        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
+>>>>>>> Invitation
 
         if (serverMember == null) {
             throw new ServerMemberException("ServerMember not found");
@@ -70,7 +78,7 @@ public class ServerMemberService {
     }
 
     public void updateServerMember(Server server, User user, Role role) throws ServerMemberException {
-        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
+        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
 
         if (serverMember == null) {
             throw new ServerMemberException("ServerMember not found");
