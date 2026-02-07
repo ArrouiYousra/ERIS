@@ -1,6 +1,12 @@
 import { useState } from "react";
 import "../styles/serverGate.css";
 
+import {
+  createInvitation,
+  joinWithInvitation,
+  type JoinInviteResponse,
+} from "../api/invitationApi";
+
 export type ServerModalStep = "choice" | "create" | "join";
 
 interface ServerGateProps {
@@ -50,11 +56,15 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
     }
 
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      await onJoinServer(inviteLink.trim());
-    } catch {
-      setError("Lien invalide ou expiré");
+      await onJoinServer(inviteLink.trim()); // ✅ backend call
+      setInviteLink("");
+      // Optional: show a toast or alert: "Vous avez rejoint le serveur !"
+    } catch (err: any) {
+      console.error(err);
+      setError(err?.message || "Lien invalide ou expiré");
     } finally {
       setIsSubmitting(false);
     }
