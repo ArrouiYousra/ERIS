@@ -33,6 +33,7 @@ import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.exceptions.ChannelException;
+import Fourth_Argument.eris.exceptions.RoleException;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
 import Fourth_Argument.eris.exceptions.UserException;
@@ -147,7 +148,7 @@ public class ServerController {
 
     @PostMapping("/{serverId}/invite")
     public ResponseEntity<InvitationDTO> createInvitation(@AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long serverId) throws UserException, ServerException {
+            @PathVariable Long serverId) throws UserException, ServerException, RoleException, ServerMemberException {
 
         String email = userDetails.getUsername();
 

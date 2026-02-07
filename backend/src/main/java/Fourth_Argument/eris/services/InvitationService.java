@@ -18,6 +18,7 @@ import Fourth_Argument.eris.api.repository.RoleRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.api.repository.UserRepository;
+import Fourth_Argument.eris.exceptions.RoleException;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
 import Fourth_Argument.eris.exceptions.UserException;
@@ -58,7 +59,8 @@ public class InvitationService {
 
     }
 
-    public InvitationDTO createInvite(String email, Long serverId) throws UserException, ServerException {
+    public InvitationDTO createInvite(String email, Long serverId)
+            throws UserException, ServerException, RoleException, ServerMemberException {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException("User not found"));
         ;
@@ -68,13 +70,13 @@ public class InvitationService {
 
         ServerMember member = serverMemberRepository
                 .findByUserAndServer(user, server)
-                .orElseThrow(() -> new RuntimeException("Not a member"));
+                .orElseThrow(() -> new ServerMemberException("Not a member"));
 
         String role = member.getRole().getName();
 
-        // if (!role.equals("OWNER") && !role.equals("ADMIN")) {
-        // throw new RuntimeException("Not allowed to create invites");
-        // }
+        if (!role.equals("OWNER") && !role.equals("ADMIN")) {
+            throw new RoleException("Not allowed to create invites");
+        }
         String code = generateCode();
 
         Invitation invite = new Invitation();
