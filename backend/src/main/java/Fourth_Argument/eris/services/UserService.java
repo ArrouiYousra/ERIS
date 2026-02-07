@@ -1,12 +1,7 @@
 package Fourth_Argument.eris.services;
 
-import java.time.LocalDateTime;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import Fourth_Argument.eris.api.dto.request.LoginRequestDTO;
-import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
 import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.mapper.UserMapper;
 import Fourth_Argument.eris.api.model.User;
@@ -20,7 +15,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
 
     public UserResponseDTO getUserById(Long id) throws UserException {
         User user = userRepository.findById(id)
@@ -50,9 +44,9 @@ public class UserService {
     // return savedUser;
     // }
 
-    public User getUserEntityByEmail(String email) {
+    public User getUserEntityByEmail(String email) throws UserException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserException("User not found"));
     }
 
     // À réecrire pour l'adapter au login auth mais c'est auth service alors

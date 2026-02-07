@@ -13,6 +13,9 @@ import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.UserRepository;
+import Fourth_Argument.eris.exceptions.ChannelException;
+import Fourth_Argument.eris.exceptions.MessageException;
+import Fourth_Argument.eris.exceptions.UserException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,13 +27,13 @@ public class MessageService {
     private final ChannelRepository channelRepository;
     private final MessageMapper messageMapper;
 
-    public MessageDTO sendMessage(MessageDTO dto, Long channelId) {
+    public MessageDTO sendMessage(MessageDTO dto, Long channelId) throws ChannelException, UserException {
 
         User sender = userRepository.findById(dto.senderId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserException("User not found"));
 
         Channel channel = channelRepository.findById(channelId)
-                .orElseThrow(() -> new RuntimeException("Channel not found"));
+                .orElseThrow(() -> new ChannelException("Channel not found"));
 
         Message messageSend = messageMapper.toEntity(dto, sender, channel);
 
@@ -40,12 +43,12 @@ public class MessageService {
 
     }
 
-    public List<MessageDTO> getMessageHistory(Channel channel) {
+    public List<MessageDTO> getMessageHistory(Channel channel) throws MessageException {
 
         List<Message> messages = messageRepository.findByChannel(channel);
 
         if (messages == null) {
-            throw new RuntimeException("Aucun message dans ce serveur !");
+            throw new MessageException("Aucun message dans ce serveur !");
         }
 
         List<MessageDTO> dtoList = messages.stream()
@@ -56,10 +59,10 @@ public class MessageService {
 
     }
 
-    public void deleteMessage(Long messageId) {
+    public void deleteMessage(Long messageId) throws MessageException {
 
         Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new RuntimeException("Pas de message trouvé"));
+                .orElseThrow(() -> new MessageException("Pas de message trouvé"));
 
         messageRepository.delete(message);
 
