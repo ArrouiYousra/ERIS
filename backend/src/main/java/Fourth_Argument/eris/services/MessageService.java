@@ -59,10 +59,7 @@ public class MessageService {
 
     }
 
-    public void deleteMessage(Long messageId) throws MessageException {
-
-        Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new MessageException("Pas de message trouvé"));
+    public void deleteMessage(Message message) throws MessageException {
 
         messageRepository.delete(message);
 
