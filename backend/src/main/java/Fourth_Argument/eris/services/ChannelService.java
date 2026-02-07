@@ -19,6 +19,7 @@ import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.ServerException;
+import Fourth_Argument.eris.exceptions.UserException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -92,7 +93,7 @@ public class ChannelService {
         return channelMapper.toDTO(updatedChannel);
     }
 
-    public void delete(Long id) throws ChannelException {
+    public void delete(Long id) throws ChannelException, UserException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
