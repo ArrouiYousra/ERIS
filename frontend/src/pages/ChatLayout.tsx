@@ -5,7 +5,6 @@ import {
   useCreateServer,
   useServerMember,
 } from "../hooks/useServers";
-import { joinServerByInviteLink } from "../api/serversApi";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ServerBar,
@@ -16,10 +15,14 @@ import {
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
 import { ServerGate } from "../components/ServerGate";
-import { ServerWizard, type ServerWizardData } from "../components/ServerWizard";
+import {
+  ServerWizard,
+  type ServerWizardData,
+} from "../components/ServerWizard";
 import type { MainContentTab } from "../types/friends";
 import "../styles/chat.css";
 import "../styles/serverWizard.css";
+import { joinWithInvitation } from "../api/invitationApi";
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -54,7 +57,9 @@ export function ChatLayout() {
   };
 
   // Handler for ServerWizard modal (full data object)
-  const handleCreateServerFromWizard = async (data: ServerWizardData): Promise<number | null> => {
+  const handleCreateServerFromWizard = async (
+    data: ServerWizardData,
+  ): Promise<number | null> => {
     const result = await createServer.mutateAsync({ name: data.name });
     console.log("Server created, API response:", result);
     console.log("Server ID from response:", result?.id);
@@ -75,7 +80,7 @@ export function ChatLayout() {
   };
 
   const handleJoinServer = async (inviteLink: string) => {
-    await joinServerByInviteLink(inviteLink);
+    await joinWithInvitation(inviteLink);
     queryClient.invalidateQueries({ queryKey: ["servers"] });
     setServerModalOpen(false);
   };
@@ -135,17 +140,29 @@ export function ChatLayout() {
               channels={channels}
               onSelectChannel={setSelectedChannelId}
               selectedChannelId={selectedChannelId}
-              serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
+              serverName={
+                selectedServerId ? serverNames[selectedServerId] : "Serveur"
+              }
             />
           </div>
           <div className="chat-main flex-1 flex flex-row min-w-0 h-full bg-[#313338]">
             <div className="flex-1 flex flex-col min-w-0 h-full">
-              <MessageList 
-                channelId={selectedChannelId} 
-                channelName={channels.find((c: any) => c.id === selectedChannelId)?.name}
-                channelTopic={(channels.find((c: any) => c.id === selectedChannelId) as any)?.topic}
-                isPrivate={(channels.find((c: any) => c.id === selectedChannelId) as any)?.isPrivate}
-                serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
+              <MessageList
+                channelId={selectedChannelId}
+                channelName={
+                  channels.find((c: any) => c.id === selectedChannelId)?.name
+                }
+                channelTopic={
+                  (channels.find((c: any) => c.id === selectedChannelId) as any)
+                    ?.topic
+                }
+                isPrivate={
+                  (channels.find((c: any) => c.id === selectedChannelId) as any)
+                    ?.isPrivate
+                }
+                serverName={
+                  selectedServerId ? serverNames[selectedServerId] : "Serveur"
+                }
                 messages={[]}
                 showMemberList={showMemberList}
                 onToggleMemberList={() => setShowMemberList(!showMemberList)}
@@ -169,7 +186,7 @@ export function ChatLayout() {
                       <span className="text-gray-300 text-sm">Yousra</span>
                     </div>
                   </div>
-                  
+
                   <h3 className="text-xs font-semibold text-gray-400 uppercase mt-4 mb-2">
                     Hors ligne — 0
                   </h3>

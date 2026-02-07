@@ -34,10 +34,3 @@ export async function updateServer(id: number, payload: UpdateServerPayload) {
   const { data } = await api.put(`/api/servers/${id}`, payload);
   return data;
 }
-
-export async function joinServerByInviteLink(inviteLinkOrCode: string) {
-  const { data } = await api.post("/api/servers/join", {
-    inviteLink: inviteLinkOrCode.trim(),
-  });
-  return data;
-}
