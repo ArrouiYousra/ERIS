@@ -50,7 +50,7 @@ public class ServerService {
     }
 
     public List<ServerDTO> getServersByUser(User user) throws ServerException {
-        List<Server> servers = serverRepository.findByOwner(user);
+        List<Server> servers = serverRepository.findAllByUser(user);
 
         if (servers == null) {
             throw new ServerException("No server found");
