@@ -1,9 +1,26 @@
 import { useState } from "react";
-import { Plus, Hash, Lock, ChevronDown, Settings, UserPlus } from "lucide-react";
-import { useCreateChannel, useUpdateChannel, useDeleteChannel } from "../hooks/useChannels";
+import {
+  Plus,
+  Hash,
+  Lock,
+  ChevronDown,
+  Settings,
+  UserPlus,
+} from "lucide-react";
+import {
+  useCreateChannel,
+  useUpdateChannel,
+  useDeleteChannel,
+} from "../hooks/useChannels";
 import { ChannelWizard, type ChannelWizardData } from "./ChannelWizard";
 import { ChannelSettings } from "./ChannelSettings";
 import type { Channel } from "../api/channelsApi";
+import {
+  createInvitation,
+  joinWithInvitation,
+  type InvitationDTO,
+} from "../api/invitationApi";
+import { InviteModal } from "./InviteModal";
 
 interface ChannelListProps {
   serverId: number | null;
@@ -30,6 +47,8 @@ export function ChannelList({
   const createChannel = useCreateChannel();
   const updateChannel = useUpdateChannel();
   const deleteChannel = useDeleteChannel();
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteCode, setInviteCode] = useState(""); // For input if you want a "join with code" feature
 
   if (!serverId) {
     return (
@@ -39,7 +58,9 @@ export function ChannelList({
     );
   }
 
-  const handleCreateChannel = async (data: ChannelWizardData): Promise<number | null> => {
+  const handleCreateChannel = async (
+    data: ChannelWizardData,
+  ): Promise<number | null> => {
     console.log("Creating channel with data:", data);
     console.log("ServerId:", serverId);
     try {
@@ -78,10 +99,40 @@ export function ChannelList({
     });
     // If the deleted channel was selected, deselect it
     if (selectedChannelId === channelToEdit.id) {
-      const remainingChannels = channels.filter(c => c.id !== channelToEdit.id);
+      const remainingChannels = channels.filter(
+        (c) => c.id !== channelToEdit.id,
+      );
       onSelectChannel(remainingChannels[0]?.id ?? 0);
     }
     setChannelToEdit(null);
+  };
+
+  const handleCreateInvite = async () => {
+    if (!serverId) return;
+
+    try {
+      const newInvite: InvitationDTO = await createInvitation(serverId);
+      alert(`Invite created! Code: ${newInvite.code}`);
+      // Optionally: copy to clipboard
+      navigator.clipboard.writeText(newInvite.code);
+    } catch (err) {
+      console.error("Failed to create invite:", err);
+    }
+  };
+
+  const handleJoinWithInvite = async () => {
+    if (!inviteCode) return;
+
+    try {
+      const response = await joinWithInvitation(inviteCode);
+      alert(`Joined server: ${response.serverName}`);
+      setInviteCode(""); // clear input
+      setShowInviteModal(false); // close modal if using one
+      // Optionally: refresh server list / reload server data
+    } catch (err) {
+      console.error("Failed to join server:", err);
+      alert("Invalid or expired invite code");
+    }
   };
 
   return (
@@ -95,7 +146,7 @@ export function ChannelList({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            // TODO: Open invite modal
+            setShowInviteModal(true);
           }}
           className="icon-btn opacity-0 group-hover:opacity-100 text-gray-400 hover:text-white transition-all"
           title="Inviter des personnes"
@@ -112,10 +163,10 @@ export function ChannelList({
             onClick={() => setChannelsCategoryOpen(!channelsCategoryOpen)}
             className="flex items-center gap-1 w-full group cursor-pointer"
           >
-            <ChevronDown 
+            <ChevronDown
               className={`w-3 h-3 text-gray-400 group-hover:text-gray-200 transition-all ${
                 channelsCategoryOpen ? "" : "-rotate-90"
-              }`} 
+              }`}
             />
             <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-200 uppercase tracking-wide transition-colors">
               Salons textuels
@@ -151,12 +202,22 @@ export function ChannelList({
                     onClick={() => onSelectChannel(channel.id)}
                   >
                     {isPrivate ? (
-                      <Lock className={`w-5 h-5 shrink-0 ${isSelected ? "text-gray-300" : "text-gray-400"}`} />
+                      <Lock
+                        className={`w-5 h-5 shrink-0 ${isSelected ? "text-gray-300" : "text-gray-400"}`}
+                      />
                     ) : (
-                      <Hash className={`w-5 h-5 shrink-0 ${isSelected ? "text-gray-300" : "text-gray-400"}`} />
+                      <Hash
+                        className={`w-5 h-5 shrink-0 ${isSelected ? "text-gray-300" : "text-gray-400"}`}
+                      />
                     )}
-                    <span className={`truncate text-[15px] flex-1 ${isSelected ? "font-medium" : ""}`}>{channel.name}</span>
-                    <div className={`flex items-center gap-1 ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}>
+                    <span
+                      className={`truncate text-[15px] flex-1 ${isSelected ? "font-medium" : ""}`}
+                    >
+                      {channel.name}
+                    </span>
+                    <div
+                      className={`flex items-center gap-1 ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}
+                    >
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -208,6 +269,14 @@ export function ChannelList({
         onGoToChannel={handleGoToChannel}
         serverMembers={serverMembers}
         serverRoles={serverRoles}
+      />
+      <InviteModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        onCreateInvite={handleCreateInvite}
+        inviteCode={inviteCode}
+        setInviteCode={setInviteCode}
+        onJoinInvite={handleJoinWithInvite}
       />
     </div>
   );
