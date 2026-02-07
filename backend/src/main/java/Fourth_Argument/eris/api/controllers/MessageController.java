@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import Fourth_Argument.eris.api.dto.MessageDTO;
 import Fourth_Argument.eris.api.model.Channel;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
+import Fourth_Argument.eris.exceptions.ChannelException;
+import Fourth_Argument.eris.exceptions.MessageException;
+import Fourth_Argument.eris.exceptions.UserException;
 import Fourth_Argument.eris.services.MessageService;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +30,7 @@ public class MessageController {
 
     @PostMapping("/channels/{id}/messages")
     public ResponseEntity<MessageDTO> sendMessage(@RequestBody MessageDTO req,
-            @PathVariable Long id) {
+            @PathVariable Long id) throws ChannelException, UserException {
 
         MessageDTO message = messageService.sendMessage(req, id);
 
@@ -37,10 +40,10 @@ public class MessageController {
 
     @GetMapping("/channels/{id}/messages")
     public ResponseEntity<List<MessageDTO>> getMessageHistory(
-            @PathVariable Long id) {
+            @PathVariable Long id) throws MessageException {
 
         Channel channel = channelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ce channel n'existe pas"));
+                .orElseThrow(() -> new MessageException("Ce channel n'existe pas"));
 
         List<MessageDTO> messages = messageService.getMessageHistory(channel);
 
@@ -50,7 +53,7 @@ public class MessageController {
 
     @DeleteMapping("/messages/{id}")
     public ResponseEntity<String> deleteMessage(
-            @PathVariable Long id) {
+            @PathVariable Long id) throws MessageException {
 
         messageService.deleteMessage(id);
 
