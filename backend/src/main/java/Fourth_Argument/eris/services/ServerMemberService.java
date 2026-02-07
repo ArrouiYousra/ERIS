@@ -1,7 +1,10 @@
 package Fourth_Argument.eris.services;
 
+import java.net.ContentHandlerFactory;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
@@ -19,17 +22,20 @@ public class ServerMemberService {
     private final ServerMemberRepository serverMemberRepository;
     private final ServerMemberMapper serverMemberMapper;
     private final ServerRepository serverRepository;
+    private final UserService userService;
 
     public ServerMemberService(
             ServerMemberRepository serverMemberRepository,
             ServerRepository serverRepository,
-            ServerMemberMapper mapper) {
+            ServerMemberMapper mapper, UserService userService) {
         this.serverMemberRepository = serverMemberRepository;
         this.serverRepository = serverRepository;
         this.serverMemberMapper = mapper;
+        this.userService = userService;
     }
 
     public void createServerMember(Server server, User user, Role role) {
+
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
 
         if (serverMember != null) {
@@ -41,6 +47,19 @@ public class ServerMemberService {
     }
 
     public void deleteServerMember(Server server, User user) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String email = auth.getName();
+
+        User loggedUser = userService.getUserEntityByEmail(email);
+
+        ServerMember serverAuthMember = serverMemberRepository.findServerMemberByUserAndServer(server, loggedUser);
+
+        if (serverAuthMember.getRole().getName() != "ADMIN") {
+            throw new RuntimeException("You don't have the rights do to it !");
+        }
+
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
 
         if (serverMember == null) {

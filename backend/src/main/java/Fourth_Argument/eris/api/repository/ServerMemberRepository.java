@@ -1,6 +1,7 @@
 package Fourth_Argument.eris.api.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,6 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
     boolean existsByUserAndServer(User user, Server server);
 
     List<ServerMember> findServerMemberByUserId(Long id);
+
+    Optional<ServerMember> findByUserAndServer(User user, Server server);
 }
