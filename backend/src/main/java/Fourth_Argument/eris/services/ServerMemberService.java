@@ -36,12 +36,7 @@ public class ServerMemberService {
         this.userService = userService;
     }
 
-<<<<<<< HEAD
-    public void createServerMember(Server server, User user, Role role) {
-
-=======
     public void createServerMember(Server server, User user, Role role) throws ServerMemberException {
->>>>>>> b030507a6d5155a219845ef19fde73bc64deb56d
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
 
         if (serverMember != null) {
@@ -52,24 +47,7 @@ public class ServerMemberService {
         serverMemberRepository.save(serverMember);
     }
 
-<<<<<<< HEAD
-    public void deleteServerMember(Server server, User user) {
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        String email = auth.getName();
-
-        User loggedUser = userService.getUserEntityByEmail(email);
-
-        ServerMember serverAuthMember = serverMemberRepository.findServerMemberByUserAndServer(server, loggedUser);
-
-        if (serverAuthMember.getRole().getName() != "ADMIN") {
-            throw new RuntimeException("You don't have the rights do to it !");
-        }
-
-=======
     public void deleteServerMember(Server server, User user) throws ServerMemberException {
->>>>>>> b030507a6d5155a219845ef19fde73bc64deb56d
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(server, user);
 
         if (serverMember == null) {
