@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import Fourth_Argument.eris.api.dto.ChannelDTO;
 import Fourth_Argument.eris.api.dto.MessageDTO;
 import Fourth_Argument.eris.api.mapper.MessageMapper;
 import Fourth_Argument.eris.api.model.Channel;
@@ -59,10 +58,7 @@ public class MessageService {
 
     }
 
-    public void deleteMessage(Long messageId) throws MessageException {
-
-        Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new MessageException("Pas de message trouvé"));
+    public void deleteMessage(Message message) throws MessageException {
 
         messageRepository.delete(message);
 
