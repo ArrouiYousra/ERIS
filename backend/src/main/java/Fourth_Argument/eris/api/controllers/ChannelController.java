@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import Fourth_Argument.eris.api.dto.ChannelDTO;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.ServerException;
+import Fourth_Argument.eris.exceptions.UserException;
 import Fourth_Argument.eris.services.ChannelService;
 
 @RestController
@@ -53,7 +54,8 @@ public class ChannelController {
     }
 
     @PutMapping("/channels/{id}")
-    public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto) throws ChannelException {
+    public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto)
+            throws ChannelException {
 
         ChannelDTO updatedChannel = channelService.update(dto, id);
 
@@ -61,7 +63,7 @@ public class ChannelController {
     }
 
     @DeleteMapping("/channels/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) throws ChannelException {
+    public ResponseEntity<String> delete(@PathVariable Long id) throws ChannelException, UserException {
 
         channelService.delete(id);
 
