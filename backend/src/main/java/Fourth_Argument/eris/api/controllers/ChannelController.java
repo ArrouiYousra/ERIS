@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Fourth_Argument.eris.api.dto.ChannelDTO;
+import Fourth_Argument.eris.exceptions.ChannelException;
+import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.services.ChannelService;
 
 @RestController
@@ -28,7 +30,7 @@ public class ChannelController {
 
     @PostMapping("/servers/{serverId}/channels")
     public ResponseEntity<ChannelDTO> createChannel(@PathVariable Long serverId,
-            @RequestBody ChannelDTO dto) {
+            @RequestBody ChannelDTO dto) throws ChannelException, ServerException {
 
         ChannelDTO createdChannel = channelService.createChannel(serverId, dto);
         return ResponseEntity
@@ -37,21 +39,21 @@ public class ChannelController {
     }
 
     @GetMapping("/servers/{serverId}/channels")
-    public ResponseEntity<List<ChannelDTO>> getChannelByServer(@PathVariable Long serverId) {
+    public ResponseEntity<List<ChannelDTO>> getChannelByServer(@PathVariable Long serverId) throws ChannelException {
         List<ChannelDTO> channels = channelService.getChannelByServer(serverId);
 
         return ResponseEntity.ok(channels);
     }
 
     @GetMapping("/channels/{id}")
-    public ResponseEntity<ChannelDTO> getChannelById(@PathVariable Long id) {
+    public ResponseEntity<ChannelDTO> getChannelById(@PathVariable Long id) throws ChannelException {
         ChannelDTO channel = channelService.findById(id);
 
         return ResponseEntity.ok(channel);
     }
 
     @PutMapping("/channels/{id}")
-    public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto) {
+    public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto) throws ChannelException {
 
         ChannelDTO updatedChannel = channelService.update(dto, id);
 
@@ -59,7 +61,7 @@ public class ChannelController {
     }
 
     @DeleteMapping("/channels/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) throws ChannelException {
 
         channelService.delete(id);
 
