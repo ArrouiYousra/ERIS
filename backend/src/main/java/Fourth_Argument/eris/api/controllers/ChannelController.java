@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +30,7 @@ public class ChannelController {
     }
 
     @PostMapping("/servers/{serverId}/channels")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerAdmin(#id, authentication.name)")
     public ResponseEntity<ChannelDTO> createChannel(@PathVariable Long serverId,
             @RequestBody ChannelDTO dto) throws ChannelException, ServerException {
 
@@ -39,6 +41,7 @@ public class ChannelController {
     }
 
     @GetMapping("/servers/{serverId}/channels")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
     public ResponseEntity<List<ChannelDTO>> getChannelByServer(@PathVariable Long serverId) throws ChannelException {
         List<ChannelDTO> channels = channelService.getChannelByServer(serverId);
 
@@ -46,6 +49,7 @@ public class ChannelController {
     }
 
     @GetMapping("/channels/{id}")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
     public ResponseEntity<ChannelDTO> getChannelById(@PathVariable Long id) throws ChannelException {
         ChannelDTO channel = channelService.findById(id);
 
@@ -53,6 +57,7 @@ public class ChannelController {
     }
 
     @PutMapping("/channels/{id}")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerAdmin(#id, authentication.name)")
     public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto) throws ChannelException {
 
         ChannelDTO updatedChannel = channelService.update(dto, id);
@@ -61,6 +66,7 @@ public class ChannelController {
     }
 
     @DeleteMapping("/channels/{id}")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerAdmin(#id, authentication.name)")
     public ResponseEntity<String> delete(@PathVariable Long id) throws ChannelException {
 
         channelService.delete(id);

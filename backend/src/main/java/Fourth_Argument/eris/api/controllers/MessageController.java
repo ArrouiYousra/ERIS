@@ -3,6 +3,7 @@ package Fourth_Argument.eris.api.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class MessageController {
     private final ChannelRepository channelRepository;
 
     @PostMapping("/channels/{id}/messages")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
     public ResponseEntity<MessageDTO> sendMessage(@RequestBody MessageDTO req,
             @PathVariable Long id) throws ChannelException, UserException {
 
@@ -39,6 +41,7 @@ public class MessageController {
     }
 
     @GetMapping("/channels/{id}/messages")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
     public ResponseEntity<List<MessageDTO>> getMessageHistory(
             @PathVariable Long id) throws MessageException {
 
@@ -52,6 +55,7 @@ public class MessageController {
     }
 
     @DeleteMapping("/messages/{id}")
+    @PreAuthorize("isAuthenticated() and @messageSecurityService.canDeleteMessage(#id, authentication.name)")
     public ResponseEntity<String> deleteMessage(
             @PathVariable Long id) throws MessageException {
 
