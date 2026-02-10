@@ -17,6 +17,11 @@ API REST + WebSocket en Spring Boot 4 / Java 21.
 - PostgreSQL 16
 - Maven (wrapper inclus via `./mvnw`)
 
+## Documentation API (Swagger)
+
+Consultez la documentation interactive de l'API via Swagger ici :  
+[http://localhost:8080/swagger-ui/index.html#/](http://localhost:8080/swagger-ui/index.html#/)
+
 ## Installation
 
 ### 1. Configurer la base de données
