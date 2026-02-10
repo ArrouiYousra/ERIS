@@ -12,11 +12,14 @@ import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
+import Fourth_Argument.eris.api.repository.InvitationRepository;
+import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.RoleRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.UserException;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -28,6 +31,9 @@ public class ServerService {
     private final ServerMemberRepository serverMemberRepository;
     private final ChannelRepository channelRepository;
     private final RoleRepository roleRepository;
+    private final MessageRepository messageRepository;
+    private final InvitationRepository invitationRepository;
+    private final EntityManager entityManager;
 
     public ServerDTO getServerById(Long id) throws ServerException {
         Server server = serverRepository.findById(id)
@@ -113,6 +119,25 @@ public class ServerService {
         } else {
             throw new ServerException("Server not found");
         }
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteServer(Long id) throws ServerException {
+        if (!serverRepository.existsById(id)) {
+            throw new ServerException("Server not found");
+        }
+
+        // Order matters: messages -> invitations -> members -> channels -> server
+        messageRepository.deleteAllByServerId(id);
+        invitationRepository.deleteAllByServerId(id);
+        serverMemberRepository.deleteAllByServerId(id);
+        channelRepository.deleteAllByServerId(id);
+
+        // Clear persistence context to avoid stale entity references
+        entityManager.flush();
+        entityManager.clear();
+
+        serverRepository.deleteById(id);
     }
 
 }

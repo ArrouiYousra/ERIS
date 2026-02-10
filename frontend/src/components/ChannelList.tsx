@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Plus,
   Hash,
@@ -6,6 +6,7 @@ import {
   ChevronDown,
   Settings,
   UserPlus,
+  Trash2,
 } from "lucide-react";
 import {
   useCreateChannel,
@@ -30,6 +31,8 @@ interface ChannelListProps {
   serverName?: string;
   serverMembers?: { id: number; username: string }[];
   serverRoles?: { id: number; name: string }[];
+  isOwner?: boolean;
+  onDeleteServer?: () => void;
 }
 
 export function ChannelList({
@@ -40,6 +43,8 @@ export function ChannelList({
   serverName = "Serveur",
   serverMembers = [],
   serverRoles = [],
+  isOwner = false,
+  onDeleteServer,
 }: ChannelListProps) {
   const [showChannelWizard, setShowChannelWizard] = useState(false);
   const [channelsCategoryOpen, setChannelsCategoryOpen] = useState(true);
@@ -48,7 +53,23 @@ export function ChannelList({
   const updateChannel = useUpdateChannel();
   const deleteChannel = useDeleteChannel();
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [inviteCode, setInviteCode] = useState(""); // For input if you want a "join with code" feature
+  const [inviteCode, setInviteCode] = useState("");
+  const [showServerDropdown, setShowServerDropdown] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowServerDropdown(false);
+      }
+    };
+    if (showServerDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showServerDropdown]);
 
   if (!serverId) {
     return (
@@ -137,23 +158,84 @@ export function ChannelList({
 
   return (
     <div className="flex flex-col h-full bg-[#2b2d31]">
-      {/* Server header */}
-      <div className="h-12 px-4 flex items-center justify-between border-b border-black/20 shadow-sm hover:bg-[#35373c] cursor-pointer transition-colors group">
-        <div className="flex items-center gap-1 flex-1 min-w-0">
-          <h2 className="text-white font-semibold truncate">{serverName}</h2>
-          <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
-        </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowInviteModal(true);
-          }}
-          className="icon-btn opacity-0 group-hover:opacity-100 text-gray-400 hover:text-white transition-all"
-          title="Inviter des personnes"
+      {/* Server header with dropdown */}
+      <div className="relative" ref={dropdownRef}>
+        <div
+          onClick={() => setShowServerDropdown(!showServerDropdown)}
+          className="h-12 px-4 flex items-center justify-between border-b border-black/20 shadow-sm hover:bg-[#35373c] cursor-pointer transition-colors group"
         >
-          <UserPlus className="w-5 h-5" />
-        </button>
+          <div className="flex items-center gap-1 flex-1 min-w-0">
+            <h2 className="text-white font-semibold truncate">{serverName}</h2>
+            <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${showServerDropdown ? "rotate-180" : ""}`} />
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowInviteModal(true);
+            }}
+            className="icon-btn opacity-0 group-hover:opacity-100 text-gray-400 hover:text-white transition-all"
+            title="Inviter des personnes"
+          >
+            <UserPlus className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Server dropdown menu */}
+        {showServerDropdown && (
+          <div className="absolute top-12 left-2 right-2 bg-[#111214] rounded-lg shadow-xl border border-white/10 py-1.5 z-50">
+            <button
+              onClick={() => { setShowInviteModal(true); setShowServerDropdown(false); }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#b5bac1] hover:bg-[#5865F2] hover:text-white rounded-sm mx-1 transition-colors"
+              style={{ width: "calc(100% - 8px)" }}
+            >
+              <UserPlus className="w-4 h-4" />
+              Inviter des personnes
+            </button>
+            {isOwner && (
+              <>
+                <div className="mx-2 my-1 border-t border-white/10" />
+                <button
+                  onClick={() => { setShowDeleteConfirm(true); setShowServerDropdown(false); }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white rounded-sm mx-1 transition-colors"
+                  style={{ width: "calc(100% - 8px)" }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Supprimer le serveur
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Delete server confirmation modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-[9999]">
+          <div className="bg-[#313338] rounded-lg p-6 w-[440px] shadow-xl">
+            <h3 className="text-xl font-bold text-white mb-2">Supprimer '{serverName}'</h3>
+            <p className="text-[#b5bac1] text-sm mb-6">
+              Es-tu sur de vouloir supprimer <strong className="text-white">{serverName}</strong> ? Cette action est irreversible. Tous les salons, messages et membres seront supprimes.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 text-sm text-white hover:underline"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => {
+                  onDeleteServer?.();
+                  setShowDeleteConfirm(false);
+                }}
+                className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded transition-colors font-medium"
+              >
+                Supprimer le serveur
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Channels section */}
       <div className="flex-1 overflow-y-auto py-3">

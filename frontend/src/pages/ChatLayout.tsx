@@ -3,7 +3,9 @@ import { useChannels } from "../hooks/useChannels";
 import {
   useServers,
   useCreateServer,
+  useDeleteServer,
 } from "../hooks/useServers";
+import { useAuth } from "../hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ServerBar,
@@ -36,9 +38,11 @@ export function ChatLayout() {
   const [serverModalOpen, setServerModalOpen] = useState(false);
   const [showMemberList, setShowMemberList] = useState(true);
 
+  const { user } = useAuth();
   const { data: servers = [] } = useServers();
   const { data: channels = [] } = useChannels(selectedServerId);
   const createServer = useCreateServer();
+  const deleteServer = useDeleteServer();
 
   const serverIds = servers.map((s: { id: number }) => s.id);
   const serverNames = Object.fromEntries(
@@ -46,6 +50,17 @@ export function ChatLayout() {
   );
 
   const isDMMode = selectedServerId === null;
+
+  // Check if current user is the owner of the selected server
+  const currentServer = servers.find((s: any) => s.id === selectedServerId);
+  const isServerOwner = !!(currentServer && user && currentServer.ownerId === user.id);
+
+  const handleDeleteServer = async () => {
+    if (!selectedServerId) return;
+    await deleteServer.mutateAsync(selectedServerId);
+    setSelectedServerId(null);
+    setSelectedChannelId(null);
+  };
 
   const handleSelectServer = (id: number | null) => {
     setSelectedServerId(id);
@@ -143,6 +158,8 @@ export function ChatLayout() {
               serverName={
                 selectedServerId ? serverNames[selectedServerId] : "Serveur"
               }
+              isOwner={isServerOwner}
+              onDeleteServer={handleDeleteServer}
             />
           </div>
           <div className="chat-main flex-1 flex flex-row min-w-0 h-full bg-[#313338]">
