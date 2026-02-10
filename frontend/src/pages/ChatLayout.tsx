@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   ServerBar,
   RightPanel,
+  UserBar,
 } from "../components/friends";
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
@@ -135,6 +136,11 @@ export function ChatLayout() {
             overflow: "hidden",
           }}
         >
+          {/* Sidebar DM avec UserBar en bas */}
+          <div className="w-[240px] min-w-[240px] shrink-0 h-full flex flex-col bg-[#2b2d31]">
+            <div className="flex-1 overflow-y-auto" />
+            <UserBar />
+          </div>
           {/* Zone 3: Main content — onglets + contenu (prend le reste) */}
           <ServerGate
             onCreateServer={handleCreateServer}

@@ -33,6 +33,10 @@ vi.mock('../ChannelSettings', () => ({
   ChannelSettings: () => null,
 }));
 
+vi.mock('../friends/UserBar', () => ({
+  UserBar: () => <div data-testid="user-bar" />,
+}));
+
 function createWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
