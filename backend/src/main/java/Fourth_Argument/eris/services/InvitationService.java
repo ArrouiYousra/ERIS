@@ -1,6 +1,7 @@
 package Fourth_Argument.eris.services;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -77,17 +78,21 @@ public class InvitationService {
         if (!role.equals("OWNER") && !role.equals("ADMIN")) {
             throw new RoleException("Not allowed to create invites");
         }
-        String code = generateCode();
+        // Chercher une invitation existante non expirée
+        Optional<Invitation> existing = invitationRepository.findFirstByServerOrderByCreatedAtDesc(server);
+        if (existing.isPresent() && existing.get().getExpiresAt().isAfter(LocalDateTime.now())) {
+            return invitationMapper.toDTO(existing.get());
+        }
 
+        // Sinon en créer une nouvelle
+        String code = generateCode();
         Invitation invite = new Invitation();
         invite.setCode(code);
-        invite.setCode(code);
-        invite.setServer(server); // ✅ associate server
-        invite.setCreatedAt(LocalDateTime.now()); // ✅ creation date
-        invite.setExpiresAt(LocalDateTime.now().plusDays(1)); // ✅ example: 7-day expiration
+        invite.setServer(server);
+        invite.setCreatedAt(LocalDateTime.now());
+        invite.setExpiresAt(LocalDateTime.now().plusDays(1));
 
         Invitation saved = invitationRepository.save(invite);
-
         return invitationMapper.toDTO(saved);
 
     }
