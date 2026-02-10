@@ -37,13 +37,18 @@ Le serveur de dev tourne sur `http://localhost:5173`.
 
 Le frontend a besoin de connaître l'URL du backend. Par défaut c'est `http://localhost:8081`.
 
-Pour changer, créer un fichier `.env.local` (non commité) :
+Créer un fichier `.env` (non commité) :
 
 ```
-VITE_API_URL=http://localhost:8080
+VITE_API_URL=http://localhost:8081
+VITE_WS_URL=http://localhost:8081/ws
 ```
 
-Ou modifier `.env` directement. Attention : Vite ne relit le `.env` qu'au démarrage, il faut relancer `npm run dev` après un changement.
+ou
+
+```bash
+cp .env.example .env
+```
 
 ## Structure
 
