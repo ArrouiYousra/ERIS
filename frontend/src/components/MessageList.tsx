@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { Hash, Lock, Users, Search, Plus } from "lucide-react";
-
-interface Message {
-  id: number;
-  content: string;
-  authorId: number;
-  authorName?: string;
-  createdAt?: string;
-}
+import { useMessages } from "../hooks/useMessages";
+import { useChannelSocket } from "../hooks/useChannelSocket";
+import { useTyping } from "../hooks/useTyping";
 
 interface MessageListProps {
   channelId?: number | null;
@@ -16,23 +11,25 @@ interface MessageListProps {
   isPrivate?: boolean;
   serverName?: string;
   conversationId?: string | null;
-  messages?: Message[];
   showMemberList?: boolean;
   onToggleMemberList?: () => void;
 }
 
-export function MessageList({ 
-  channelId = null, 
+export function MessageList({
+  channelId = null,
   channelName = "",
   channelTopic = "",
   isPrivate = false,
   serverName = "Serveur",
-  conversationId = null, 
-  messages = [],
+  conversationId = null,
   showMemberList = true,
   onToggleMemberList,
 }: MessageListProps) {
   const [messageInput, setMessageInput] = useState("");
+  const { data: messages = [] } = useMessages(channelId ?? null);
+  const { sendMessage } = useChannelSocket(channelId ?? null);
+  const { typingText, onInputChange, stopTyping } = useTyping(channelId ?? null);
+
   const isDM = !!conversationId;
   const hasContext = !!channelId || isDM;
 
@@ -48,9 +45,9 @@ export function MessageList({
 
   const handleSendMessage = () => {
     if (!messageInput.trim()) return;
-    // TODO: Implement send message
-    console.log("Sending message:", messageInput);
+    sendMessage(messageInput);
     setMessageInput("");
+    stopTyping();
   };
 
   return (
@@ -80,10 +77,9 @@ export function MessageList({
         {isDM && (
           <h3 className="text-white font-semibold">Conversation</h3>
         )}
-        
+
         {/* Right side of header */}
         <div className="flex items-center gap-4 ml-auto">
-          {/* Members toggle */}
           {!isDM && (
             <button
               onClick={onToggleMemberList}
@@ -93,8 +89,6 @@ export function MessageList({
               <Users className="w-5 h-5" />
             </button>
           )}
-          
-          {/* Search bar */}
           <div className="relative">
             <input
               type="text"
@@ -110,15 +104,15 @@ export function MessageList({
       <div className="flex-1 overflow-y-auto">
         {messages.length > 0 ? (
           <div className="p-4 space-y-4">
-            {messages.map((message) => (
-              <div key={message.id} className="flex gap-3">
+            {messages.map((message: any) => (
+              <div key={message.id || Math.random()} className="flex gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-medium shrink-0">
-                  {(message.authorName || "U").charAt(0).toUpperCase()}
+                  {(message.senderUsername || "U").charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2">
                     <span className="text-white font-medium">
-                      {message.authorName || `User ${message.authorId}`}
+                      {message.senderUsername || `User ${message.senderId}`}
                     </span>
                     {message.createdAt && (
                       <span className="text-gray-500 text-xs">
@@ -132,7 +126,6 @@ export function MessageList({
             ))}
           </div>
         ) : (
-          /* Welcome message */
           <div className="flex flex-col items-center justify-center p-8 pt-16">
             <div className="w-[68px] h-[68px] rounded-full bg-[#5865F2] flex items-center justify-center mb-4">
               {isPrivate ? (
@@ -149,6 +142,13 @@ export function MessageList({
             </p>
           </div>
         )}
+
+        {/* Typing indicator */}
+        {typingText && (
+          <div className="px-4 pb-2 text-sm text-gray-400 italic">
+            {typingText}
+          </div>
+        )}
       </div>
 
       {/* Message input */}
@@ -160,7 +160,10 @@ export function MessageList({
           <input
             type="text"
             value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
+            onChange={(e) => {
+              setMessageInput(e.target.value);
+              if (e.target.value.length > 0) onInputChange();
+            }}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             placeholder={`Envoyer un message dans #${channelName || "général"}`}
             className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 outline-none"
