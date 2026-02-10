@@ -7,7 +7,7 @@ vi.mock("../client", () => ({
 }));
 
 import { api } from "../client";
-import { getServerMember } from "../serverMembersApi";
+import { getServerMembers } from "../serverMembersApi";
 
 describe("serverMembersApi", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -16,9 +16,9 @@ describe("serverMembersApi", () => {
     const mockData = [{ id: 1, serverId: 2, userId: 3, nickname: "Alice" }];
     (api.get as any).mockResolvedValue({ data: mockData });
 
-    const result = await getServerMember(2);
+    const result = await getServerMembers(2);
 
-    expect(api.get).toHaveBeenCalledWith("servers/2/members");
+    expect(api.get).toHaveBeenCalledWith("/api/servers/2/members");
     expect(result).toEqual(mockData);
   });
 });
