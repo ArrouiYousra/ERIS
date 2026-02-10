@@ -3,6 +3,13 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MainSidebar } from "../MainSidebar";
 
+vi.mock("../../../hooks/useAuth", () => ({
+  useAuth: () => ({
+    user: { displayName: "Test", username: "test" },
+    logout: vi.fn(),
+  }),
+}));
+
 describe("MainSidebar", () => {
   const defaultProps = {
     selectedDMId: null as string | null,

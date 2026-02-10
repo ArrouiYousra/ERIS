@@ -22,6 +22,7 @@ import {
   type InvitationDTO,
 } from "../api/invitationApi";
 import { InviteModal } from "./InviteModal";
+import { UserBar } from "./friends/UserBar";
 
 interface ChannelListProps {
   serverId: number | null;
@@ -360,6 +361,9 @@ export function ChannelList({
         setInviteCode={setInviteCode}
         onJoinInvite={handleJoinWithInvite}
       />
+
+      {/* User panel */}
+      <UserBar />
     </div>
   );
 }
