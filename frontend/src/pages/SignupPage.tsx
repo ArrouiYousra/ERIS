@@ -91,7 +91,6 @@ export function SignupPage() {
               className="form-input"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              required
               disabled={loading}
             />
           </div>

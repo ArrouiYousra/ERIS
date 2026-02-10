@@ -4,11 +4,13 @@ import {
   getServerById,
   createServer,
   updateServer,
+  deleteServer as deleteServerApi,
+  leaveServer as leaveServerApi,
   type Server,
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
-import { getServerMember } from "../api/serverMembersApi";
+import { getServerMembers } from "../api/serverMembersApi";
 
 import { useAuth } from "./useAuth";
 
@@ -54,14 +56,14 @@ export function useUpdateServer() {
       queryClient.invalidateQueries({ queryKey: ["servers", variables.id] });
     },
   });
-}
-
-export function useServerMember(id: number | null) {
-  return useQuery({
-    queryKey: ["serverMembers", id],
-    queryFn: () => (id ? getServerMember(id) : null),
-    enabled: !!id,
-  });
 
   
+}
+
+export function useServerMembers(serverId: number | null) {
+  return useQuery({
+    queryKey: ["serverMembers", serverId],
+    queryFn: () => (serverId ? getServerMembers(serverId) : []),
+    enabled: !!serverId,
+  });
 }
