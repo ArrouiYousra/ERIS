@@ -84,7 +84,7 @@ public class ServerController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Server updated");
     }
 
-    @GetMapping("/servers/{serverId}/members")
+    @GetMapping("/{serverId}/members")
     @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#serverId, authentication.name)")
     public ResponseEntity<List<ServerMemberDTO>> getServerMembers(
             @PathVariable Long serverId,
@@ -96,6 +96,7 @@ public class ServerController {
     }
 
     @PostMapping("/{serverId}/invite")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<InvitationDTO> createInvitation(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long serverId) throws UserException, ServerException, RoleException, ServerMemberException {
 
@@ -108,6 +109,7 @@ public class ServerController {
     }
 
     @PostMapping("/join")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<JoinInviteResponseDTO> joinServer(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody JoinInviteRequestDTO request) throws UserException, ServerMemberException {

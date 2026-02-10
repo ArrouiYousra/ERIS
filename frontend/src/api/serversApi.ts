@@ -34,3 +34,13 @@ export async function updateServer(id: number, payload: UpdateServerPayload) {
   const { data } = await api.put(`/api/servers/${id}`, payload);
   return data;
 }
+
+export async function deleteServer(id: number) {
+  const { data } = await api.delete(`/api/servers/${id}`);
+  return data;
+}
+
+export async function leaveServer(serverId: number) {
+  const { data } = await api.delete(`/api/servers/${serverId}/leave`);
+  return data;
+}

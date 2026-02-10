@@ -6,8 +6,8 @@ export interface JoinInviteRequest {
 }
 
 export interface JoinInviteResponse {
-  serverId: number;
   serverName: string;
+  serverId: number;
   message: string;
 }
 
@@ -18,14 +18,15 @@ export interface InvitationDTO {
 
 export async function createInvitation(serverId: number): Promise<InvitationDTO> {
   const { data } = await api.post<InvitationDTO>(
-    `/api/servers/${serverId}/invite`,  // ← ajoute le / au début
+    `/api/servers/${serverId}/invite`,
   );
   return data;
 }
 
 export async function joinWithInvitation(code: string) {
-  const { data } = await api.post<JoinInviteResponse>(`/api/servers/join`, {  // ← ajoute le /
+  const { data } = await api.post<JoinInviteResponse>(`/api/servers/join`, {
     code,
   });
+  console.log(data);
   return data;
 }
