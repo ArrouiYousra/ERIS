@@ -60,7 +60,7 @@ public ResponseEntity<Map<String, Object>> getMe(@AuthenticationPrincipal UserDe
         return ResponseEntity.ok(Map.of(
                 "id", user.getId(),
                 "email", user.getEmail(),
-                "username", user.getUsername(),
-                "displayName", user.getDisplayName() != null ? user.getDisplayName() : user.getUsername()));
+                "username", user.getUser(),
+                "displayName", user.getDisplayName() != null ? user.getDisplayName() : user.getUser()));
     }
 }
