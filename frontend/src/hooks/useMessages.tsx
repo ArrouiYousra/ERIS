@@ -10,7 +10,7 @@ export interface Message {
 }
 
 export async function getMessages(channelId: number) {
-  const { data } = await api.get(`/channels/${channelId}/messages`);
+  const { data } = await api.get(`/api/channels/${channelId}/messages`);
   return data;
 }
 

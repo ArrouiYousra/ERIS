@@ -5,7 +5,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { login as loginApi, signup as signupApi, getMe } from "../api/authApi";
+import { login as loginApi, signup as signupApi } from "../api/authApi";
+import { api } from "../api/client";
 
 type AuthContextValue = {
   user: any | null;
@@ -28,31 +29,34 @@ function useProvideAuth(): AuthContextValue {
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // ── Fetch /api/auth/me au reload pour récupérer le user avec son id ──
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
       setLoading(false);
       return;
     }
-    // Pour l'instant, on ne peut pas récupérer l'utilisateur avec /me
-    // car le backend n'a pas encore cet endpoint avec auth
-    // On considère l'utilisateur comme authentifié s'il a un token
-    // On crée un objet user minimal pour maintenir l'authentification
-    setUser({ id: null, authenticated: true });
-    setLoading(false);
-    // TODO: Implémenter /api/me dans le backend avec authentification
+    api
+      .get("/api/auth/me")
+      .then(({ data }) => setUser(data))
+      .catch(() => {
+        localStorage.removeItem("access_token");
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (email: string, password: string) => {
+    // loginApi retourne { token, expiresIn } (LoginResponseDTO)
     const data = await loginApi({ email, password });
 
-    // store the token
     if (data.token) {
       localStorage.setItem("access_token", data.token);
     }
 
-    // set user
-    setUser(data.user);
+    // Fetch le user complet via /me maintenant qu'on a le token
+    const { data: userData } = await api.get("/api/auth/me");
+    setUser(userData);
   };
 
   const signup = async (
@@ -62,14 +66,13 @@ function useProvideAuth(): AuthContextValue {
     displayName: string,
     birthDate: string,
   ) => {
-    const userData = await signupApi({
+    await signupApi({
       email,
       username,
       password,
       displayName,
       birthDate,
     });
-    // Le backend retourne directement le UserResponseDTO après création
     // On se connecte automatiquement après l'inscription
     await login(email, password);
   };
@@ -79,10 +82,7 @@ function useProvideAuth(): AuthContextValue {
     setUser(null);
   };
 
-  // On considère l'utilisateur comme authentifié s'il a un token OU un user
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-  const isAuthenticated = !!user || !!token;
+  const isAuthenticated = !!user;
 
   return {
     user,

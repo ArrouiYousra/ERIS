@@ -10,10 +10,14 @@ import {
 } from "../api/serversApi";
 import { getServerMember } from "../api/serverMembersApi";
 
+import { useAuth } from "./useAuth";
+
 export function useServers() {
+  const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ["servers"],
     queryFn: getAllServers,
+    enabled: isAuthenticated,
   });
 }
 
@@ -58,4 +62,6 @@ export function useServerMember(id: number | null) {
     queryFn: () => (id ? getServerMember(id) : null),
     enabled: !!id,
   });
+
+  
 }
