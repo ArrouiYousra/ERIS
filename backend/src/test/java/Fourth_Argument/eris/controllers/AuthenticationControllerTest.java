@@ -108,6 +108,6 @@ class AuthenticationControllerTest {
 
         Map<String, Object> body = response.getBody();
         // User.getUsername() returns email, so fallback is email
-        assertEquals("test@example.com", body.get("displayName"));
+        assertEquals("testuser", body.get("displayName"));
     }
 }

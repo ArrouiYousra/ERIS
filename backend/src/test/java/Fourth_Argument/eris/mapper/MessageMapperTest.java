@@ -22,6 +22,7 @@ class MessageMapperTest {
         User sender = new User();
         sender.setId(1L);
         sender.setEmail("sender@test.com");
+        sender.setUsername("senderUser");
 
         User owner = new User();
         owner.setId(2L);
@@ -45,7 +46,7 @@ class MessageMapperTest {
 
         assertEquals(1L, dto.id());
         assertEquals(1L, dto.senderId());
-        assertEquals("sender@test.com", dto.senderUsername());
+        assertEquals("senderUser", dto.senderUsername());
         assertEquals("Hello", dto.content());
         assertEquals(1L, dto.channelId());
         assertNotNull(dto.createdAt());
