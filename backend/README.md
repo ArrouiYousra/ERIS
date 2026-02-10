@@ -102,3 +102,30 @@ Les migrations sont exécutées automatiquement au démarrage. Ne pas modifier u
 | DELETE | `/api/channels/{id}` | Oui | Supprimer un channel |
 
 L'auth se fait via le header `Authorization: Bearer <token>`.
+
+## Tests
+
+Les tests unitaires se trouvent dans `src/test/java/Fourth_Argument/eris/`.
+
+### Lancer tous les tests
+
+```bash
+./mvnw test
+```
+
+### Lancer les tests d'une classe spécifique
+
+```bash
+./mvnw test -Dtest=ServerControllerTest
+```
+
+### Lancer les tests avec le rapport détaillé
+
+```bash
+./mvnw test -Dsurefire.useFile=false
+```
+
+> Les tests nécessitent les mêmes variables d'environnement que le lancement normal (`DB_URL`, `DB_USER`, `DB_PASSWORD`). Penser à les exporter avant ou à les charger via le `.env` :
+> ```bash
+> export $(cat .env | xargs) && ./mvnw test
+> ```

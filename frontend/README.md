@@ -88,6 +88,34 @@ src/
 | `npm run lint` | Linter ESLint |
 | `npm run preview` | Preview du build |
 
+## Tests
+
+Les tests sont écrits avec [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/). Ils se trouvent dans des dossiers `__tests__/` à côté des fichiers source.
+
+### Lancer tous les tests
+
+```bash
+npm test
+```
+
+### Lancer les tests en mode watch (relance auto à chaque modification)
+
+```bash
+npm run test:watch
+```
+
+### Lancer les tests avec couverture de code
+
+```bash
+npm run test:coverage
+```
+
+### Lancer un fichier de test spécifique
+
+```bash
+npx vitest run src/components/__tests__/ChannelList.test.tsx
+```
+
 ## Auth
 
 Le token JWT est stocké dans `localStorage` sous la clé `access_token`. Il est automatiquement ajouté aux requêtes via l'intercepteur axios dans `client.ts`.
