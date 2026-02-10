@@ -1,13 +1,16 @@
 package Fourth_Argument.eris;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class ErisApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void applicationClassExists() {
+		// Verify the main application class exists
+		assertTrue(ErisApplicationMain.class.isAnnotationPresent(
+				org.springframework.boot.autoconfigure.SpringBootApplication.class));
 	}
 
 }

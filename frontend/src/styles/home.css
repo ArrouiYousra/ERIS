@@ -4,7 +4,7 @@
   height: 100%;
   background: #000;
   color: #fff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   opacity: 0;
   transition: opacity 0.8s ease;
   margin: 0;
@@ -95,6 +95,27 @@
   text-align: center;
   max-width: 900px;
   padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-icon {
+  width: 280px;
+  height: 280px;
+  object-fit: contain;
+  border-radius: 32px;
+  filter: drop-shadow(0 0 40px rgba(168, 85, 247, 0.4)) drop-shadow(0 0 80px rgba(236, 72, 153, 0.2));
+  animation: heroIconFloat 6s ease-in-out infinite;
+}
+
+@keyframes heroIconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 .hero-title {
