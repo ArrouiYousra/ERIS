@@ -95,30 +95,8 @@ public class ChannelService {
 
     public void delete(Long id) throws ChannelException, UserException {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        String email = auth.getName();
-
         Channel channel = channelRepository.findById(id)
                 .orElseThrow(() -> new ChannelException("Pas de channel existant"));
-
-        User user = userService.getUserEntityByEmail(email);
-
-        // 3️⃣ Get server
-        Server server = channel.getServer();
-
-        // 4️⃣ Get server membership
-        ServerMember member = serverMemberRepository
-                .findByUserAndServer(user, server)
-                .orElseThrow(() -> new RuntimeException("User not member of this server"));
-
-        // 5️⃣ Get role
-        String roleName = member.getRole().getName();
-
-        // 6️⃣ Check permission
-        if (!roleName.equals("OWNER") && !roleName.equals("ADMIN")) {
-            throw new RuntimeException("You are not allowed to delete channels");
-        }
 
         List<Message> messages = messageRepository.findByChannel(channel);
 

@@ -50,7 +50,7 @@ public class ChannelController {
     }
 
     @GetMapping("/channels/{id}")
-    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#serverId, authentication.name)")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfChannel(#id, authentication.name)")
     public ResponseEntity<ChannelDTO> getChannelById(@PathVariable Long id) throws ChannelException {
         ChannelDTO channel = channelService.findById(id);
 
@@ -58,7 +58,7 @@ public class ChannelController {
     }
 
     @PutMapping("/channels/{id}")
-    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerAdmin(#serverId, authentication.name)")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isChannelAdmin(#id, authentication.name)")
     public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto) throws ChannelException {
 
         ChannelDTO updatedChannel = channelService.update(dto, id);
@@ -67,7 +67,7 @@ public class ChannelController {
     }
 
     @DeleteMapping("/channels/{id}")
-    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerAdmin(#serverId, authentication.name)")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isChannelAdmin(#id, authentication.name)")
     public ResponseEntity<String> delete(@PathVariable Long id) throws ChannelException, UserException {
 
         channelService.delete(id);
