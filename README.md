@@ -3,8 +3,8 @@
 Eris est une application de messagerie en temps réel, type Discord, développée dans le cadre du projet T-JSF-600.
 
 Le projet est séparé en deux parties :
-- **backend/** : API REST en Spring Boot (Java 21) + WebSocket
-- **frontend/** : SPA en React + TypeScript + Vite
+- [**backend/** : API REST en Spring Boot (Java 21) + WebSocket](backend/README.md)
+- [**frontend/** : SPA en React + TypeScript + Vite](frontend/README.md)
 
 ## Prérequis
 
@@ -71,3 +71,4 @@ Voir les `.env.example` dans chaque dossier pour les variables attendues.
 - `feature/*` : branches de feature
 
 On merge les features dans `dev`, puis `dev` dans `main` quand c'est stable.
+
