@@ -30,7 +30,7 @@ public class MessageController {
     private final ChannelRepository channelRepository;
 
     @PostMapping("/channels/{id}/messages")
-    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<MessageDTO> sendMessage(@RequestBody MessageDTO req,
             @PathVariable Long id) throws ChannelException, UserException {
 
@@ -41,7 +41,7 @@ public class MessageController {
     }
 
     @GetMapping("/channels/{id}/messages")
-    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MessageDTO>> getMessageHistory(
             @PathVariable Long id) throws MessageException {
 

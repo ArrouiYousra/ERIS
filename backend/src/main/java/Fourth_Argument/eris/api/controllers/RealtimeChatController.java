@@ -3,8 +3,7 @@ package Fourth_Argument.eris.api.controllers;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
 import Fourth_Argument.eris.api.dto.MessageDTO;
 import Fourth_Argument.eris.exceptions.ChannelException;
@@ -12,24 +11,32 @@ import Fourth_Argument.eris.exceptions.UserException;
 import Fourth_Argument.eris.services.MessageService;
 import lombok.RequiredArgsConstructor;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class RealtimeChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
 
-    @MessageMapping("/chat/{channelId}")
-    public void processMessage(
-            @Payload MessageDTO messageDTO,
-            @PathVariable Long channelId) throws ChannelException, UserException {
+    // ── Messages ──
+    @MessageMapping("/chat")
+    public void processMessage(@Payload MessageDTO messageDTO) throws ChannelException, UserException {
+        // Persister via le service existant (channelId vient du DTO)
+        MessageDTO saved = messageService.sendMessage(messageDTO, messageDTO.channelId());
 
-        // 1️⃣ Persist message (same logic as REST)
-        MessageDTO savedMessage = messageService.sendMessage(messageDTO, channelId);
-
-        // 2️⃣ Broadcast to all subscribers of the channel
+        // Broadcast à tous les abonnés du channel
         messagingTemplate.convertAndSend(
-                "/topic/channels/" + channelId,
-                savedMessage);
+                "/topic/channels/" + messageDTO.channelId(), saved);
+    }
+
+    // ── Typing ──
+    @MessageMapping("/typing")
+    public void handleTyping(@Payload TypingPayload payload) {
+        // Relayer à tous les abonnés du channel
+        messagingTemplate.convertAndSend(
+                "/topic/channels/" + payload.channelId() + "/typing", payload);
+    }
+
+    public record TypingPayload(Long userId, String username, Long channelId, boolean typing) {
     }
 }
