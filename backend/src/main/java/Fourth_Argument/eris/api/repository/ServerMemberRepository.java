@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
@@ -24,4 +27,9 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
     List<ServerMember> findServerMemberByUserId(Long id);
 
     Optional<ServerMember> findByUserAndServer(User user, Server server);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM ServerMember sm WHERE sm.server.id = :serverId")
+    void deleteAllByServerId(Long serverId);
 }

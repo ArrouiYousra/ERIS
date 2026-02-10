@@ -60,6 +60,16 @@ export function useUpdateServer() {
   
 }
 
+export function useDeleteServer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteServerApi(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+    },
+  });
+}
+
 export function useServerMembers(serverId: number | null) {
   return useQuery({
     queryKey: ["serverMembers", serverId],
