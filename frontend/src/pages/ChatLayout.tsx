@@ -24,6 +24,7 @@ import "../styles/chat.css";
 import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
 import { useServerMembers } from "../hooks/useServers";
+import { usePresence } from "../hooks/usePresence";
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -33,6 +34,7 @@ export function ChatLayout() {
   );
   
   const { data: members = [] } = useServerMembers(selectedServerId);
+  const { onlineUserIds } = usePresence(selectedServerId);
   const [selectedDMId, setSelectedDMId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<MainContentTab>("ADD");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
@@ -180,28 +182,58 @@ export function ChatLayout() {
                 onToggleMemberList={() => setShowMemberList(!showMemberList)}
               />
             </div>
-            {showMemberList && (
-              <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
-                <div className="p-4">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                    Membres — {members.length}
-                  </h3>
-                  <div className="space-y-1">
-                    {members.map((member: any) => (
-                      <div key={member.id} className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer">
-                        <div className="relative">
-                          <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
-                            {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
-                          </div>
-                          <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-gray-500 rounded-full border-2 border-[#2b2d31]" />
+            {showMemberList && (() => {
+              const onlineMembers = members.filter((m: any) => onlineUserIds.has(m.userId));
+              const offlineMembers = members.filter((m: any) => !onlineUserIds.has(m.userId));
+              return (
+                <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
+                  <div className="p-4 space-y-3">
+                    {/* En ligne */}
+                    {onlineMembers.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                          En ligne — {onlineMembers.length}
+                        </h3>
+                        <div className="space-y-0.5">
+                          {onlineMembers.map((member: any) => (
+                            <div key={member.userId} className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer">
+                              <div className="relative">
+                                <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
+                                  {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
+                                </div>
+                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#23a559] rounded-full border-2 border-[#2b2d31]" />
+                              </div>
+                              <span className="text-gray-300 text-sm">{member.nickname || member.username || `User ${member.userId}`}</span>
+                            </div>
+                          ))}
                         </div>
-                        <span className="text-gray-300 text-sm">{member.nickname || member.username || `User ${member.userId}`}</span>
                       </div>
-                    ))}
+                    )}
+                    {/* Hors ligne */}
+                    {offlineMembers.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                          Hors ligne — {offlineMembers.length}
+                        </h3>
+                        <div className="space-y-0.5">
+                          {offlineMembers.map((member: any) => (
+                            <div key={member.userId} className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40">
+                              <div className="relative">
+                                <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
+                                  {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
+                                </div>
+                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#80848e] rounded-full border-2 border-[#2b2d31]" />
+                              </div>
+                              <span className="text-gray-300 text-sm">{member.nickname || member.username || `User ${member.userId}`}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       )}
