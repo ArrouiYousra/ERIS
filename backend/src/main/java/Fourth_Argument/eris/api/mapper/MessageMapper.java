@@ -11,7 +11,13 @@ import Fourth_Argument.eris.api.model.User;
 public class MessageMapper {
 
     public MessageDTO toDTO(Message message) {
-        return new MessageDTO(message.getSender().getId(), message.getContent(), message.getChannel().getId());
+        return new MessageDTO(
+                message.getId(),
+                message.getSender().getId(),
+                message.getSender().getUsername(),
+                message.getContent(),
+                message.getChannel().getId(),
+                message.getCreatedAt() != null ? message.getCreatedAt().toString() : null);
     }
 
     public Message toEntity(MessageDTO dto, User sender, Channel channel) {
@@ -19,9 +25,6 @@ public class MessageMapper {
         message.setChannel(channel);
         message.setContent(dto.content());
         message.setSender(sender);
-
         return message;
-
     }
-
 }
