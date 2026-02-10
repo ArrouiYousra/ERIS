@@ -64,6 +64,24 @@ Chaque dev a ses propres credentials. Les fichiers `.env` ne sont pas commités.
 
 Voir les `.env.example` dans chaque dossier pour les variables attendues.
 
+## Tests
+
+### Backend
+
+```bash
+cd backend
+export $(cat .env | xargs) && ./mvnw test
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm test
+```
+
+Pour plus de détails (watch mode, couverture, tests spécifiques), voir les README de chaque partie.
+
 ## Branches
 
 - `main` : production
