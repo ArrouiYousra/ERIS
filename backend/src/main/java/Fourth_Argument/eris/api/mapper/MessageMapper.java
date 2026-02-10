@@ -14,7 +14,7 @@ public class MessageMapper {
         return new MessageDTO(
                 message.getId(),
                 message.getSender().getId(),
-                message.getSender().getUsername(),
+                message.getSender().getUser(),
                 message.getContent(),
                 message.getChannel().getId(),
                 message.getCreatedAt() != null ? message.getCreatedAt().toString() : null);

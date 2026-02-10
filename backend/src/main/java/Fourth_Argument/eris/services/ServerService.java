@@ -94,7 +94,7 @@ public class ServerService {
         ServerMember member = new ServerMember();
         member.setServer(savedServer);
         member.setUser(owner);
-        member.setNickname(owner.getUsername());
+        member.setNickname(owner.getUser());
         member.setTypingStatus(false);
 
         Role ownerRole = roleRepository.findByName("OWNER")
