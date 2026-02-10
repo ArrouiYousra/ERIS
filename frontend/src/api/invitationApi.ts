@@ -16,17 +16,15 @@ export interface InvitationDTO {
   expiresAt?: string;
 }
 
-export async function createInvitation(
-  serverId: number,
-): Promise<InvitationDTO> {
+export async function createInvitation(serverId: number): Promise<InvitationDTO> {
   const { data } = await api.post<InvitationDTO>(
-    `api/servers/${serverId}/invite`,
+    `/api/servers/${serverId}/invite`,  // ← ajoute le / au début
   );
   return data;
 }
 
 export async function joinWithInvitation(code: string) {
-  const { data } = await api.post<JoinInviteResponse>(`api/servers/join`, {
+  const { data } = await api.post<JoinInviteResponse>(`/api/servers/join`, {  // ← ajoute le /
     code,
   });
   return data;
