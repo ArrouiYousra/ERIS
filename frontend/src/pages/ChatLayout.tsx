@@ -3,13 +3,10 @@ import { useChannels } from "../hooks/useChannels";
 import {
   useServers,
   useCreateServer,
-  useServerMember,
 } from "../hooks/useServers";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ServerBar,
-  MainSidebar,
-  MainContent,
   RightPanel,
 } from "../components/friends";
 import { ChannelList } from "../components/ChannelList";
@@ -23,6 +20,7 @@ import type { MainContentTab } from "../types/friends";
 import "../styles/chat.css";
 import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
+import { useServerMembers } from "../hooks/useServers";
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -30,6 +28,8 @@ export function ChatLayout() {
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(
     null,
   );
+  
+  const { data: members = [] } = useServerMembers(selectedServerId);
   const [selectedDMId, setSelectedDMId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<MainContentTab>("ADD");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
@@ -149,47 +149,33 @@ export function ChatLayout() {
             <div className="flex-1 flex flex-col min-w-0 h-full">
               <MessageList
                 channelId={selectedChannelId}
-                channelName={
-                  channels.find((c: any) => c.id === selectedChannelId)?.name
-                }
-                channelTopic={
-                  (channels.find((c: any) => c.id === selectedChannelId) as any)
-                    ?.topic
-                }
-                isPrivate={
-                  (channels.find((c: any) => c.id === selectedChannelId) as any)
-                    ?.isPrivate
-                }
-                serverName={
-                  selectedServerId ? serverNames[selectedServerId] : "Serveur"
-                }
-                messages={[]}
+                channelName={channels.find((c: any) => c.id === selectedChannelId)?.name}
+                channelTopic={(channels.find((c: any) => c.id === selectedChannelId) as any)?.topic}
+                isPrivate={(channels.find((c: any) => c.id === selectedChannelId) as any)?.isPrivate}
+                serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
                 showMemberList={showMemberList}
                 onToggleMemberList={() => setShowMemberList(!showMemberList)}
               />
             </div>
-            {/* Member list */}
             {showMemberList && (
               <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
                 <div className="p-4">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                    En ligne — 1
+                    Membres — {members.length}
                   </h3>
                   <div className="space-y-1">
-                    <div className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer">
-                      <div className="relative">
-                        <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
-                          Y
+                    {members.map((member: any) => (
+                      <div key={member.id} className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer">
+                        <div className="relative">
+                          <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
+                            {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
+                          </div>
+                          <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-gray-500 rounded-full border-2 border-[#2b2d31]" />
                         </div>
-                        <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#23a55a] rounded-full border-2 border-[#2b2d31]" />
+                        <span className="text-gray-300 text-sm">{member.nickname || member.username || `User ${member.userId}`}</span>
                       </div>
-                      <span className="text-gray-300 text-sm">Yousra</span>
-                    </div>
+                    ))}
                   </div>
-
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase mt-4 mb-2">
-                    Hors ligne — 0
-                  </h3>
                 </div>
               </div>
             )}
