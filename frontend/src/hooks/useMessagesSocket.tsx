@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL || "ws://localhost:8081";
+
 export function useMessagesSocket(channelId: number | null) {
   const [messages, setMessages] = useState<any[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
@@ -7,7 +9,7 @@ export function useMessagesSocket(channelId: number | null) {
   useEffect(() => {
     if (!channelId) return;
 
-    const ws = new WebSocket(`ws://localhost:8081/ws/channels/${channelId}`);
+    const ws = new WebSocket(`${WS_BASE_URL}/ws/channels/${channelId}`);
     wsRef.current = ws;
 
     ws.onopen = () => console.log("Connected to channel", channelId);

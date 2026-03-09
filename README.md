@@ -12,6 +12,7 @@ Le projet est séparé en deux parties :
 - Node.js >= 18
 - PostgreSQL 16
 - npm
+- Docker + Docker Compose
 
 ## Structure du projet
 
@@ -54,6 +55,34 @@ npm run dev
 ```
 
 Le frontend tourne sur `http://localhost:5173` par défaut.
+
+## Lancement avec Docker (recommandé)
+
+Depuis la racine du projet :
+
+```bash
+cp .env.docker.example .env
+docker compose up --build -d
+```
+
+Services disponibles :
+
+- Frontend : `http://localhost:5173`
+- Backend API : `http://localhost:8081`
+- Swagger : `http://localhost:8081/swagger-ui/index.html`
+
+Commandes utiles :
+
+```bash
+# Voir les logs
+docker compose logs -f
+
+# Arrêter la stack
+docker compose down
+
+# Arrêter et supprimer les données PostgreSQL
+docker compose down -v
+```
 
 ## Configuration
 
