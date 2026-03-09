@@ -42,6 +42,7 @@ Créer un fichier `.env` (non commité) :
 ```
 VITE_API_URL=http://localhost:8081
 VITE_WS_URL=http://localhost:8081/ws
+VITE_WS_BASE_URL=ws://localhost:8081
 ```
 
 ou
