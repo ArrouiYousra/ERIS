@@ -3,7 +3,7 @@ import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useAuth } from '../hooks/useAuth';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:8080/ws';
+const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:8081/ws';
 
 interface SocketContextValue {
   connected: boolean;
