@@ -20,6 +20,7 @@ import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
 import { useServerMembers } from "../hooks/useServers";
 import { usePresence } from "../hooks/usePresence";
+import { useServerSocket } from '../hooks/useServerSocket';
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -40,6 +41,7 @@ export function ChatLayout() {
   const { data: channels = [] } = useChannels(selectedServerId);
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
+  useServerSocket();
 
   const serverIds = servers.map((s: { id: number }) => s.id);
   const serverNames = Object.fromEntries(
