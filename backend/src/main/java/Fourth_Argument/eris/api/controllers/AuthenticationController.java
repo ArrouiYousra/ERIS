@@ -1,7 +1,5 @@
 package Fourth_Argument.eris.api.controllers;
 
-import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,11 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import Fourth_Argument.eris.api.dto.request.LoginRequestDTO;
 import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
 import Fourth_Argument.eris.api.dto.response.LoginResponseDTO;
+import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.api.services.AuthenticationService;
+import Fourth_Argument.eris.api.services.JwtService;
+import Fourth_Argument.eris.api.services.UserService;
 import Fourth_Argument.eris.exceptions.UserException;
-import Fourth_Argument.eris.services.AuthenticationService;
-import Fourth_Argument.eris.services.JwtService;
-import Fourth_Argument.eris.services.UserService;
 
 @RequestMapping("/api/auth")
 @RestController
@@ -54,13 +53,10 @@ public class AuthenticationController {
 
     // ── AJOUTÉ : récupérer le user connecté au reload ──
     @GetMapping("/me")
-public ResponseEntity<Map<String, Object>> getMe(@AuthenticationPrincipal UserDetails userDetails) throws UserException {
-        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+    public ResponseEntity<UserResponseDTO> getMe(@AuthenticationPrincipal UserDetails userDetails)
+            throws UserException {
+        UserResponseDTO user = userService.getUserByEmail(userDetails.getUsername());
         // Retourner un Map simple puisqu'il n'y a pas de UserResponseDTO
-        return ResponseEntity.ok(Map.of(
-                "id", user.getId(),
-                "email", user.getEmail(),
-                "username", user.getUser(),
-                "displayName", user.getDisplayName() != null ? user.getDisplayName() : user.getUser()));
+        return ResponseEntity.ok(user);
     }
 }

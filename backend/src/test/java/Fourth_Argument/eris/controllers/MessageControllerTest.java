@@ -20,8 +20,8 @@ import Fourth_Argument.eris.api.model.Channel;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
+import Fourth_Argument.eris.api.services.MessageService;
 import Fourth_Argument.eris.exceptions.MessageException;
-import Fourth_Argument.eris.services.MessageService;
 
 @ExtendWith(MockitoExtension.class)
 class MessageControllerTest {
@@ -39,7 +39,7 @@ class MessageControllerTest {
     @BeforeEach
     void setUp() {
         // MessageController uses @RequiredArgsConstructor, create manually
-        controller = new MessageController(messageService, channelRepository);
+        controller = new MessageController(messageService);
 
         User owner = new User();
         owner.setId(1L);
@@ -72,7 +72,7 @@ class MessageControllerTest {
     @Test
     void getMessageHistory_success() throws Exception {
         when(channelRepository.findById(1L)).thenReturn(Optional.of(channel));
-        when(messageService.getMessageHistory(channel)).thenReturn(List.of(messageDTO));
+        when(messageService.getMessageHistory(channel.getId())).thenReturn(List.of(messageDTO));
 
         ResponseEntity<List<MessageDTO>> response = controller.getMessageHistory(1L);
 

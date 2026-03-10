@@ -1,10 +1,7 @@
-package Fourth_Argument.eris.services;
+package Fourth_Argument.eris.api.services;
 
-import java.net.ContentHandlerFactory;
 import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
@@ -24,16 +21,14 @@ public class ServerMemberService {
     private final ServerMemberRepository serverMemberRepository;
     private final ServerMemberMapper serverMemberMapper;
     private final ServerRepository serverRepository;
-    private final UserService userService;
 
     public ServerMemberService(
             ServerMemberRepository serverMemberRepository,
             ServerRepository serverRepository,
-            ServerMemberMapper mapper, UserService userService) {
+            ServerMemberMapper mapper) {
         this.serverMemberRepository = serverMemberRepository;
         this.serverRepository = serverRepository;
         this.serverMemberMapper = mapper;
-        this.userService = userService;
     }
 
     public void createServerMember(Server server, User user, Role role) throws ServerMemberException {

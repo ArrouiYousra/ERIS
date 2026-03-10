@@ -1,9 +1,7 @@
 package Fourth_Argument.eris.api.mapper;
 
 import Fourth_Argument.eris.api.dto.InvitationDTO;
-import Fourth_Argument.eris.api.dto.ServerDTO;
 import Fourth_Argument.eris.api.model.Invitation;
-import Fourth_Argument.eris.api.model.Server;
 
 import org.springframework.stereotype.Component;
 

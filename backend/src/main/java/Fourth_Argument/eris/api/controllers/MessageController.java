@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Fourth_Argument.eris.api.dto.MessageDTO;
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.repository.ChannelRepository;
+import Fourth_Argument.eris.api.services.MessageService;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.MessageException;
 import Fourth_Argument.eris.exceptions.UserException;
-import Fourth_Argument.eris.services.MessageService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class MessageController {
 
     private final MessageService messageService;
-    private final ChannelRepository channelRepository;
 
     @PostMapping("/channels/{id}/messages")
     @PreAuthorize("isAuthenticated()")
@@ -43,12 +40,9 @@ public class MessageController {
     @GetMapping("/channels/{id}/messages")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MessageDTO>> getMessageHistory(
-            @PathVariable Long id) throws MessageException {
+            @PathVariable Long id) throws MessageException, ChannelException {
 
-        Channel channel = channelRepository.findById(id)
-                .orElseThrow(() -> new MessageException("Ce channel n'existe pas"));
-
-        List<MessageDTO> messages = messageService.getMessageHistory(channel);
+        List<MessageDTO> messages = messageService.getMessageHistory(id);
 
         return ResponseEntity.ok(messages);
 

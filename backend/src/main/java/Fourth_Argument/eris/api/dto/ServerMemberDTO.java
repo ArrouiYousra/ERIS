@@ -2,9 +2,6 @@ package Fourth_Argument.eris.api.dto;
 
 import java.time.LocalDateTime;
 
-import Fourth_Argument.eris.api.model.Role;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.User;
 import lombok.Getter;
 import lombok.Setter;
 

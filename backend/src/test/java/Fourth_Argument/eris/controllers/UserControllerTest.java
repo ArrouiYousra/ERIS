@@ -17,7 +17,7 @@ import Fourth_Argument.eris.api.controllers.UserController;
 import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.mapper.UserMapper;
 import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.services.UserService;
+import Fourth_Argument.eris.api.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {

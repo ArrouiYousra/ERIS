@@ -6,10 +6,10 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.api.services.JwtService;
 
 class JwtServiceTest {
 

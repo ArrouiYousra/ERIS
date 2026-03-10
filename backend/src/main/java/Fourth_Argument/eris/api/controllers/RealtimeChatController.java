@@ -6,9 +6,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import Fourth_Argument.eris.api.dto.MessageDTO;
+import Fourth_Argument.eris.api.services.MessageService;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.UserException;
-import Fourth_Argument.eris.services.MessageService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
