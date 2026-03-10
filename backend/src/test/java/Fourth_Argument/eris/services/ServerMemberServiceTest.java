@@ -89,7 +89,7 @@ class ServerMemberServiceTest {
     void deleteServerMember_success() throws Exception {
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
-        serverMemberService.deleteServerMember(server, user);
+        serverMemberService.deleteServerMember(user.getEmail(), server.getId());
 
         verify(serverMemberRepository).delete(serverMember);
     }
@@ -99,7 +99,7 @@ class ServerMemberServiceTest {
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
 
         assertThrows(ServerMemberException.class,
-                () -> serverMemberService.deleteServerMember(server, user));
+                () -> serverMemberService.deleteServerMember(user.getEmail(), server.getId()));
     }
 
     // ── getMembersByServerId ──
