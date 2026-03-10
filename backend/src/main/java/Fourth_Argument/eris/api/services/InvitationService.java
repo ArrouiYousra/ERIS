@@ -9,12 +9,16 @@ import org.springframework.stereotype.Service;
 import Fourth_Argument.eris.api.dto.InvitationDTO;
 import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
 import Fourth_Argument.eris.api.mapper.InvitationMapper;
+import Fourth_Argument.eris.api.model.Channel;
 import Fourth_Argument.eris.api.model.Invitation;
+import Fourth_Argument.eris.api.model.Message;
 import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.InvitationRepository;
+import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.RoleRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
@@ -35,11 +39,14 @@ public class InvitationService {
     private final UserService userService;
     private final ServerRepository serverRepository;
     private final RoleRepository roleRepository;
+    private final ChannelRepository channelRepository;
+    private final MessageRepository messageRepository;
 
     public InvitationService(InvitationRepository invitationRepository, InvitationMapper invitationMapper,
             UserRepository userRepository, ServerMemberRepository serverMemberRepository,
             ServerMemberService serverMemberService, UserService userService,
-            ServerRepository serverRepository, RoleRepository roleRepository) {
+            ServerRepository serverRepository, RoleRepository roleRepository, ChannelRepository channelRepository,
+            MessageRepository messageRepository) {
         this.invitationRepository = invitationRepository;
         this.invitationMapper = invitationMapper;
         this.userRepository = userRepository;
@@ -48,6 +55,8 @@ public class InvitationService {
         this.serverMemberService = serverMemberService;
         this.userService = userService;
         this.roleRepository = roleRepository;
+        this.channelRepository = channelRepository;
+        this.messageRepository = messageRepository;
 
     }
 
@@ -109,17 +118,31 @@ public class InvitationService {
             throw new RuntimeException("Invite expired");
         }
 
+        // Récupération des infos utilisées dans le cadre du message d'invit, Bot User +
+        // General channel
+        User bot = userRepository.findByUsername("SystemBot");
+
         Role role = roleRepository.findByName("MEMBER")
                 .orElseThrow(() -> new RuntimeException("Role MEMBER not found"));
 
         // ✅ Add user as MEMBER
         serverMemberService.createServerMember(invite.getServer(), user, role);
 
+        Channel channel = channelRepository.getChannelsByServer(invite.getServer()).get(0);
+
+        // Création du message d'invitation
+        Message invitationMessage = new Message();
+        invitationMessage.setChannel(channel);
+        invitationMessage.setContent("Bienvenue " + user.getUser() + " !");
+        invitationMessage.setSender(bot);
+
+        messageRepository.save(invitationMessage);
+
         // ✅ Return response DTO
         JoinInviteResponseDTO response = new JoinInviteResponseDTO();
         response.setServerId(invite.getServer().getId());
         response.setServerName(invite.getServer().getName());
-        response.setMessage("Joined successfully");
+        response.setMessage(invitationMessage);
 
         return response;
     }

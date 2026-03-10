@@ -10,8 +10,11 @@ import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.api.repository.ChannelRepository;
+import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
+import Fourth_Argument.eris.api.repository.UserRepository;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
 
@@ -25,10 +28,14 @@ public class ServerMemberService {
     public ServerMemberService(
             ServerMemberRepository serverMemberRepository,
             ServerRepository serverRepository,
-            ServerMemberMapper mapper) {
+            ServerMemberMapper mapper,
+            ChannelRepository channelRepository,
+            MessageRepository messageRepository,
+            UserRepository userRepository) {
         this.serverMemberRepository = serverMemberRepository;
         this.serverRepository = serverRepository;
         this.serverMemberMapper = mapper;
+
     }
 
     public void createServerMember(Server server, User user, Role role) throws ServerMemberException {
