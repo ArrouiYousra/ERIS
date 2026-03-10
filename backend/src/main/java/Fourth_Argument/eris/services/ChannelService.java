@@ -1,9 +1,9 @@
 package Fourth_Argument.eris.services;
 
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ChannelDTO;
@@ -11,8 +11,6 @@ import Fourth_Argument.eris.api.mapper.ChannelMapper;
 import Fourth_Argument.eris.api.model.Channel;
 import Fourth_Argument.eris.api.model.Message;
 import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.ServerMember;
-import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
@@ -32,6 +30,7 @@ public class ChannelService {
     private final MessageRepository messageRepository;
     private final UserService userService;
     private final ServerMemberRepository serverMemberRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public ChannelDTO createChannel(Long serverId, ChannelDTO dto) throws ChannelException, ServerException {
 
@@ -44,6 +43,9 @@ public class ChannelService {
         if (channel.getName().isEmpty()) {
             throw new ChannelException("Le channel doit avoir un nom !");
         }
+
+        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "CREATED", "channelId", savedChannel.getId()));
+
 
         return channelMapper.toDTO(savedChannel);
 
@@ -103,6 +105,8 @@ public class ChannelService {
         messageRepository.deleteAll(messages);
 
         channelRepository.delete(channel);
+
+        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "DELETED", "channelId", id));
 
     }
 }

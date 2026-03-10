@@ -36,7 +36,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         console.log('✅ STOMP connected');
         setConnected(true);
 
-        // Enregistrer la présence si on a le user.id
+        // Enregistrer la présence si on a le user.id 
         if (user?.id) {
           stomp.publish({
             destination: '/app/presence.connect',
