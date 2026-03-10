@@ -1,5 +1,5 @@
 import { PanelRightOpen } from "lucide-react";
-import { useServerMember } from "../../hooks/useServers";
+import { useServerMembers } from "../../hooks/useServers";
 import { usePresence } from "../../hooks/usePresence";
 
 interface LeftPanelProps {
@@ -13,7 +13,7 @@ export function LeftPanel({
   collapsed = false,
   onToggle,
 }: LeftPanelProps) {
-  const { data: serverMembers = [], isLoading } = useServerMember(serverId);
+  const { data: serverMembers = [], isLoading } = useServerMembers(serverId);
   const { onlineUserIds } = usePresence(serverId);
 
   if (collapsed) {
@@ -36,7 +36,9 @@ export function LeftPanel({
 
   // Séparer online / offline
   const online = serverMembers.filter((m: any) => onlineUserIds.has(m.userId));
-  const offline = serverMembers.filter((m: any) => !onlineUserIds.has(m.userId));
+  const offline = serverMembers.filter(
+    (m: any) => !onlineUserIds.has(m.userId),
+  );
 
   return (
     <aside
@@ -58,7 +60,11 @@ export function LeftPanel({
                   En ligne — {online.length}
                 </p>
                 {online.map((member: any) => (
-                  <MemberRow key={member.userId} member={member} isOnline={true} />
+                  <MemberRow
+                    key={member.userId}
+                    member={member}
+                    isOnline={true}
+                  />
                 ))}
               </>
             )}
@@ -68,7 +74,11 @@ export function LeftPanel({
                   Hors ligne — {offline.length}
                 </p>
                 {offline.map((member: any) => (
-                  <MemberRow key={member.userId} member={member} isOnline={false} />
+                  <MemberRow
+                    key={member.userId}
+                    member={member}
+                    isOnline={false}
+                  />
                 ))}
               </>
             )}

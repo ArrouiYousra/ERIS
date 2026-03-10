@@ -1,12 +1,6 @@
 import { useState } from "react";
 import "../styles/serverGate.css";
 
-import {
-  createInvitation,
-  joinWithInvitation,
-  type JoinInviteResponse,
-} from "../api/invitationApi";
-
 export type ServerModalStep = "choice" | "create" | "join";
 
 interface ServerGateProps {

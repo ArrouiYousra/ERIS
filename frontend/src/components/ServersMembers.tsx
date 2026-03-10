@@ -1,4 +1,4 @@
-import { useServerMember } from "../hooks/useServers";
+import { useServerMembers } from "../hooks/useServers";
 import type { ServerMember } from "../api/serverMembersApi";
 
 interface ServerMembersProps {
@@ -6,7 +6,7 @@ interface ServerMembersProps {
 }
 
 export function ServerMembers({ serverId }: ServerMembersProps) {
-  const { data: members = [], isLoading } = useServerMember(serverId);
+  const { data: members = [], isLoading } = useServerMembers(serverId);
 
   if (isLoading) return <div>Loading members...</div>;
   if (!members.length) return <div>No members found</div>;

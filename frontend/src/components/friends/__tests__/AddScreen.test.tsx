@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AddScreen } from "../AddScreen";
@@ -12,7 +12,9 @@ describe("AddScreen", () => {
 
   it("submit button is disabled when input is empty", () => {
     render(<AddScreen />);
-    const submitBtn = screen.getByRole("button", { name: /envoyer une demande/i });
+    const submitBtn = screen.getByRole("button", {
+      name: /envoyer une demande/i,
+    });
     expect(submitBtn).toBeDisabled();
   });
 
@@ -21,14 +23,18 @@ describe("AddScreen", () => {
     render(<AddScreen />);
     const input = screen.getByPlaceholderText("Saisir un pseudo");
     await user.type(input, "TestUser");
-    const submitBtn = screen.getByRole("button", { name: /envoyer une demande/i });
+    const submitBtn = screen.getByRole("button", {
+      name: /envoyer une demande/i,
+    });
     expect(submitBtn).not.toBeDisabled();
   });
 
   it("clears input on form submit", async () => {
     const user = userEvent.setup();
     render(<AddScreen />);
-    const input = screen.getByPlaceholderText("Saisir un pseudo") as HTMLInputElement;
+    const input = screen.getByPlaceholderText(
+      "Saisir un pseudo",
+    ) as HTMLInputElement;
     await user.type(input, "TestUser");
     // Submit form
     const form = input.closest("form")!;
@@ -38,7 +44,9 @@ describe("AddScreen", () => {
 
   it("does not clear input on submit when empty", () => {
     render(<AddScreen />);
-    const input = screen.getByPlaceholderText("Saisir un pseudo") as HTMLInputElement;
+    const input = screen.getByPlaceholderText(
+      "Saisir un pseudo",
+    ) as HTMLInputElement;
     const form = input.closest("form")!;
     fireEvent.submit(form);
     expect(input.value).toBe("");
