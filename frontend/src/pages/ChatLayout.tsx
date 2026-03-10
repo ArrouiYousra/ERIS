@@ -20,6 +20,9 @@ import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
 import { useServerMembers } from "../hooks/useServers";
 import { usePresence } from "../hooks/usePresence";
+import type { Channel } from "../api/channelsApi";
+import type { Server } from "../api/serversApi";
+import type { ServerMember } from "../api/serverMembersApi";
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -41,19 +44,22 @@ export function ChatLayout() {
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
 
-  const serverIds = servers.map((s: { id: number }) => s.id);
+  const serverIds = servers.map((s: Server) => s.id);
   const serverNames = Object.fromEntries(
-    servers.map((s: { id: number; name: string }) => [s.id, s.name]),
+    servers.map((s: Server) => [s.id, s.name]),
   );
 
   const isDMMode = selectedServerId === null;
 
   // Check if current user is the owner of the selected server
-  const currentServer = servers.find((s: any) => s.id === selectedServerId);
+  const currentServer = servers.find((s: Server) => s.id === selectedServerId);
   const isServerOwner = !!(
     currentServer &&
     user &&
     currentServer.ownerId === user.id
+  );
+  const selectedChannel = channels.find(
+    (channel: Channel) => channel.id === selectedChannelId,
   );
 
   const handleDeleteServer = async () => {
@@ -172,17 +178,9 @@ export function ChatLayout() {
             <div className="flex-1 flex flex-col min-w-0 h-full">
               <MessageList
                 channelId={selectedChannelId}
-                channelName={
-                  channels.find((c: any) => c.id === selectedChannelId)?.name
-                }
-                channelTopic={
-                  (channels.find((c: any) => c.id === selectedChannelId) as any)
-                    ?.topic
-                }
-                isPrivate={
-                  (channels.find((c: any) => c.id === selectedChannelId) as any)
-                    ?.isPrivate
-                }
+                channelName={selectedChannel?.name}
+                channelTopic={selectedChannel?.topic}
+                isPrivate={selectedChannel?.isPrivate}
                 serverName={
                   selectedServerId ? serverNames[selectedServerId] : "Serveur"
                 }
@@ -192,11 +190,11 @@ export function ChatLayout() {
             </div>
             {showMemberList &&
               (() => {
-                const onlineMembers = members.filter((m: any) =>
+                const onlineMembers = members.filter((m: ServerMember) =>
                   onlineUserIds.has(m.userId),
                 );
                 const offlineMembers = members.filter(
-                  (m: any) => !onlineUserIds.has(m.userId),
+                  (m: ServerMember) => !onlineUserIds.has(m.userId),
                 );
                 return (
                   <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
@@ -208,7 +206,7 @@ export function ChatLayout() {
                             En ligne — {onlineMembers.length}
                           </h3>
                           <div className="space-y-0.5">
-                            {onlineMembers.map((member: any) => (
+                            {onlineMembers.map((member: ServerMember) => (
                               <div
                                 key={member.userId}
                                 className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer"
@@ -238,7 +236,7 @@ export function ChatLayout() {
                             Hors ligne — {offlineMembers.length}
                           </h3>
                           <div className="space-y-0.5">
-                            {offlineMembers.map((member: any) => (
+                            {offlineMembers.map((member: ServerMember) => (
                               <div
                                 key={member.userId}
                                 className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40"

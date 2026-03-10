@@ -5,12 +5,14 @@ import { api } from "../api/client";
 export interface Message {
   id: number;
   senderId: number;
+  senderUsername?: string;
   content: string;
   createdAt: string;
+  channelId?: number;
 }
 
-export async function getMessages(channelId: number) {
-  const { data } = await api.get(`/api/channels/${channelId}/messages`);
+export async function getMessages(channelId: number): Promise<Message[]> {
+  const { data } = await api.get<Message[]>(`/api/channels/${channelId}/messages`);
   return data;
 }
 

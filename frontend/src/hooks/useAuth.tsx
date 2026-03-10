@@ -8,8 +8,15 @@ import {
 import { login as loginApi, signup as signupApi } from "../api/authApi";
 import { api } from "../api/client";
 
+export interface AuthUser {
+  id: number;
+  email?: string;
+  username?: string;
+  displayName?: string;
+}
+
 type AuthContextValue = {
-  user: any | null;
+  user: AuthUser | null;
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -26,7 +33,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function useProvideAuth(): AuthContextValue {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   // ── Fetch /api/auth/me au reload pour récupérer le user avec son id ──
@@ -37,8 +44,8 @@ function useProvideAuth(): AuthContextValue {
       return;
     }
     api
-      .get("/api/auth/me")
-      .then(({ data }) => setUser(data))
+      .get<AuthUser>("/api/auth/me")
+      .then((response: { data: AuthUser }) => setUser(response.data))
       .catch(() => {
         localStorage.removeItem("access_token");
         setUser(null);
@@ -55,7 +62,7 @@ function useProvideAuth(): AuthContextValue {
     }
 
     // Fetch le user complet via /me maintenant qu'on a le token
-    const { data: userData } = await api.get("/api/auth/me");
+    const { data: userData } = await api.get<AuthUser>("/api/auth/me");
     setUser(userData);
   };
 
