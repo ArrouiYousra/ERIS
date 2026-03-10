@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.services;
+package Fourth_Argument.eris.api.services;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

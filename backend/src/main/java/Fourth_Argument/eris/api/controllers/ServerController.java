@@ -22,14 +22,14 @@ import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.dto.request.JoinInviteRequestDTO;
 import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.api.services.InvitationService;
+import Fourth_Argument.eris.api.services.ServerMemberService;
+import Fourth_Argument.eris.api.services.ServerService;
+import Fourth_Argument.eris.api.services.UserService;
 import Fourth_Argument.eris.exceptions.RoleException;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
 import Fourth_Argument.eris.exceptions.UserException;
-import Fourth_Argument.eris.services.InvitationService;
-import Fourth_Argument.eris.services.ServerMemberService;
-import Fourth_Argument.eris.services.ServerService;
-import Fourth_Argument.eris.services.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -129,14 +129,17 @@ public class ServerController {
     }
 
     // @DeleteMapping("/{id}/leave")
-    // @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
-    // public ResponseEntity<String> leaveServer(@PathVariable Long id, @RequestBody UserResponseDTO userDTO)
-    //         throws ServerException, ServerMemberException {
-    //     Long userId = userDTO.getId();
-    //     if (Objects.equals(serverService.getServerById(id).getOwnerId(), userId)) {
-    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The owner cannot leave the server");
-    //     }
-    //     serverMemberService.deleteServerMember(id, userId);
-    //     return ResponseEntity.status(HttpStatus.OK).body("Server left");
+    // @PreAuthorize("isAuthenticated() and
+    // @serverSecurityService.isMemberOfServer(#id, authentication.name)")
+    // public ResponseEntity<String> leaveServer(@PathVariable Long id, @RequestBody
+    // UserResponseDTO userDTO)
+    // throws ServerException, ServerMemberException {
+    // Long userId = userDTO.getId();
+    // if (Objects.equals(serverService.getServerById(id).getOwnerId(), userId)) {
+    // return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The owner cannot
+    // leave the server");
+    // }
+    // serverMemberService.deleteServerMember(id, userId);
+    // return ResponseEntity.status(HttpStatus.OK).body("Server left");
     // }
 }

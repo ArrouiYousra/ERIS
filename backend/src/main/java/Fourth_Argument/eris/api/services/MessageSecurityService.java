@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.services;
+package Fourth_Argument.eris.api.services;
 
 import org.springframework.stereotype.Service;
 

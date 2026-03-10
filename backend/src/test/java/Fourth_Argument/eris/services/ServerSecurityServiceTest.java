@@ -20,6 +20,8 @@ import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
+import Fourth_Argument.eris.api.services.ServerSecurityService;
+import Fourth_Argument.eris.api.services.UserService;
 import Fourth_Argument.eris.exceptions.UserException;
 
 @ExtendWith(MockitoExtension.class)

@@ -22,10 +22,10 @@ import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.dto.request.JoinInviteRequestDTO;
 import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
 import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.services.InvitationService;
-import Fourth_Argument.eris.services.ServerMemberService;
-import Fourth_Argument.eris.services.ServerService;
-import Fourth_Argument.eris.services.UserService;
+import Fourth_Argument.eris.api.services.InvitationService;
+import Fourth_Argument.eris.api.services.ServerMemberService;
+import Fourth_Argument.eris.api.services.ServerService;
+import Fourth_Argument.eris.api.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 @org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)

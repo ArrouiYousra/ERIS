@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.services;
+package Fourth_Argument.eris.api.services;
 
 import java.util.List;
 
@@ -68,21 +68,6 @@ public class ServerService {
 
         return serverDTOs;
     }
-
-    // public List<ServerDTO> getUserServers(Long id) {
-    // List<ServerMember> serverMembers =
-    // serverMemberRepository.findServerMemberByUserId(id);
-
-    // if (serverMembers == null) {
-    // throw new RuntimeException("No server found");
-    // }
-
-    // List<ServerDTO> serverDTOs = serverMembers.stream()
-    // .map(member -> getServerById(member.getServerId()))
-    // .toList();
-
-    // return serverDTOs;
-    // }
 
     public ServerDTO createServer(ServerDTO serverDTO, User owner) {
         Server server = new Server();

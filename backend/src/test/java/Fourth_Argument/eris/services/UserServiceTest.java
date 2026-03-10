@@ -16,6 +16,7 @@ import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.mapper.UserMapper;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.UserRepository;
+import Fourth_Argument.eris.api.services.UserService;
 import Fourth_Argument.eris.exceptions.UserException;
 
 @ExtendWith(MockitoExtension.class)

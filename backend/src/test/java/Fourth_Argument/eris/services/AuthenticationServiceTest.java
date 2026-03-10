@@ -19,6 +19,7 @@ import Fourth_Argument.eris.api.dto.request.LoginRequestDTO;
 import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.UserRepository;
+import Fourth_Argument.eris.api.services.AuthenticationService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {

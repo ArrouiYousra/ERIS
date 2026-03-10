@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 
 import Fourth_Argument.eris.api.controllers.ChannelController;
 import Fourth_Argument.eris.api.dto.ChannelDTO;
-import Fourth_Argument.eris.services.ChannelService;
+import Fourth_Argument.eris.api.services.ChannelService;
 
 @ExtendWith(MockitoExtension.class)
 class ChannelControllerTest {

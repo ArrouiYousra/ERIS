@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Fourth_Argument.eris.api.dto.ChannelDTO;
+import Fourth_Argument.eris.api.services.ChannelService;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.UserException;
-import Fourth_Argument.eris.services.ChannelService;
 
 @RestController
 @RequestMapping("/api")
@@ -59,7 +59,8 @@ public class ChannelController {
 
     @PutMapping("/channels/{id}")
     @PreAuthorize("isAuthenticated() and @serverSecurityService.isChannelAdmin(#id, authentication.name)")
-    public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto) throws ChannelException {
+    public ResponseEntity<ChannelDTO> update(@PathVariable Long id, @RequestBody ChannelDTO dto)
+            throws ChannelException {
 
         ChannelDTO updatedChannel = channelService.update(dto, id);
 
