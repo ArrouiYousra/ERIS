@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.mapper.UserMapper;
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.api.services.UserService;
 import Fourth_Argument.eris.exceptions.UserException;
-import Fourth_Argument.eris.services.UserService;
 
 @RestController
 @RequestMapping("/api")

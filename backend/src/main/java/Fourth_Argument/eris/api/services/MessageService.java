@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.services;
+package Fourth_Argument.eris.api.services;
 
 import java.util.List;
 
@@ -42,7 +42,10 @@ public class MessageService {
 
     }
 
-    public List<MessageDTO> getMessageHistory(Channel channel) throws MessageException {
+    public List<MessageDTO> getMessageHistory(Long channelId) throws MessageException, ChannelException {
+
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new ChannelException("This channel is not found !"));
 
         List<Message> messages = messageRepository.findByChannel(channel);
 
