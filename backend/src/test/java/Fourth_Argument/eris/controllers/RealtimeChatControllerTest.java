@@ -12,7 +12,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import Fourth_Argument.eris.api.controllers.RealtimeChatController;
 import Fourth_Argument.eris.api.dto.MessageDTO;
-import Fourth_Argument.eris.services.MessageService;
+import Fourth_Argument.eris.api.services.MessageService;
 
 @ExtendWith(MockitoExtension.class)
 class RealtimeChatControllerTest {
@@ -44,8 +44,8 @@ class RealtimeChatControllerTest {
 
     @Test
     void handleTyping_broadcastsToChannel() {
-        RealtimeChatController.TypingPayload payload =
-                new RealtimeChatController.TypingPayload(1L, "testuser", 5L, true);
+        RealtimeChatController.TypingPayload payload = new RealtimeChatController.TypingPayload(1L, "testuser", 5L,
+                true);
 
         controller.handleTyping(payload);
 
@@ -54,8 +54,7 @@ class RealtimeChatControllerTest {
 
     @Test
     void typingPayload_record() {
-        RealtimeChatController.TypingPayload payload =
-                new RealtimeChatController.TypingPayload(1L, "user", 5L, true);
+        RealtimeChatController.TypingPayload payload = new RealtimeChatController.TypingPayload(1L, "user", 5L, true);
 
         assertEquals(1L, payload.userId());
         assertEquals("user", payload.username());

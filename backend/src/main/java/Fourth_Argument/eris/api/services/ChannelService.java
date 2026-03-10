@@ -1,9 +1,7 @@
-package Fourth_Argument.eris.services;
+package Fourth_Argument.eris.api.services;
 
 import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ChannelDTO;
@@ -11,11 +9,8 @@ import Fourth_Argument.eris.api.mapper.ChannelMapper;
 import Fourth_Argument.eris.api.model.Channel;
 import Fourth_Argument.eris.api.model.Message;
 import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.ServerMember;
-import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.MessageRepository;
-import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.ServerException;
@@ -30,8 +25,6 @@ public class ChannelService {
     private final ChannelRepository channelRepository;
     private final ServerRepository serverRepository;
     private final MessageRepository messageRepository;
-    private final UserService userService;
-    private final ServerMemberRepository serverMemberRepository;
 
     public ChannelDTO createChannel(Long serverId, ChannelDTO dto) throws ChannelException, ServerException {
 

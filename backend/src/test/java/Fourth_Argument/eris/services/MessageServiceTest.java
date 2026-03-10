@@ -1,7 +1,6 @@
 package Fourth_Argument.eris.services;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
@@ -24,6 +23,7 @@ import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.UserRepository;
+import Fourth_Argument.eris.api.services.MessageService;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.MessageException;
 import Fourth_Argument.eris.exceptions.UserException;
@@ -116,7 +116,7 @@ class MessageServiceTest {
         when(messageRepository.findByChannel(channel)).thenReturn(List.of(message));
         when(messageMapper.toDTO(message)).thenReturn(messageDTO);
 
-        List<MessageDTO> result = messageService.getMessageHistory(channel);
+        List<MessageDTO> result = messageService.getMessageHistory(channel.getId());
 
         assertEquals(1, result.size());
     }
@@ -126,14 +126,14 @@ class MessageServiceTest {
         when(messageRepository.findByChannel(channel)).thenReturn(null);
 
         assertThrows(MessageException.class,
-                () -> messageService.getMessageHistory(channel));
+                () -> messageService.getMessageHistory(channel.getId()));
     }
 
     @Test
     void getMessageHistory_empty() throws Exception {
         when(messageRepository.findByChannel(channel)).thenReturn(Collections.emptyList());
 
-        List<MessageDTO> result = messageService.getMessageHistory(channel);
+        List<MessageDTO> result = messageService.getMessageHistory(channel.getId());
 
         assertTrue(result.isEmpty());
     }
