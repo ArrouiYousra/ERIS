@@ -7,11 +7,7 @@ import {
 } from "../hooks/useServers";
 import { useAuth } from "../hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  ServerBar,
-  RightPanel,
-  UserBar,
-} from "../components/friends";
+import { ServerBar, RightPanel, UserBar } from "../components/friends";
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
 import { ServerGate } from "../components/ServerGate";
@@ -19,7 +15,6 @@ import {
   ServerWizard,
   type ServerWizardData,
 } from "../components/ServerWizard";
-import type { MainContentTab } from "../types/friends";
 import "../styles/chat.css";
 import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
@@ -32,11 +27,10 @@ export function ChatLayout() {
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(
     null,
   );
-  
+
   const { data: members = [] } = useServerMembers(selectedServerId);
   const { onlineUserIds } = usePresence(selectedServerId);
-  const [selectedDMId, setSelectedDMId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<MainContentTab>("ADD");
+  const [, setSelectedDMId] = useState<string | null>(null);
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [serverModalOpen, setServerModalOpen] = useState(false);
   const [showMemberList, setShowMemberList] = useState(true);
@@ -56,7 +50,11 @@ export function ChatLayout() {
 
   // Check if current user is the owner of the selected server
   const currentServer = servers.find((s: any) => s.id === selectedServerId);
-  const isServerOwner = !!(currentServer && user && currentServer.ownerId === user.id);
+  const isServerOwner = !!(
+    currentServer &&
+    user &&
+    currentServer.ownerId === user.id
+  );
 
   const handleDeleteServer = async () => {
     if (!selectedServerId) return;
@@ -174,66 +172,99 @@ export function ChatLayout() {
             <div className="flex-1 flex flex-col min-w-0 h-full">
               <MessageList
                 channelId={selectedChannelId}
-                channelName={channels.find((c: any) => c.id === selectedChannelId)?.name}
-                channelTopic={(channels.find((c: any) => c.id === selectedChannelId) as any)?.topic}
-                isPrivate={(channels.find((c: any) => c.id === selectedChannelId) as any)?.isPrivate}
-                serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
+                channelName={
+                  channels.find((c: any) => c.id === selectedChannelId)?.name
+                }
+                channelTopic={
+                  (channels.find((c: any) => c.id === selectedChannelId) as any)
+                    ?.topic
+                }
+                isPrivate={
+                  (channels.find((c: any) => c.id === selectedChannelId) as any)
+                    ?.isPrivate
+                }
+                serverName={
+                  selectedServerId ? serverNames[selectedServerId] : "Serveur"
+                }
                 showMemberList={showMemberList}
                 onToggleMemberList={() => setShowMemberList(!showMemberList)}
               />
             </div>
-            {showMemberList && (() => {
-              const onlineMembers = members.filter((m: any) => onlineUserIds.has(m.userId));
-              const offlineMembers = members.filter((m: any) => !onlineUserIds.has(m.userId));
-              return (
-                <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
-                  <div className="p-4 space-y-3">
-                    {/* En ligne */}
-                    {onlineMembers.length > 0 && (
-                      <div>
-                        <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                          En ligne — {onlineMembers.length}
-                        </h3>
-                        <div className="space-y-0.5">
-                          {onlineMembers.map((member: any) => (
-                            <div key={member.userId} className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer">
-                              <div className="relative">
-                                <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
-                                  {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
+            {showMemberList &&
+              (() => {
+                const onlineMembers = members.filter((m: any) =>
+                  onlineUserIds.has(m.userId),
+                );
+                const offlineMembers = members.filter(
+                  (m: any) => !onlineUserIds.has(m.userId),
+                );
+                return (
+                  <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
+                    <div className="p-4 space-y-3">
+                      {/* En ligne */}
+                      {onlineMembers.length > 0 && (
+                        <div>
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                            En ligne — {onlineMembers.length}
+                          </h3>
+                          <div className="space-y-0.5">
+                            {onlineMembers.map((member: any) => (
+                              <div
+                                key={member.userId}
+                                className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer"
+                              >
+                                <div className="relative">
+                                  <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
+                                    {(member.nickname || member.username || "U")
+                                      .charAt(0)
+                                      .toUpperCase()}
+                                  </div>
+                                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#23a559] rounded-full border-2 border-[#2b2d31]" />
                                 </div>
-                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#23a559] rounded-full border-2 border-[#2b2d31]" />
+                                <span className="text-gray-300 text-sm">
+                                  {member.nickname ||
+                                    member.username ||
+                                    `User ${member.userId}`}
+                                </span>
                               </div>
-                              <span className="text-gray-300 text-sm">{member.nickname || member.username || `User ${member.userId}`}</span>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    {/* Hors ligne */}
-                    {offlineMembers.length > 0 && (
-                      <div>
-                        <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                          Hors ligne — {offlineMembers.length}
-                        </h3>
-                        <div className="space-y-0.5">
-                          {offlineMembers.map((member: any) => (
-                            <div key={member.userId} className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40">
-                              <div className="relative">
-                                <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
-                                  {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
+                      )}
+                      {/* Hors ligne */}
+                      {offlineMembers.length > 0 && (
+                        <div>
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                            Hors ligne — {offlineMembers.length}
+                          </h3>
+                          <div className="space-y-0.5">
+                            {offlineMembers.map((member: any) => (
+                              <div
+                                key={member.userId}
+                                className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40"
+                              >
+                                <div className="relative">
+                                  <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
+                                    {(member.nickname || member.username || "U")
+                                      .charAt(0)
+                                      .toUpperCase()}
+                                  </div>
+                                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#80848e] rounded-full border-2 border-[#2b2d31]" />
                                 </div>
-                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#80848e] rounded-full border-2 border-[#2b2d31]" />
+                                <span className="text-gray-300 text-sm">
+                                  {member.nickname ||
+                                    member.username ||
+                                    `User ${member.userId}`}
+                                </span>
                               </div>
-                              <span className="text-gray-300 text-sm">{member.nickname || member.username || `User ${member.userId}`}</span>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })()}
+                );
+              })()}
           </div>
         </div>
       )}

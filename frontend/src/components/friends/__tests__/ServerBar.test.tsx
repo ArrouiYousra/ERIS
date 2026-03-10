@@ -40,7 +40,7 @@ describe("ServerBar", () => {
   });
 
   it("shows active indicator on DM when no server selected", () => {
-    const { container } = render(<ServerBar {...defaultProps} />);
+    // const { container } = render(<ServerBar {...defaultProps} />);
     const dmButton = screen.getByTitle("Message priv\u00e9s");
     expect(dmButton.getAttribute("aria-pressed")).toBe("true");
   });

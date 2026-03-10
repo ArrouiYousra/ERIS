@@ -5,8 +5,6 @@ import {
   createServer,
   updateServer,
   deleteServer as deleteServerApi,
-  leaveServer as leaveServerApi,
-  type Server,
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
@@ -56,8 +54,6 @@ export function useUpdateServer() {
       queryClient.invalidateQueries({ queryKey: ["servers", variables.id] });
     },
   });
-
-  
 }
 
 export function useDeleteServer() {
