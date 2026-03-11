@@ -1,6 +1,7 @@
 import { PanelRightOpen } from "lucide-react";
 import { useServerMembers } from "../../hooks/useServers";
 import { usePresence } from "../../hooks/usePresence";
+import type { ServerMember } from "../../api/serverMembersApi";
 
 interface LeftPanelProps {
   serverId: number | null;
@@ -35,9 +36,11 @@ export function LeftPanel({
   }
 
   // Séparer online / offline
-  const online = serverMembers.filter((m: any) => onlineUserIds.has(m.userId));
+  const online = serverMembers.filter((m: ServerMember) =>
+    onlineUserIds.has(m.userId),
+  );
   const offline = serverMembers.filter(
-    (m: any) => !onlineUserIds.has(m.userId),
+    (m: ServerMember) => !onlineUserIds.has(m.userId),
   );
 
   return (
@@ -59,7 +62,7 @@ export function LeftPanel({
                 <p className="text-xs font-semibold text-[#b5bac1] uppercase">
                   En ligne — {online.length}
                 </p>
-                {online.map((member: any) => (
+                {online.map((member: ServerMember) => (
                   <MemberRow
                     key={member.userId}
                     member={member}
@@ -73,7 +76,7 @@ export function LeftPanel({
                 <p className="text-xs font-semibold text-[#b5bac1] uppercase mt-4">
                   Hors ligne — {offline.length}
                 </p>
-                {offline.map((member: any) => (
+                {offline.map((member: ServerMember) => (
                   <MemberRow
                     key={member.userId}
                     member={member}
@@ -92,7 +95,13 @@ export function LeftPanel({
   );
 }
 
-function MemberRow({ member, isOnline }: { member: any; isOnline: boolean }) {
+function MemberRow({
+  member,
+  isOnline,
+}: {
+  member: ServerMember;
+  isOnline: boolean;
+}) {
   return (
     <div
       className={`flex items-center gap-2 p-2 rounded-lg hover:bg-[#202432] cursor-pointer ${!isOnline ? "opacity-40" : ""}`}
