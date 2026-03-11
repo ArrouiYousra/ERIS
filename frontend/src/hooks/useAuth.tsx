@@ -7,13 +7,7 @@ import {
 } from "react";
 import { login as loginApi, signup as signupApi } from "../api/authApi";
 import { api } from "../api/client";
-
-export interface AuthUser {
-  id: number;
-  email?: string;
-  username?: string;
-  displayName?: string;
-}
+import type { AuthUser } from "../types/shared";
 
 type AuthContextValue = {
   user: AuthUser | null;

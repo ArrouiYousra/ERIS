@@ -1,15 +1,7 @@
 import { api } from "./client";
+import type { ServerMember } from "../types/shared";
 
-export interface ServerMember {
-  id: number;
-  username: string;
-  serverId: number;
-  roleName: string;
-  nickname: string;
-  userId: number;
-  typingStatus: boolean;
-  joinedAt: string;
-}
+export type { ServerMember };
 
 export async function getServerMembers(serverId: number) {
   const { data } = await api.get<ServerMember[]>(`/api/servers/${serverId}/members`);
