@@ -1,7 +1,9 @@
 package Fourth_Argument.eris.api.services;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ChannelDTO;
@@ -25,6 +27,9 @@ public class ChannelService {
     private final ChannelRepository channelRepository;
     private final ServerRepository serverRepository;
     private final MessageRepository messageRepository;
+    private final UserService userService;
+    private final ServerMemberRepository serverMemberRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public ChannelDTO createChannel(Long serverId, ChannelDTO dto) throws ChannelException, ServerException {
 
@@ -37,6 +42,9 @@ public class ChannelService {
         if (channel.getName().isEmpty()) {
             throw new ChannelException("Le channel doit avoir un nom !");
         }
+
+        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "CREATED", "channelId", savedChannel.getId()));
+
 
         return channelMapper.toDTO(savedChannel);
 
@@ -96,6 +104,8 @@ public class ChannelService {
         messageRepository.deleteAll(messages);
 
         channelRepository.delete(channel);
+
+        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "DELETED", "channelId", id));
 
     }
 }
