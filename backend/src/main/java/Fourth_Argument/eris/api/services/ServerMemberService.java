@@ -17,6 +17,7 @@ import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.api.repository.UserRepository;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
+import Fourth_Argument.eris.exceptions.UserException;
 
 @Service
 public class ServerMemberService {
@@ -24,18 +25,19 @@ public class ServerMemberService {
     private final ServerMemberRepository serverMemberRepository;
     private final ServerMemberMapper serverMemberMapper;
     private final ServerRepository serverRepository;
+    private final UserService userService;
 
     public ServerMemberService(
             ServerMemberRepository serverMemberRepository,
             ServerRepository serverRepository,
-            ServerMemberMapper mapper,
+            ServerMemberMapper mapper, UserService userService,
             ChannelRepository channelRepository,
             MessageRepository messageRepository,
             UserRepository userRepository) {
         this.serverMemberRepository = serverMemberRepository;
         this.serverRepository = serverRepository;
         this.serverMemberMapper = mapper;
-
+        this.userService = userService;
     }
 
     public void createServerMember(Server server, User user, Role role) throws ServerMemberException {
@@ -49,7 +51,13 @@ public class ServerMemberService {
         serverMemberRepository.save(serverMember);
     }
 
-    public void deleteServerMember(Server server, User user) throws ServerMemberException {
+    public void deleteServerMember(String email, Long serverId)
+            throws ServerException, ServerMemberException, UserException {
+
+        User user = userService.getUserEntityByEmail(email);
+        Server server = serverRepository.findById(serverId)
+                .orElseThrow(() -> new ServerException("Server not found"));
+
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
 
         if (serverMember == null) {

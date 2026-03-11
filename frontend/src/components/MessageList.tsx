@@ -3,6 +3,7 @@ import { Hash, Lock, Users, Search, Plus } from "lucide-react";
 import { useMessages } from "../hooks/useMessages";
 import { useChannelSocket } from "../hooks/useChannelSocket";
 import { useTyping } from "../hooks/useTyping";
+import type { Message } from "../hooks/useMessages";
 
 interface MessageListProps {
   channelId?: number | null;
@@ -104,7 +105,7 @@ export function MessageList({
       <div className="flex-1 overflow-y-auto">
         {messages.length > 0 ? (
           <div className="p-4 space-y-4">
-            {messages.map((message: any) => (
+            {messages.map((message: Message) => (
               <div key={message.id || Math.random()} className="flex gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-medium shrink-0">
                   {(message.senderUsername || "U").charAt(0).toUpperCase()}
