@@ -4,11 +4,14 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.InvitationDTO;
+import Fourth_Argument.eris.api.dto.MessageDTO;
 import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
 import Fourth_Argument.eris.api.mapper.InvitationMapper;
+import Fourth_Argument.eris.api.mapper.MessageMapper;
 import Fourth_Argument.eris.api.model.Channel;
 import Fourth_Argument.eris.api.model.Invitation;
 import Fourth_Argument.eris.api.model.Message;
@@ -41,12 +44,14 @@ public class InvitationService {
     private final RoleRepository roleRepository;
     private final ChannelRepository channelRepository;
     private final MessageRepository messageRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final MessageMapper messageMapper;
 
     public InvitationService(InvitationRepository invitationRepository, InvitationMapper invitationMapper,
             UserRepository userRepository, ServerMemberRepository serverMemberRepository,
             ServerMemberService serverMemberService, UserService userService,
             ServerRepository serverRepository, RoleRepository roleRepository, ChannelRepository channelRepository,
-            MessageRepository messageRepository) {
+            MessageRepository messageRepository, SimpMessagingTemplate messagingTemplate, MessageMapper messageMapper) {
         this.invitationRepository = invitationRepository;
         this.invitationMapper = invitationMapper;
         this.userRepository = userRepository;
@@ -57,6 +62,8 @@ public class InvitationService {
         this.roleRepository = roleRepository;
         this.channelRepository = channelRepository;
         this.messageRepository = messageRepository;
+        this.messagingTemplate = messagingTemplate;
+        this.messageMapper = messageMapper;
 
     }
 
@@ -143,6 +150,11 @@ public class InvitationService {
         response.setServerId(invite.getServer().getId());
         response.setServerName(invite.getServer().getName());
         response.setMessage(invitationMessage);
+
+        MessageDTO invitationMessageDTO = messageMapper.toDTO(invitationMessage);
+
+        String destination = "/topic/channels/" + channel.getId();
+        messagingTemplate.convertAndSend(destination, invitationMessageDTO);
 
         return response;
     }
