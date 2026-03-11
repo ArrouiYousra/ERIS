@@ -4,6 +4,7 @@ import {
   useServers,
   useCreateServer,
   useDeleteServer,
+  useLeaveServer,
 } from "../hooks/useServers";
 import { useAuth } from "../hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -44,6 +45,7 @@ export function ChatLayout() {
   const { data: channels = [] } = useChannels(selectedServerId);
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
+  const leaveServer = useLeaveServer();
   useServerSocket();
 
   const serverIds = servers.map((s: Server) => s.id);
@@ -107,6 +109,13 @@ export function ChatLayout() {
     await joinWithInvitation(inviteLink);
     queryClient.invalidateQueries({ queryKey: ["servers"] });
     setServerModalOpen(false);
+  };
+
+  const handleLeaveServer = async () => {
+    if (!selectedServerId) return;
+    await leaveServer.mutateAsync(selectedServerId);
+    setSelectedServerId(null);
+    setSelectedChannelId(null);
   };
 
   return (
@@ -174,6 +183,7 @@ export function ChatLayout() {
               }
               isOwner={isServerOwner}
               onDeleteServer={handleDeleteServer}
+              onLeaveServer={handleLeaveServer}
             />
           </div>
           <div className="chat-main flex-1 flex flex-row min-w-0 h-full bg-[#313338]">
