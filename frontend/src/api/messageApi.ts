@@ -1,13 +1,13 @@
 import { api } from "./client";
+import type { ChatMessage } from "../types/shared";
 
-export interface Message {
-  id: number;
-  content: string;
-  channelId: number;
-  createdAt: string;
-}
+export type Message = ChatMessage;
 
-export async function getMessageByChannel(channelId: number) {
-  const { data } = await api.get(`/api/channels/${channelId}/messages`);
+export async function getMessageByChannel(
+  channelId: number,
+): Promise<ChatMessage[]> {
+  const { data } = await api.get<ChatMessage[]>(
+    `/api/channels/${channelId}/messages`,
+  );
   return data;
 }
