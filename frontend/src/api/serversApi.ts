@@ -1,10 +1,7 @@
 import { api } from "./client";
+import type { Server } from "../types/shared";
 
-export interface Server {
-  id: number;
-  name: string;
-  ownerId: number;
-}
+export type { Server };
 
 export interface CreateServerPayload {
   name: string;
@@ -16,17 +13,17 @@ export interface UpdateServerPayload {
 }
 
 export async function createServer(payload: CreateServerPayload) {
-  const { data } = await api.post("/api/servers", payload);
+  const { data } = await api.post<Server>("/api/servers", payload);
   return data;
 }
 
-export async function getAllServers() {
-  const { data } = await api.get("/api/servers");
+export async function getAllServers(): Promise<Server[]> {
+  const { data } = await api.get<Server[]>("/api/servers");
   return data;
 }
 
-export async function getServerById(id: number) {
-  const { data } = await api.get(`/api/servers/${id}`);
+export async function getServerById(id: number): Promise<Server> {
+  const { data } = await api.get<Server>(`/api/servers/${id}`);
   return data;
 }
 
