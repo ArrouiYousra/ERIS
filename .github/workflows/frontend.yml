@@ -51,7 +51,7 @@ jobs:
 
       - name: Run tests
         working-directory: frontend
-        run: npm test -- --watchAll=false --passWithNoTests
+        run: npm test
 
       - name: Upload test reports
         if: failure()
@@ -63,7 +63,7 @@ jobs:
   # ─── Job 3: Build ───
   build:
     name: Build
-    needs: [lint, test]
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

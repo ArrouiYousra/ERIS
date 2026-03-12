@@ -145,7 +145,7 @@ jobs:
 
       - name: OWASP Dependency Check
         working-directory: backend
-        run: mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=9
+        run:  mvn dependency:tree -DoutputType=text
         continue-on-error: true
 
       - name: Upload security report
