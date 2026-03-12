@@ -137,7 +137,7 @@ describe('useAuth', () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     await act(async () => {
-      await result.current.signup('new@b.c', 'user', 'Pass1234', 'User', '2000-01-01');
+      await result.current.signup('new@b.c', 'user', 'Pass1234', 'User');
     });
 
     expect(signupApi).toHaveBeenCalled();

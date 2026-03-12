@@ -1,3 +1,16 @@
 .auth-page--signup .auth-card {
   max-width: 520px;
 }
+
+@media (max-width: 400px) {
+  .auth-page.auth-page--signup {
+    display: grid;
+    place-items: center;
+    padding: 20px 12px;
+  }
+
+  .auth-page.auth-page--signup .auth-card.auth-card--signup {
+    margin: 0;
+    transform: translateY(48px);
+  }
+}

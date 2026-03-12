@@ -1,5 +1,5 @@
 import { PanelRightOpen } from "lucide-react";
-import { useServerMember } from "../../hooks/useServers";
+import { useServerMembers } from "../../hooks/useServers";
 import { usePresence } from "../../hooks/usePresence";
 
 interface LeftPanelProps {
@@ -13,7 +13,7 @@ export function LeftPanel({
   collapsed = false,
   onToggle,
 }: LeftPanelProps) {
-  const { data: serverMembers = [], isLoading } = useServerMember(serverId);
+  const { data: serverMembers = [], isLoading } = useServerMembers(serverId);
   const { onlineUserIds } = usePresence(serverId);
 
   if (collapsed) {

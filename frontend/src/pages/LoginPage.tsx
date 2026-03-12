@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { type SubmitEventHandler, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/auth.css";
@@ -12,7 +12,7 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onSubmit = async (e: FormEvent) => {
+  const onSubmit: SubmitEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);

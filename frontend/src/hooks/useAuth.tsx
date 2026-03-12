@@ -18,7 +18,6 @@ type AuthContextValue = {
     username: string,
     password: string,
     displayName: string,
-    birthDate: string,
   ) => Promise<void>;
   logout: () => void;
 };
@@ -64,14 +63,12 @@ function useProvideAuth(): AuthContextValue {
     username: string,
     password: string,
     displayName: string,
-    birthDate: string,
   ) => {
     await signupApi({
       email,
       username,
       password,
       displayName,
-      birthDate,
     });
     // On se connecte automatiquement après l'inscription
     await login(email, password);

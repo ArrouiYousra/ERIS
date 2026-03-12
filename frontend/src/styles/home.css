@@ -157,7 +157,6 @@
 @media (max-width: 768px) {
   .home-hero {
     padding-top: 88px;
-    align-items: flex-start;
   }
 
   .home-hero-title {
@@ -166,33 +165,11 @@
 
   .home-hero-subtitle {
     line-height: 1.5;
-    margin-bottom: clamp(12px, 2.5vw, 24px);
   }
 
   .home-hero-blob {
     filter: blur(70px);
     opacity: 0.2;
-  }
-}
-
-@media (max-height: 760px) {
-  .home-hero {
-    padding-top: 72px;
-    padding-bottom: 24px;
-  }
-
-  .home-hero-icon {
-    width: clamp(88px, 18vw, 160px);
-    height: clamp(88px, 18vw, 160px);
-  }
-
-  .home-hero-title {
-    font-size: clamp(28px, 6vw, 52px);
-  }
-
-  .home-hero-subtitle {
-    font-size: clamp(14px, 2vw, 18px);
-    line-height: 1.45;
   }
 }
 

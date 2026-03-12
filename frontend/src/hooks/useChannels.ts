@@ -43,7 +43,7 @@ export function useUpdateChannel() {
   return useMutation({
     mutationFn: ({
       channelId,
-      serverId,
+      serverId: _serverId,
       payload,
     }: {
       channelId: number;
@@ -66,7 +66,7 @@ export function useDeleteChannel() {
   return useMutation({
     mutationFn: ({
       channelId,
-      serverId,
+      serverId: _serverId,
     }: {
       channelId: number;
       serverId: number;

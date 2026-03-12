@@ -120,10 +120,6 @@
   gap: var(--space-2);
 }
 
-.auth-form-group--checkbox {
-  margin-top: var(--space-2);
-}
-
 .auth-form-label {
   color: var(--color-text-secondary);
   font-size: 0.75rem;
@@ -213,38 +209,6 @@
   color: var(--color-brand-start);
 }
 
-.auth-checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: pointer;
-  user-select: none;
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
-}
-
-.auth-checkbox {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--color-brand-end);
-}
-
-.auth-checkbox:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.auth-birthdate-fields {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.auth-input--select,
-.auth-input--day,
-.auth-input--year {
-  flex: 1;
-}
-
 @media (max-width: 1024px) {
   .auth-page {
     padding-top: 40px;
@@ -265,6 +229,7 @@
 @media (max-width: 375px) {
   .auth-page {
     padding: 20px 12px;
+    align-items: center;
   }
 
   .auth-card {
