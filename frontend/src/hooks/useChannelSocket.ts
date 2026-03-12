@@ -15,10 +15,7 @@ export function useChannelSocket(channelId: number | null) {
     const sub = subscribe(`/topic/channels/${channelId}`, (msg) => {
       const newMessage = JSON.parse(msg.body);
       queryClient.setQueryData(['messages', channelId], (old: any[] = []) => {
-        const existingMessage = (old.some((m) => m.id === newMessage.id));
-        if (existingMessage) {
-          return old.map((m) => m.id === newMessage.id ? newMessage : m);
-        }
+        if (old.some((m) => m.id === newMessage.id)) return old;
         return [...old, newMessage];
       });
     });
