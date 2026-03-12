@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Fourth_Argument.eris.api.dto.MessageDTO;
+import Fourth_Argument.eris.api.model.Message;
 import Fourth_Argument.eris.api.services.MessageService;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.MessageException;
@@ -34,6 +38,19 @@ public class MessageController {
         MessageDTO message = messageService.sendMessage(req, id);
 
         return ResponseEntity.ok(message);
+
+    }
+
+    @PatchMapping("/messages/{id}")
+    @PreAuthorize("isAuthenticated() and @messageSecurityService.canEditMessage(#id, authentication.name)")
+    public ResponseEntity<Message> updateMessage(
+            @AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, @RequestBody MessageDTO messageDTO)
+            throws MessageException, ChannelException {
+
+        String email = userDetails.getUsername();
+        Message updatedMessage = messageService.editMessage(email, messageDTO, id);
+
+        return ResponseEntity.ok(updatedMessage);
 
     }
 

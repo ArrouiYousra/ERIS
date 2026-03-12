@@ -41,16 +41,32 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      target: build
       args:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:8081}
         VITE_WS_URL: ${VITE_WS_URL:-http://localhost:8081/ws}
         VITE_WS_BASE_URL: ${VITE_WS_BASE_URL:-ws://localhost:8081}
     container_name: eris-frontend
     restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+          initial_sync: true
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
     depends_on:
       - backend
     ports:
-      - "5173:80"
+      - "5173:5173"
+    command: npm run dev -- --host
+
 
 volumes:
   postgres_data:
