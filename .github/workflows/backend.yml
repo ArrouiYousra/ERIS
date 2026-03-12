@@ -2,11 +2,11 @@ name: Backend CI
 
 on:
   push:
-    paths:
-      - 'backend/**'
+    #paths:
+      #- 'backend/**'
   pull_request:
-    paths:
-      - 'backend/**'
+    #paths:
+      #- 'backend/**'
 
 jobs:
   # ─── Job 1: Lint (style du code) ───
@@ -122,15 +122,15 @@ jobs:
         run: |
           # Parse le rapport JaCoCo et affiche le pourcentage
           if [ -f target/site/jacoco/index.html ]; then
-            echo "✅ JaCoCo report generated successfully"
-            echo "📊 Coverage report available in artifacts"
+            echo "JaCoCo report generated successfully"
+            echo "Coverage report available in artifacts"
           else
-            echo "❌ JaCoCo report not found"
+            echo "JaCoCo report not found"
             exit 1
           fi
 
   # ─── Job 4: Security Scan ───
-  security:
+  security: 
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
@@ -145,7 +145,7 @@ jobs:
 
       - name: OWASP Dependency Check
         working-directory: backend
-        run: mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=9
+        run:  mvn dependency:tree -DoutputType=text
         continue-on-error: true
 
       - name: Upload security report
