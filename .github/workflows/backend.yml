@@ -2,11 +2,11 @@ name: Backend CI
 
 on:
   push:
-    #paths:
-      #- 'backend/**'
+    paths:
+      - 'backend/**'
   pull_request:
-    #paths:
-      #- 'backend/**'
+    paths:
+      - 'backend/**'
 
 jobs:
   # ─── Job 1: Lint (style du code) ───
