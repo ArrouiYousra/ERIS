@@ -25,7 +25,7 @@ jobs:
 
       - name: Run Checkstyle
         working-directory: backend
-        run: mvn checkstyle:check -Dcheckstyle.consoleOutput=true
+        run: mvn checkstyle:check
 
   # ─── Job 2: Build + Test ───
   test:

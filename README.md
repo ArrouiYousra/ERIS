@@ -1,5 +1,5 @@
-![Backend CI](https://github.com/wejmaime/eris/actions/workflows/backend.yml/badge.svg)
-![Frontend CI](https://github.com/wejmaime/eris/actions/workflows/frontend.yml/badge.svg)
+[![Backend CI](https://github.com/EpitechMscProPromo2028/T-DEV-600-TLS_2/actions/workflows/backend.yml/badge.svg)](https://github.com/EpitechMscProPromo2028/T-DEV-600-TLS_2/actions/workflows/backend.yml)
+[![Frontend CI](https://github.com/EpitechMscProPromo2028/T-DEV-600-TLS_2/actions/workflows/frontend.yml/badge.svg)](https://github.com/EpitechMscProPromo2028/T-DEV-600-TLS_2/actions/workflows/frontend.yml)
 
 
 # Eris
