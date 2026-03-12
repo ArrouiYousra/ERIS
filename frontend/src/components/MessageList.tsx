@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Hash, Lock, Users, Search, Plus } from "lucide-react";
+import { Hash, Lock, Users, Search, Plus, PanelLeft } from "lucide-react";
 import { useMessages } from "../hooks/useMessages";
 import { useChannelSocket } from "../hooks/useChannelSocket";
 import { useTyping } from "../hooks/useTyping";
@@ -12,6 +12,7 @@ interface MessageListProps {
   serverName?: string;
   conversationId?: string | null;
   showMemberList?: boolean;
+  onToggleSidebar?: () => void;
   onToggleMemberList?: () => void;
 }
 
@@ -23,6 +24,7 @@ export function MessageList({
   serverName = "Serveur",
   conversationId = null,
   showMemberList = true,
+  onToggleSidebar,
   onToggleMemberList,
 }: MessageListProps) {
   const [messageInput, setMessageInput] = useState("");
@@ -53,7 +55,17 @@ export function MessageList({
   return (
     <div className="flex flex-col h-full bg-[#313338]">
       {/* Channel header */}
-      <div className="h-12 px-4 flex items-center gap-2 border-b border-black/20 shadow-sm shrink-0">
+      <div className="h-12 px-2 sm:px-4 flex items-center gap-2 border-b border-black/20 shadow-sm shrink-0 min-w-0">
+        {onToggleSidebar && (
+          <button
+            onClick={onToggleSidebar}
+            className="lg:hidden text-gray-400 hover:text-gray-200 transition-colors"
+            title="Afficher la liste des salons"
+            aria-label="Afficher la liste des salons"
+          >
+            <PanelLeft className="w-5 h-5" />
+          </button>
+        )}
         {!isDM && (
           <>
             {isPrivate ? (
@@ -67,7 +79,7 @@ export function MessageList({
             {channelTopic && (
               <>
                 <div className="w-px h-6 bg-gray-600 mx-2 shrink-0" />
-                <p className="text-gray-400 text-sm truncate flex-1" title={channelTopic}>
+                <p className="text-gray-400 text-sm truncate flex-1 hidden md:block" title={channelTopic}>
                   {channelTopic}
                 </p>
               </>
@@ -79,7 +91,7 @@ export function MessageList({
         )}
 
         {/* Right side of header */}
-        <div className="flex items-center gap-4 ml-auto">
+        <div className="flex items-center gap-2 sm:gap-4 ml-auto">
           {!isDM && (
             <button
               onClick={onToggleMemberList}
@@ -89,11 +101,11 @@ export function MessageList({
               <Users className="w-5 h-5" />
             </button>
           )}
-          <div className="relative">
+          <div className="relative hidden sm:block">
             <input
               type="text"
               placeholder={`Rechercher dans ${serverName}`}
-              className="w-40 lg:w-48 px-2 py-1 pl-8 bg-[#1e1f22] rounded text-sm text-gray-300 placeholder-gray-500 outline-none focus:w-56 transition-all"
+              className="w-36 lg:w-48 px-2 py-1 pl-8 bg-[#1e1f22] rounded text-sm text-gray-300 placeholder-gray-500 outline-none focus:w-52 transition-all"
             />
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           </div>

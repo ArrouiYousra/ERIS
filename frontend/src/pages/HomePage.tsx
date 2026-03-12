@@ -14,22 +14,22 @@ export function HomePage() {
     <div className={`home-page ${mounted ? "home-page--visible" : ""}`}>
       <Header />
       {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-background">
-          <div className="hero-blob hero-blob--1"></div>
-          <div className="hero-blob hero-blob--2"></div>
-          <div className="hero-blob hero-blob--3"></div>
+      <section className="home-hero">
+        <div className="home-hero-background">
+          <div className="home-hero-blob home-hero-blob--1"></div>
+          <div className="home-hero-blob home-hero-blob--2"></div>
+          <div className="home-hero-blob home-hero-blob--3"></div>
         </div>
-        <div className="hero-content">
+        <div className="home-hero-content">
           <img
             src={erisIcone}
             alt="Eris"
-            className="hero-icon"
+            className="home-hero-icon"
           />
-          <h1 className="hero-title">
-            Bienvenue sur <span className="hero-title-highlight">Eris</span>
+          <h1 className="home-hero-title">
+            Bienvenue sur <span className="home-hero-title-highlight">Eris</span>
           </h1>
-          <p className="hero-subtitle">
+          <p className="home-hero-subtitle">
             Un espace où tes conversations prennent vie. Rejoins tes amis, crée ta communauté et discute sans limites.
           </p>
         </div>

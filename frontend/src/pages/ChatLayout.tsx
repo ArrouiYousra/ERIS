@@ -19,7 +19,6 @@ import {
   ServerWizard,
   type ServerWizardData,
 } from "../components/ServerWizard";
-import type { MainContentTab } from "../types/friends";
 import "../styles/chat.css";
 import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
@@ -32,14 +31,14 @@ export function ChatLayout() {
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(
     null,
   );
-  
+
   const { data: members = [] } = useServerMembers(selectedServerId);
   const { onlineUserIds } = usePresence(selectedServerId);
-  const [selectedDMId, setSelectedDMId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<MainContentTab>("ADD");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [serverModalOpen, setServerModalOpen] = useState(false);
   const [showMemberList, setShowMemberList] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [mobileMemberListOpen, setMobileMemberListOpen] = useState(false);
 
   const { user } = useAuth();
   const { data: servers = [] } = useServers();
@@ -67,9 +66,9 @@ export function ChatLayout() {
 
   const handleSelectServer = (id: number | null) => {
     setSelectedServerId(id);
-    if (id !== null) {
-      setSelectedDMId(null);
-    } else {
+    setMobileSidebarOpen(false);
+    setMobileMemberListOpen(false);
+    if (id === null) {
       setSelectedChannelId(null);
     }
   };
@@ -103,21 +102,17 @@ export function ChatLayout() {
     setServerModalOpen(false);
   };
 
+  const handleToggleMemberList = () => {
+    if (typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches) {
+      setShowMemberList((prev) => !prev);
+      return;
+    }
+    setMobileSidebarOpen(false);
+    setMobileMemberListOpen((open) => !open);
+  };
+
   return (
-    <div
-      className="chat-layout-root bg-[#0f1115] text-[#f2f3f5]"
-      style={{
-        width: "100%",
-        minWidth: 0,
-        flex: 1,
-        height: "100%",
-        minHeight: 0,
-        display: "flex",
-        flexDirection: "row",
-        overflow: "hidden",
-        boxSizing: "border-box",
-      }}
-    >
+    <div className="chat-layout-root">
       {/* Zone 1: Server bar — 72px */}
       <ServerBar
         selectedServerId={selectedServerId}
@@ -128,18 +123,9 @@ export function ChatLayout() {
       />
 
       {isDMMode ? (
-        <div
-          className="chat-dm-wrapper"
-          style={{
-            flex: 1,
-            minWidth: 0,
-            display: "flex",
-            flexDirection: "row",
-            overflow: "hidden",
-          }}
-        >
+        <div className="chat-dm-wrapper">
           {/* Sidebar DM avec UserBar en bas */}
-          <div className="w-[240px] min-w-[240px] shrink-0 h-full flex flex-col bg-[#2b2d31]">
+          <div className="chat-dm-sidebar shrink-0 h-full hidden md:flex flex-col bg-[#2b2d31]">
             <div className="flex-1 overflow-y-auto" />
             <UserBar />
           </div>
@@ -155,13 +141,37 @@ export function ChatLayout() {
           />
         </div>
       ) : (
-        <div className="flex flex-row flex-1 h-full min-w-0 overflow-hidden">
+        <div className="chat-server-mode">
+          {mobileSidebarOpen && (
+            <button
+              type="button"
+              className="chat-overlay lg:hidden"
+              onClick={() => setMobileSidebarOpen(false)}
+              aria-label="Fermer la liste des salons"
+            />
+          )}
+          {mobileMemberListOpen && (
+            <button
+              type="button"
+              className="chat-overlay lg:hidden"
+              onClick={() => setMobileMemberListOpen(false)}
+              aria-label="Fermer la liste des membres"
+            />
+          )}
+
           {/* Mode serveur : sidebar canaux + zone messages */}
-          <div className="chat-sidebar chat-sidebar--channels w-[240px] min-w-[240px] shrink-0 h-full">
+          <div
+            className={`chat-sidebar chat-sidebar--channels shrink-0 chat-sidebar-drawer ${
+              mobileSidebarOpen ? "chat-drawer-visible" : "chat-drawer-hidden-left"
+            }`}
+          >
             <ChannelList
               serverId={selectedServerId}
               channels={channels}
-              onSelectChannel={setSelectedChannelId}
+              onSelectChannel={(channelId) => {
+                setSelectedChannelId(channelId);
+                setMobileSidebarOpen(false);
+              }}
               selectedChannelId={selectedChannelId}
               serverName={
                 selectedServerId ? serverNames[selectedServerId] : "Serveur"
@@ -170,24 +180,32 @@ export function ChatLayout() {
               onDeleteServer={handleDeleteServer}
             />
           </div>
-          <div className="chat-main flex-1 flex flex-row min-w-0 h-full bg-[#313338]">
-            <div className="flex-1 flex flex-col min-w-0 h-full">
+          <div className="chat-main-shell">
+            <div className="chat-main-messages">
               <MessageList
                 channelId={selectedChannelId}
                 channelName={channels.find((c: any) => c.id === selectedChannelId)?.name}
                 channelTopic={(channels.find((c: any) => c.id === selectedChannelId) as any)?.topic}
                 isPrivate={(channels.find((c: any) => c.id === selectedChannelId) as any)?.isPrivate}
                 serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
-                showMemberList={showMemberList}
-                onToggleMemberList={() => setShowMemberList(!showMemberList)}
+                showMemberList={showMemberList || mobileMemberListOpen}
+                onToggleSidebar={() => {
+                  setMobileMemberListOpen(false);
+                  setMobileSidebarOpen((open) => !open);
+                }}
+                onToggleMemberList={handleToggleMemberList}
               />
             </div>
-            {showMemberList && (() => {
+            {(showMemberList || mobileMemberListOpen) && (() => {
               const onlineMembers = members.filter((m: any) => onlineUserIds.has(m.userId));
               const offlineMembers = members.filter((m: any) => !onlineUserIds.has(m.userId));
               return (
-                <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
-                  <div className="p-4 space-y-3">
+                <div
+                  className={`chat-member-list chat-member-drawer shrink-0 ${
+                    mobileMemberListOpen ? "chat-drawer-visible" : "chat-drawer-hidden-right"
+                  }`}
+                >
+                  <div className="chat-member-list-content p-4 space-y-3">
                     {/* En ligne */}
                     {onlineMembers.length > 0 && (
                       <div>

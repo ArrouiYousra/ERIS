@@ -1,49 +1,105 @@
-/* Conteneur principal : largeur viewport pour occuper tout l'écran */
 .chat-layout-root {
   display: flex;
-  width: 100vw;
-  min-width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
   flex: 1 1 0%;
   overflow: hidden;
-  background: #0f1115;
-  color: #f2f3f5;
+  background: var(--color-bg-canvas);
+  color: var(--color-text-primary);
   box-sizing: border-box;
 }
 
-/* Wrapper zones 2+3+4 (sidebar + centre + panneau droit) — flex-grow pour prendre le reste */
 .chat-dm-wrapper {
   display: flex;
   flex: 1 1 0%;
   min-width: 0;
-  width: 0;
   overflow: hidden;
 }
 
-/* Zone centrale (onglets + contenu) — flex-grow pour remplir entre sidebar et panneau droit */
-.chat-main-content {
+.chat-server-mode {
+  display: flex;
   flex: 1 1 0%;
   min-width: 0;
-  width: 0;
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
   overflow: hidden;
+}
+
+.chat-main-shell {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  background: var(--color-bg-muted);
+}
+
+.chat-main-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.chat-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.chat-sidebar-drawer {
+  position: fixed;
+  top: 0;
+  left: 72px;
+  z-index: 30;
+  height: 100%;
+  transition: transform var(--motion-medium);
+}
+
+.chat-member-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 30;
+  height: 100%;
+  transition: transform var(--motion-medium);
+}
+
+.chat-drawer-hidden-left {
+  transform: translateX(-100%);
+}
+
+.chat-drawer-hidden-right {
+  transform: translateX(100%);
+}
+
+.chat-drawer-visible {
+  transform: translateX(0);
+}
+
+.chat-member-list-content {
+  height: 100%;
+  background: #2b2d31;
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
 }
 
 .chat-layout {
   display: flex;
-  height: 100vh;
-  width: 100vw;
-  background: #000;
-  color: #fff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  height: 100%;
+  width: 100%;
+  background: var(--color-bg-canvas);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
 }
 
 .chat-sidebar {
-  background: #1a1a1a;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-surface);
+  border-right: 1px solid var(--color-border-subtle);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -57,15 +113,25 @@
 }
 
 .chat-sidebar--channels {
-  width: 240px;
-  min-width: 240px;
+  width: clamp(176px, 18vw, 220px);
+  min-width: clamp(176px, 18vw, 220px);
+}
+
+.chat-dm-sidebar {
+  width: clamp(176px, 18vw, 220px);
+  min-width: clamp(176px, 18vw, 220px);
+}
+
+.chat-member-list {
+  width: clamp(180px, 20vw, 220px);
+  min-width: clamp(180px, 20vw, 220px);
 }
 
 .chat-main {
   flex: 1;
   display: flex;
   flex-direction: row;
-  background: #313338;
+  background: var(--color-bg-muted);
   min-height: 0;
   min-width: 0;
   height: 100%;
@@ -89,14 +155,83 @@
 .chat-main-welcome-title {
   font-size: 32px;
   font-weight: 700;
-  color: #f2f3f5;
+  color: var(--color-text-primary);
   margin: 0 0 16px 0;
 }
 
 .chat-main-welcome-text {
   font-size: 16px;
-  color: #b5bac1;
+  color: var(--color-text-secondary);
   max-width: 400px;
   line-height: 1.5;
   margin: 0;
+}
+
+@media (max-width: 1200px) {
+  .chat-member-list {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .chat-sidebar--channels,
+  .chat-dm-sidebar {
+    width: 192px;
+    min-width: 192px;
+  }
+
+  .chat-main-welcome {
+    padding: 28px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chat-sidebar--servers {
+    width: 56px;
+    min-width: 56px;
+    padding: 8px 0;
+  }
+
+  .chat-sidebar-drawer {
+    left: 56px;
+  }
+
+  .chat-sidebar--channels,
+  .chat-dm-sidebar {
+    width: min(76vw, 240px);
+    min-width: min(76vw, 240px);
+  }
+
+  .chat-main-welcome {
+    padding: 20px 16px;
+  }
+
+  .chat-main-welcome-title {
+    font-size: clamp(24px, 6vw, 32px);
+  }
+
+  .chat-main-welcome-text {
+    font-size: 14px;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 560px) {
+  .chat-sidebar--channels,
+  .chat-dm-sidebar {
+    width: min(72vw, 208px);
+    min-width: min(72vw, 208px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .chat-overlay {
+    display: none;
+  }
+
+  .chat-sidebar-drawer,
+  .chat-member-drawer {
+    position: static;
+    transform: translateX(0);
+  }
 }

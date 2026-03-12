@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import "../styles/auth.css";
 import "../styles/signup.css";
 
 export function SignupPage() {
@@ -51,29 +52,29 @@ export function SignupPage() {
   };
 
   return (
-    <div className="signup-page">
-      <div className="signup-background">
-        <div className="signup-blob signup-blob--1"></div>
-        <div className="signup-blob signup-blob--2"></div>
-        <div className="signup-blob signup-blob--3"></div>
+    <div className="auth-page auth-page--signup">
+      <div className="auth-background">
+        <div className="auth-blob auth-blob--1"></div>
+        <div className="auth-blob auth-blob--2"></div>
+        <div className="auth-blob auth-blob--3"></div>
       </div>
-      <div className="signup-container">
-        <div className="signup-header">
-          <h1 className="signup-title">Create an account</h1>
-          <p className="signup-subtitle">Join us and start chatting!</p>
+      <div className="auth-card auth-card--signup">
+        <div className="auth-header">
+          <h1 className="auth-title">Create an account</h1>
+          <p className="auth-subtitle">Join us and start chatting!</p>
         </div>
 
-        {error && <div className="signup-error">{error}</div>}
+        {error && <div className="auth-error">{error}</div>}
 
-        <form className="signup-form" onSubmit={onSubmit}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="email">
-              Email <span className="form-label-required">*</span>
+        <form className="auth-form" onSubmit={onSubmit}>
+          <div className="auth-form-group">
+            <label className="auth-form-label" htmlFor="email">
+              Email <span className="auth-form-label-required">*</span>
             </label>
             <input
               id="email"
               type="email"
-              className="form-input"
+              className="auth-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -81,28 +82,28 @@ export function SignupPage() {
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="displayName">
+          <div className="auth-form-group">
+            <label className="auth-form-label" htmlFor="displayName">
               Display Name
             </label>
             <input
               id="displayName"
               type="text"
-              className="form-input"
+              className="auth-input"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               disabled={loading}
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="username">
-              Username <span className="form-label-required">*</span>
+          <div className="auth-form-group">
+            <label className="auth-form-label" htmlFor="username">
+              Username <span className="auth-form-label-required">*</span>
             </label>
             <input
               id="username"
               type="text"
-              className="form-input"
+              className="auth-input"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -110,14 +111,14 @@ export function SignupPage() {
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="password">
-              Password <span className="form-label-required">*</span>
+          <div className="auth-form-group">
+            <label className="auth-form-label" htmlFor="password">
+              Password <span className="auth-form-label-required">*</span>
             </label>
             <input
               id="password"
               type="password"
-              className="form-input"
+              className="auth-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -125,13 +126,13 @@ export function SignupPage() {
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              Date of Birth <span className="form-label-required">*</span>
+          <div className="auth-form-group">
+            <label className="auth-form-label">
+              Date of Birth <span className="auth-form-label-required">*</span>
             </label>
-            <div className="birthdate-fields">
+            <div className="auth-birthdate-fields">
               <select
-                className="form-input form-input--select"
+                className="auth-input auth-input--select"
                 value={birthMonth}
                 onChange={(e) => setBirthMonth(e.target.value)}
                 required
@@ -152,7 +153,7 @@ export function SignupPage() {
                 <option value="12">December</option>
               </select>
               <select
-                className="form-input form-input--day"
+                className="auth-input auth-input--day"
                 value={birthDay}
                 onChange={(e) => setBirthDay(e.target.value)}
                 required
@@ -166,7 +167,7 @@ export function SignupPage() {
                 ))}
               </select>
               <select
-                className="form-input form-input--year"
+                className="auth-input auth-input--year"
                 value={birthYear}
                 onChange={(e) => setBirthYear(e.target.value)}
                 required
@@ -185,11 +186,11 @@ export function SignupPage() {
             </div>
           </div>
 
-          <div className="form-group form-group--checkbox">
-            <label className="form-checkbox-label">
+          <div className="auth-form-group auth-form-group--checkbox">
+            <label className="auth-checkbox-label">
               <input
                 type="checkbox"
-                className="form-checkbox"
+                className="auth-checkbox"
                 checked={acceptedTerms}
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
                 disabled={loading}
@@ -201,16 +202,16 @@ export function SignupPage() {
 
           <button
             type="submit"
-            className="signup-button"
+            className="auth-submit-button"
             disabled={loading || !acceptedTerms}
           >
             {loading ? "Creating account..." : "Sign Up"}
           </button>
         </form>
 
-        <div className="signup-footer">
+        <div className="auth-footer">
           <span>Already have an account? </span>
-          <Link to="/login" className="signup-link">
+          <Link to="/login" className="auth-link">
             Log in
           </Link>
         </div>

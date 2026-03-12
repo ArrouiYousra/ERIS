@@ -212,7 +212,7 @@ export function ChannelList({
       {/* Delete server confirmation modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-[9999]">
-          <div className="bg-[#313338] rounded-lg p-6 w-[440px] shadow-xl">
+          <div className="bg-[#313338] rounded-lg p-6 w-[92vw] max-w-[440px] shadow-xl">
             <h3 className="text-xl font-bold text-white mb-2">Supprimer '{serverName}'</h3>
             <p className="text-[#b5bac1] text-sm mb-6">
               Es-tu sur de vouloir supprimer <strong className="text-white">{serverName}</strong> ? Cette action est irreversible. Tous les salons, messages et membres seront supprimes.
