@@ -45,4 +45,35 @@ public class MessageSecurityService {
             return false;
         }
     }
+
+    public boolean canEditMessage(Long messageId, String userEmail) {
+        try {
+            User user = userService.getUserEntityByEmail(userEmail);
+            Message message = messageRepository.findById(messageId).orElse(null);
+
+            if (message == null || user == null) {
+                return false;
+            }
+
+            Server server = message.getChannel().getServer();
+            ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
+
+            if (serverMember == null) {
+                return false;
+            }
+
+            String ServerMemberMail = serverMember.getUser().getEmail();
+
+            if (message.getSender().getEmail().equals(ServerMemberMail)) {
+                return true;
+            }
+            ;
+
+            String roleName = serverMember.getRole().getName();
+            return "ADMIN".equals(roleName) || "OWNER".equals(roleName);
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
