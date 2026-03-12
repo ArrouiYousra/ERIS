@@ -130,4 +130,8 @@ public class ServerService {
         messagingTemplate.convertAndSend("/topic/servers", (Object) Map.of("type", "DELETED", "serverId", id));
     }
 
+    public void changeOwner(Server server, User user) {
+        server.setOwner(user);
+        serverRepository.save(server);
+    }
 }

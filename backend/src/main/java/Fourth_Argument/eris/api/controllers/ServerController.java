@@ -20,6 +20,7 @@ import Fourth_Argument.eris.api.dto.InvitationDTO;
 import Fourth_Argument.eris.api.dto.ServerDTO;
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.dto.request.JoinInviteRequestDTO;
+import Fourth_Argument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
 import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.services.InvitationService;
@@ -136,5 +137,17 @@ public class ServerController {
         serverMemberService.deleteServerMember(email, id);
 
         return ResponseEntity.status(HttpStatus.OK).body("Server left");
+    }
+
+    @PutMapping("/{serverId}/members/{memberId}")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerOwner(#serverId, authentication.name)")
+    public ResponseEntity<String> updateMemberRole(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long serverId, @PathVariable Long memberId, @RequestBody UpdateMemberRoleRequestDTO dto)
+            throws RoleException, ServerException, ServerMemberException, UserException {
+
+        String email = userDetails.getUsername();
+        serverMemberService.updateServerMember(email, serverId, memberId, dto);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Member role updated");
     }
 }
