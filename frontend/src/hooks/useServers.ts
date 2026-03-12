@@ -54,8 +54,6 @@ export function useUpdateServer() {
       queryClient.invalidateQueries({ queryKey: ["servers", variables.id] });
     },
   });
-
-  
 }
 
 export function useDeleteServer() {

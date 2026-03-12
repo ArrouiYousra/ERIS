@@ -3,8 +3,6 @@ package Fourth_Argument.eris.controllers;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +16,11 @@ import Fourth_Argument.eris.api.controllers.AuthenticationController;
 import Fourth_Argument.eris.api.dto.request.LoginRequestDTO;
 import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
 import Fourth_Argument.eris.api.dto.response.LoginResponseDTO;
+import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
 import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.services.AuthenticationService;
-import Fourth_Argument.eris.services.JwtService;
-import Fourth_Argument.eris.services.UserService;
+import Fourth_Argument.eris.api.services.AuthenticationService;
+import Fourth_Argument.eris.api.services.JwtService;
+import Fourth_Argument.eris.api.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationControllerTest {
@@ -88,13 +87,13 @@ class AuthenticationControllerTest {
         when(userDetails.getUsername()).thenReturn("test@example.com");
         when(userService.getUserEntityByEmail("test@example.com")).thenReturn(testUser);
 
-        ResponseEntity<Map<String, Object>> response = controller.getMe(userDetails);
+        ResponseEntity<UserResponseDTO> response = controller.getMe(userDetails);
 
         assertEquals(200, response.getStatusCode().value());
-        Map<String, Object> body = response.getBody();
+        UserResponseDTO body = response.getBody();
         assertNotNull(body);
-        assertEquals(1L, body.get("id"));
-        assertEquals("test@example.com", body.get("email"));
+        assertEquals(1L, body.getId());
+        assertEquals("test@example.com", body.getEmail());
     }
 
     @Test
@@ -104,10 +103,10 @@ class AuthenticationControllerTest {
         when(userDetails.getUsername()).thenReturn("test@example.com");
         when(userService.getUserEntityByEmail("test@example.com")).thenReturn(testUser);
 
-        ResponseEntity<Map<String, Object>> response = controller.getMe(userDetails);
+        ResponseEntity<UserResponseDTO> response = controller.getMe(userDetails);
 
-        Map<String, Object> body = response.getBody();
+        UserResponseDTO body = response.getBody();
         // User.getUsername() returns email, so fallback is email
-        assertEquals("testuser", body.get("displayName"));
+        assertEquals("testuser", body.getEmail());
     }
 }

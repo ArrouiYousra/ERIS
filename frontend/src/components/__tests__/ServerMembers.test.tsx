@@ -24,8 +24,24 @@ describe("ServerMembers", () => {
   it("renders member list", () => {
     (useServerMembers as any).mockReturnValue({
       data: [
-        { id: 1, serverId: 1, userId: 1, nickname: "Alice", roleId: 1, typingStatus: false, joinedAt: "" },
-        { id: 2, serverId: 1, userId: 2, nickname: "Bob", roleId: 1, typingStatus: false, joinedAt: "" },
+        {
+          id: 1,
+          serverId: 1,
+          userId: 1,
+          nickname: "Alice",
+          roleId: 1,
+          typingStatus: false,
+          joinedAt: "",
+        },
+        {
+          id: 2,
+          serverId: 1,
+          userId: 2,
+          nickname: "Bob",
+          roleId: 1,
+          typingStatus: false,
+          joinedAt: "",
+        },
       ],
       isLoading: false,
     });

@@ -7,11 +7,7 @@ import {
 } from "../hooks/useServers";
 import { useAuth } from "../hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  ServerBar,
-  RightPanel,
-  UserBar,
-} from "../components/friends";
+import { ServerBar, RightPanel, UserBar } from "../components/friends";
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
 import { ServerGate } from "../components/ServerGate";
@@ -24,6 +20,10 @@ import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
 import { useServerMembers } from "../hooks/useServers";
 import { usePresence } from "../hooks/usePresence";
+import type { Channel } from "../api/channelsApi";
+import type { Server } from "../api/serversApi";
+import type { ServerMember } from "../api/serverMembersApi";
+import { useServerSocket } from '../hooks/useServerSocket';
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -45,17 +45,25 @@ export function ChatLayout() {
   const { data: channels = [] } = useChannels(selectedServerId);
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
+  useServerSocket();
 
-  const serverIds = servers.map((s: { id: number }) => s.id);
+  const serverIds = servers.map((s: Server) => s.id);
   const serverNames = Object.fromEntries(
-    servers.map((s: { id: number; name: string }) => [s.id, s.name]),
+    servers.map((s: Server) => [s.id, s.name]),
   );
 
   const isDMMode = selectedServerId === null;
 
   // Check if current user is the owner of the selected server
-  const currentServer = servers.find((s: any) => s.id === selectedServerId);
-  const isServerOwner = !!(currentServer && user && currentServer.ownerId === user.id);
+  const currentServer = servers.find((s: Server) => s.id === selectedServerId);
+  const isServerOwner = !!(
+    currentServer &&
+    user &&
+    currentServer.ownerId === user.id
+  );
+  const selectedChannel = channels.find(
+    (channel: Channel) => channel.id === selectedChannelId,
+  );
 
   const handleDeleteServer = async () => {
     if (!selectedServerId) return;
@@ -219,39 +227,50 @@ export function ChatLayout() {
                                 <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
                                   {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
                                 </div>
-                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#23a559] rounded-full border-2 border-[#2b2d31]" />
+                                <span className="text-gray-300 text-sm">
+                                  {member.nickname ||
+                                    member.username ||
+                                    `User ${member.userId}`}
+                                </span>
                               </div>
-                              <span className="text-gray-300 text-sm">{member.nickname || member.username || `User ${member.userId}`}</span>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    {/* Hors ligne */}
-                    {offlineMembers.length > 0 && (
-                      <div>
-                        <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                          Hors ligne — {offlineMembers.length}
-                        </h3>
-                        <div className="space-y-0.5">
-                          {offlineMembers.map((member: any) => (
-                            <div key={member.userId} className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40">
-                              <div className="relative">
-                                <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
-                                  {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
+                      )}
+                      {/* Hors ligne */}
+                      {offlineMembers.length > 0 && (
+                        <div>
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                            Hors ligne — {offlineMembers.length}
+                          </h3>
+                          <div className="space-y-0.5">
+                            {offlineMembers.map((member: ServerMember) => (
+                              <div
+                                key={member.userId}
+                                className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40"
+                              >
+                                <div className="relative">
+                                  <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
+                                    {(member.nickname || member.username || "U")
+                                      .charAt(0)
+                                      .toUpperCase()}
+                                  </div>
+                                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#80848e] rounded-full border-2 border-[#2b2d31]" />
                                 </div>
-                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#80848e] rounded-full border-2 border-[#2b2d31]" />
+                                <span className="text-gray-300 text-sm">
+                                  {member.nickname ||
+                                    member.username ||
+                                    `User ${member.userId}`}
+                                </span>
                               </div>
-                              <span className="text-gray-300 text-sm">{member.nickname || member.username || `User ${member.userId}`}</span>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })()}
+                );
+              })()}
           </div>
         </div>
       )}

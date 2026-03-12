@@ -1,7 +1,6 @@
 package Fourth_Argument.eris.services;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
@@ -18,12 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import Fourth_Argument.eris.api.dto.ChannelDTO;
 import Fourth_Argument.eris.api.mapper.ChannelMapper;
 import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Message;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
+import Fourth_Argument.eris.api.services.ChannelService;
+import Fourth_Argument.eris.api.services.UserService;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.ServerException;
 

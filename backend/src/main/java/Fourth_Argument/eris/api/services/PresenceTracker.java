@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.services;
+package Fourth_Argument.eris.api.services;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,8 @@ public class PresenceTracker {
         String sessionId = accessor.getSessionId();
         Long userId = payload.userId();
 
-        if (sessionId == null || userId == null) return;
+        if (sessionId == null || userId == null)
+            return;
 
         sessionToUser.put(sessionId, userId);
         userSessions.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(sessionId);
@@ -59,7 +60,8 @@ public class PresenceTracker {
     public void handleDisconnect(SessionDisconnectEvent event) {
         String sessionId = StompHeaderAccessor.wrap(event.getMessage()).getSessionId();
         Long userId = sessionToUser.remove(sessionId);
-        if (userId == null) return;
+        if (userId == null)
+            return;
 
         Set<String> sessions = userSessions.get(userId);
         if (sessions != null) {
@@ -81,7 +83,7 @@ public class PresenceTracker {
         try {
             // Trouver tous les serveurs de ce user via ses memberships
             List<ServerMember> memberships = serverMemberRepository.findServerMemberByUserId(userId);
-            
+
             // Extraire les serverIds uniques
             Set<Long> serverIds = memberships.stream()
                     .map(m -> m.getServer().getId())
@@ -104,7 +106,8 @@ public class PresenceTracker {
         Set<Long> online = ConcurrentHashMap.newKeySet();
         try {
             Server server = serverRepository.findById(serverId).orElse(null);
-            if (server == null) return online;
+            if (server == null)
+                return online;
 
             List<ServerMember> members = serverMemberRepository.findByServer(server);
             for (ServerMember member : members) {

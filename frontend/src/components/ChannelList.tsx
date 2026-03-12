@@ -273,7 +273,7 @@ export function ChannelList({
             {channels.length > 0 ? (
               channels.map((channel) => {
                 const isSelected = selectedChannelId === channel.id;
-                const isPrivate = (channel as any).isPrivate;
+                const isPrivate = channel.isPrivate;
                 return (
                   <div
                     key={channel.id}
@@ -338,7 +338,7 @@ export function ChannelList({
       <ChannelSettings
         isOpen={!!channelToEdit}
         channel={channelToEdit}
-        isPrivate={(channelToEdit as any)?.isPrivate}
+        isPrivate={channelToEdit?.isPrivate}
         onClose={() => setChannelToEdit(null)}
         onSave={handleSaveChannel}
         onDelete={handleDeleteChannel}

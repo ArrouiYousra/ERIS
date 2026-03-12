@@ -1,7 +1,9 @@
-package Fourth_Argument.eris.services;
+package Fourth_Argument.eris.api.services;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ServerDTO;
@@ -34,6 +36,7 @@ public class ServerService {
     private final MessageRepository messageRepository;
     private final InvitationRepository invitationRepository;
     private final EntityManager entityManager;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public ServerDTO getServerById(Long id) throws ServerException {
         Server server = serverRepository.findById(id)
@@ -69,21 +72,6 @@ public class ServerService {
         return serverDTOs;
     }
 
-    // public List<ServerDTO> getUserServers(Long id) {
-    // List<ServerMember> serverMembers =
-    // serverMemberRepository.findServerMemberByUserId(id);
-
-    // if (serverMembers == null) {
-    // throw new RuntimeException("No server found");
-    // }
-
-    // List<ServerDTO> serverDTOs = serverMembers.stream()
-    // .map(member -> getServerById(member.getServerId()))
-    // .toList();
-
-    // return serverDTOs;
-    // }
-
     public ServerDTO createServer(ServerDTO serverDTO, User owner) {
         Server server = new Server();
         server.setName(serverDTO.getName());
@@ -107,6 +95,7 @@ public class ServerService {
                 .orElseThrow(() -> new RuntimeException("Role OWNER not found"));
         member.setRole(ownerRole);
         serverMemberRepository.save(member);
+        messagingTemplate.convertAndSend("/topic/servers", (Object) Map.of("type", "CREATED", "serverId", savedServer.getId()));
 
         return serverMapper.toDTO(savedServer, owner);
     }
@@ -138,6 +127,7 @@ public class ServerService {
         entityManager.clear();
 
         serverRepository.deleteById(id);
+        messagingTemplate.convertAndSend("/topic/servers", (Object) Map.of("type", "DELETED", "serverId", id));
     }
 
 }

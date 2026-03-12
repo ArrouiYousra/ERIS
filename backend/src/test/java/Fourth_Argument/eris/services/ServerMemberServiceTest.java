@@ -22,6 +22,8 @@ import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
+import Fourth_Argument.eris.api.services.ServerMemberService;
+import Fourth_Argument.eris.api.services.UserService;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
 
@@ -89,7 +91,7 @@ class ServerMemberServiceTest {
     void deleteServerMember_success() throws Exception {
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
-        serverMemberService.deleteServerMember(server, user);
+        serverMemberService.deleteServerMember(user.getEmail(), server.getId());
 
         verify(serverMemberRepository).delete(serverMember);
     }
@@ -99,7 +101,7 @@ class ServerMemberServiceTest {
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
 
         assertThrows(ServerMemberException.class,
-                () -> serverMemberService.deleteServerMember(server, user));
+                () -> serverMemberService.deleteServerMember(user.getEmail(), server.getId()));
     }
 
     // ── getMembersByServerId ──

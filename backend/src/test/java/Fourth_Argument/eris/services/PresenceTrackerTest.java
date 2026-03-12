@@ -14,13 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.Server;
@@ -28,6 +24,7 @@ import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
+import Fourth_Argument.eris.api.services.PresenceTracker;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,7 +68,8 @@ class PresenceTrackerTest {
     void registerUser_success() {
         PresenceTracker.PresencePayload payload = new PresenceTracker.PresencePayload(1L);
 
-        StompHeaderAccessor accessor = StompHeaderAccessor.create(org.springframework.messaging.simp.stomp.StompCommand.SEND);
+        StompHeaderAccessor accessor = StompHeaderAccessor
+                .create(org.springframework.messaging.simp.stomp.StompCommand.SEND);
         accessor.setSessionId("session1");
 
         when(serverMemberRepository.findServerMemberByUserId(1L)).thenReturn(List.of(member));
@@ -86,7 +84,8 @@ class PresenceTrackerTest {
     @Test
     void registerUser_nullSessionId() {
         PresenceTracker.PresencePayload payload = new PresenceTracker.PresencePayload(1L);
-        StompHeaderAccessor accessor = StompHeaderAccessor.create(org.springframework.messaging.simp.stomp.StompCommand.SEND);
+        StompHeaderAccessor accessor = StompHeaderAccessor
+                .create(org.springframework.messaging.simp.stomp.StompCommand.SEND);
         // Don't set sessionId - it will be null
 
         presenceTracker.registerUser(payload, accessor);
@@ -97,7 +96,8 @@ class PresenceTrackerTest {
     @Test
     void registerUser_nullUserId() {
         PresenceTracker.PresencePayload payload = new PresenceTracker.PresencePayload(null);
-        StompHeaderAccessor accessor = StompHeaderAccessor.create(org.springframework.messaging.simp.stomp.StompCommand.SEND);
+        StompHeaderAccessor accessor = StompHeaderAccessor
+                .create(org.springframework.messaging.simp.stomp.StompCommand.SEND);
         accessor.setSessionId("session1");
 
         presenceTracker.registerUser(payload, accessor);
@@ -127,8 +127,8 @@ class PresenceTrackerTest {
     @Test
     void getOnlineUserIdsForServer_withOnlineUser() {
         // Simulate a connected user by manually adding to the internal maps
-        Map<Long, Set<String>> userSessions =
-                (Map<Long, Set<String>>) ReflectionTestUtils.getField(presenceTracker, "userSessions");
+        Map<Long, Set<String>> userSessions = (Map<Long, Set<String>>) ReflectionTestUtils.getField(presenceTracker,
+                "userSessions");
         Set<String> sessions = ConcurrentHashMap.newKeySet();
         sessions.add("session1");
         userSessions.put(1L, sessions);
