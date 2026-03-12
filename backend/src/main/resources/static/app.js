@@ -13,7 +13,7 @@ let nickname = null;
 let fullname = null;
 let selectedUserId = null;
 
-// ✅ NOUVELLES VARIABLES pour le typing
+// NOUVELLES VARIABLES pour le typing
 let typingTimer;
 let isTyping = false;
 const TYPING_TIMEOUT = 5000; // 2 secondes
@@ -44,7 +44,7 @@ function onConnected() {
     // S'abonner au topic public pour les connexions/déconnexions
     stompClient.subscribe('/topic/public', onUserStatusUpdate);
 
-    // ✅ NOUVEAU : S'abonner aux notifications typing
+    //  NOUVEAU : S'abonner aux notifications typing
     stompClient.subscribe(`/user/${nickname}/queue/typing`, onTypingReceived);
 
     // Enregistrer l'utilisateur
