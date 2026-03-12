@@ -2,11 +2,11 @@ name: Frontend CI
 
 on:
   push:
-    paths:
-      - 'frontend/**'
+    #paths:
+      #- 'frontend/**'
   pull_request:
-    paths:
-      - 'frontend/**'
+    #paths:
+      #- 'frontend/**'
 
 jobs:
   # ─── Job 1: Lint (ESLint) ───
