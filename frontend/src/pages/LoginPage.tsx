@@ -25,72 +25,71 @@ export function LoginPage() {
       const errorMessage =
         axiosError?.response?.data?.message ||
         axiosError?.response?.data?.error ||
-        axiosError?.message ||
-        "Error during registration. Please try again.";
+        "Erreur de connexion. Veuillez réessayer.";
       setError(errorMessage);
     } finally {
-      setLoading(false);
-    }
-  };
+    setLoading(false);
+  }
+};
 
-  return (
-    <div className="login-page">
-      <div className="login-background">
-        <div className="login-blob login-blob--1"></div>
-        <div className="login-blob login-blob--2"></div>
-        <div className="login-blob login-blob--3"></div>
+return (
+  <div className="login-page">
+    <div className="login-background">
+      <div className="login-blob login-blob--1"></div>
+      <div className="login-blob login-blob--2"></div>
+      <div className="login-blob login-blob--3"></div>
+    </div>
+    <div className="login-container">
+      <div className="login-header">
+        <h1 className="login-title">Welcome back!</h1>
+        <p className="login-subtitle">We're so excited to see you again!</p>
       </div>
-      <div className="login-container">
-        <div className="login-header">
-          <h1 className="login-title">Welcome back!</h1>
-          <p className="login-subtitle">We're so excited to see you again!</p>
+
+      {error && <div className="login-error">{error}</div>}
+
+      <form className="login-form" onSubmit={onSubmit}>
+        <div className="form-group">
+          <label className="form-label" htmlFor="email">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            className="form-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+          />
         </div>
 
-        {error && <div className="login-error">{error}</div>}
-
-        <form className="login-form" onSubmit={onSubmit}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              className="form-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="password">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              className="form-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? "Connexion..." : "Log In"}
-          </button>
-        </form>
-
-        <div className="login-footer">
-          <span>Need an account? </span>
-          <Link to="/signup" className="login-link">
-            Register
-          </Link>
+        <div className="form-group">
+          <label className="form-label" htmlFor="password">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            className="form-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={loading}
+          />
         </div>
+
+        <button type="submit" className="login-button" disabled={loading}>
+          {loading ? "Connexion..." : "Log In"}
+        </button>
+      </form>
+
+      <div className="login-footer">
+        <span>Need an account? </span>
+        <Link to="/signup" className="login-link">
+          Register
+        </Link>
       </div>
     </div>
-  );
+  </div>
+);
 }
