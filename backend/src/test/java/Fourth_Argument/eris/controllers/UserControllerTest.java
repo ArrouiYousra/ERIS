@@ -13,11 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
-import Fourth_Argument.eris.api.controllers.UserController;
-import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
-import Fourth_Argument.eris.api.mapper.UserMapper;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.services.UserService;
+import fourth_argument.eris.api.controllers.UserController;
+import fourth_argument.eris.api.dto.response.UserResponseDTO;
+import fourth_argument.eris.api.mapper.UserMapper;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {

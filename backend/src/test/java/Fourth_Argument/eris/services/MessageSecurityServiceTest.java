@@ -12,17 +12,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Message;
-import Fourth_Argument.eris.api.model.Role;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.ServerMember;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.repository.MessageRepository;
-import Fourth_Argument.eris.api.repository.ServerMemberRepository;
-import Fourth_Argument.eris.api.services.MessageSecurityService;
-import Fourth_Argument.eris.api.services.UserService;
-import Fourth_Argument.eris.exceptions.UserException;
+import fourth_argument.eris.api.model.Channel;
+import fourth_argument.eris.api.model.Message;
+import fourth_argument.eris.api.model.Role;
+import fourth_argument.eris.api.model.Server;
+import fourth_argument.eris.api.model.ServerMember;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.repository.MessageRepository;
+import fourth_argument.eris.api.repository.ServerMemberRepository;
+import fourth_argument.eris.api.services.MessageSecurityService;
+import fourth_argument.eris.api.services.UserService;
+import fourth_argument.eris.exceptions.UserException;
 
 @ExtendWith(MockitoExtension.class)
 class MessageSecurityServiceTest {

@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import Fourth_Argument.eris.api.dto.ChannelDTO;
-import Fourth_Argument.eris.api.mapper.ChannelMapper;
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.User;
+import fourth_argument.eris.api.dto.ChannelDTO;
+import fourth_argument.eris.api.mapper.ChannelMapper;
+import fourth_argument.eris.api.model.Channel;
+import fourth_argument.eris.api.model.Server;
+import fourth_argument.eris.api.model.User;
 
 class ChannelMapperTest {
 

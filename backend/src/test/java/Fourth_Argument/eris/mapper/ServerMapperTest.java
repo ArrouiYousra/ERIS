@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import Fourth_Argument.eris.api.dto.ServerDTO;
-import Fourth_Argument.eris.api.mapper.ServerMapper;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.User;
+import fourth_argument.eris.api.dto.ServerDTO;
+import fourth_argument.eris.api.mapper.ServerMapper;
+import fourth_argument.eris.api.model.Server;
+import fourth_argument.eris.api.model.User;
 
 class ServerMapperTest {
 

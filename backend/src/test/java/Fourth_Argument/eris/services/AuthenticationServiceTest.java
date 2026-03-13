@@ -15,11 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import Fourth_Argument.eris.api.dto.request.LoginRequestDTO;
-import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.repository.UserRepository;
-import Fourth_Argument.eris.api.services.AuthenticationService;
+import fourth_argument.eris.api.dto.request.LoginRequestDTO;
+import fourth_argument.eris.api.dto.request.UserRequestDTO;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.repository.UserRepository;
+import fourth_argument.eris.api.services.AuthenticationService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {

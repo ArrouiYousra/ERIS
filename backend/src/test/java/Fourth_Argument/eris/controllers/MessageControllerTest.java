@@ -14,14 +14,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import Fourth_Argument.eris.api.controllers.MessageController;
-import Fourth_Argument.eris.api.dto.MessageDTO;
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.repository.ChannelRepository;
-import Fourth_Argument.eris.api.services.MessageService;
-import Fourth_Argument.eris.exceptions.MessageException;
+import fourth_argument.eris.api.controllers.MessageController;
+import fourth_argument.eris.api.dto.MessageDTO;
+import fourth_argument.eris.api.model.Channel;
+import fourth_argument.eris.api.model.Server;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.repository.ChannelRepository;
+import fourth_argument.eris.api.services.MessageService;
+import fourth_argument.eris.exceptions.MessageException;
 
 @ExtendWith(MockitoExtension.class)
 class MessageControllerTest {

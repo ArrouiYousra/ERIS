@@ -14,18 +14,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import Fourth_Argument.eris.api.dto.ChannelDTO;
-import Fourth_Argument.eris.api.mapper.ChannelMapper;
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.repository.ChannelRepository;
-import Fourth_Argument.eris.api.repository.MessageRepository;
-import Fourth_Argument.eris.api.repository.ServerMemberRepository;
-import Fourth_Argument.eris.api.repository.ServerRepository;
-import Fourth_Argument.eris.api.services.ChannelService;
-import Fourth_Argument.eris.api.services.UserService;
-import Fourth_Argument.eris.exceptions.ChannelException;
-import Fourth_Argument.eris.exceptions.ServerException;
+import fourth_argument.eris.api.dto.ChannelDTO;
+import fourth_argument.eris.api.mapper.ChannelMapper;
+import fourth_argument.eris.api.model.Channel;
+import fourth_argument.eris.api.model.Server;
+import fourth_argument.eris.api.repository.ChannelRepository;
+import fourth_argument.eris.api.repository.MessageRepository;
+import fourth_argument.eris.api.repository.ServerMemberRepository;
+import fourth_argument.eris.api.repository.ServerRepository;
+import fourth_argument.eris.api.services.ChannelService;
+import fourth_argument.eris.api.services.UserService;
+import fourth_argument.eris.exceptions.ChannelException;
+import fourth_argument.eris.exceptions.ServerException;
 
 @ExtendWith(MockitoExtension.class)
 class ChannelServiceTest {
