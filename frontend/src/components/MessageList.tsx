@@ -105,8 +105,8 @@ export function MessageList({
       <div className="flex-1 overflow-y-auto">
         {messages.length > 0 ? (
           <div className="p-4 space-y-4">
-            {messages.map((message: Message) => (
-              <div key={message.id || Math.random()} className="flex gap-3">
+            {messages.map((message: Message, index: number) => (
+              <div key={message.id ?? `msg-${index}`} className="flex gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-medium shrink-0">
                   {(message.senderUsername || "U").charAt(0).toUpperCase()}
                 </div>

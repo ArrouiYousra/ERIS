@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { InternalAxiosRequestConfig } from 'axios';
 
+interface AxiosInterceptorManager {
+  handlers: Array<{
+    fulfilled: (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig;
+  }>;
+}
+
 describe('client', () => {
   beforeEach(() => {
     // Clear localStorage before each test
@@ -49,8 +55,8 @@ describe('client', () => {
 
     const { api } = await import('../client');
 
-    const config = { headers: {} as Record<string, string> } as any;
-    const interceptors = api.interceptors.request as any;
+    const interceptors = api.interceptors.request as unknown as AxiosInterceptorManager;
+    const config = { headers: {} } as InternalAxiosRequestConfig;
 
     if (interceptors.handlers && interceptors.handlers.length > 0) {
       const handler = interceptors.handlers[0];

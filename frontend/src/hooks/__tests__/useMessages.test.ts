@@ -42,7 +42,7 @@ describe("useMessages", () => {
   });
 
   it("disables query when channelId is null", () => {
-    (useQuery as any).mockReturnValue({ data: [], isLoading: false });
+    (useQuery as Mock).mockReturnValue({ data: [], isLoading: false });
     useMessages(null);
     expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({

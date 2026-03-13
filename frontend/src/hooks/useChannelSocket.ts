@@ -38,7 +38,7 @@ export function useChannelSocket(channelId: number | null) {
       }
       publish('/app/chat', { senderId: user.id, channelId, content });
     },
-    [channelId, connected, user?.id, publish],
+    [channelId, connected, user, publish],
   );
 
   return { sendMessage, connected };

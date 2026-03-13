@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import type { IMessage } from '@stomp/stompjs';
 
 const mockSubscribe = vi.fn();
 const mockPublish = vi.fn();
@@ -136,8 +135,8 @@ describe('useTyping', () => {
   });
 
   it('shows typing text for 2 users', () => {
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });
@@ -157,8 +156,8 @@ describe('useTyping', () => {
   });
 
   it('shows typing text for 3+ users', () => {
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });
@@ -181,8 +180,8 @@ describe('useTyping', () => {
   });
 
   it('ignores own typing events', () => {
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });
@@ -200,8 +199,8 @@ describe('useTyping', () => {
   });
 
   it('removes user from typing when they stop', () => {
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });
