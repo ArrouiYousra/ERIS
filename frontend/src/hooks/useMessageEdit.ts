@@ -10,7 +10,7 @@ export function useServerSocket() {
   // Subscribe aux messages du channel
   useEffect(() => {
     if (!connected) return;
-    const sub = subscribe(`/topic/channels/${messageid}`, (msg) => {
+    const sub = subscribe(`/topic/channels/${messageid}`, () => { //eslint
         queryClient.invalidateQueries({ queryKey: ["servers"] });
     });
     const sub_reload = subscribe(`/topic/channels`, () => {

@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import type { IMessage } from '@stomp/stompjs';
 
 const mockSubscribe = vi.fn();
 const mockPublish = vi.fn();
+type StompCallback = (msg: { body: string }) => void;
 
 vi.mock('../../api/wsApi', () => ({
   useSocket: () => ({
@@ -10,7 +12,7 @@ vi.mock('../../api/wsApi', () => ({
     publish: mockPublish,
     connected: true,
   }),
-  SocketProvider: ({ children }: any) => children,
+  SocketProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock('../useAuth', () => ({
@@ -116,8 +118,8 @@ describe('useTyping', () => {
 
   it('shows typing text for 1 user', () => {
     // Simulate receiving a typing event from another user
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });

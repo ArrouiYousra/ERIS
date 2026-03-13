@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
+import { vi, type Mock } from 'vitest';
 
 vi.mock("../../api/client", () => ({
   api: {
@@ -19,7 +20,7 @@ describe("getMessages", () => {
 
   it("fetches messages for a channel", async () => {
     const mockData = [{ id: 1, senderId: 1, content: "Hello", createdAt: "2026-01-01" }];
-    (api.get as any).mockResolvedValue({ data: mockData });
+    (api.get as Mock).mockResolvedValue({ data: mockData });
 
     const result = await getMessages(5);
 
@@ -30,7 +31,7 @@ describe("getMessages", () => {
 
 describe("useMessages", () => {
   it("calls useQuery with correct params when channelId is provided", () => {
-    (useQuery as any).mockReturnValue({ data: [], isLoading: false });
+    (useQuery as Mock).mockReturnValue({ data: [], isLoading: false });
     useMessages(3);
     expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({

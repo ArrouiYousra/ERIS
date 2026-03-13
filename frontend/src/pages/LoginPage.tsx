@@ -19,8 +19,15 @@ export function LoginPage() {
     try {
       await login(email, password);
       navigate("/app");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Erreur de connexion. Vérifiez vos identifiants.");
+    } catch (err: unknown) {
+      console.error("Signup error:", err);
+      const axiosError = err as { response?: { data?: { message?: string; error?: string } }; message?: string };
+      const errorMessage =
+        axiosError?.response?.data?.message ||
+        axiosError?.response?.data?.error ||
+        axiosError?.message ||
+        "Error during registration. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

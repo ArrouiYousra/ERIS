@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { type Mock } from 'vitest';
 
 vi.mock("../client", () => ({
   api: {
@@ -14,7 +15,7 @@ describe("serverMembersApi", () => {
 
   it("getServerMember calls GET servers/:id/members", async () => {
     const mockData = [{ id: 1, serverId: 2, userId: 3, nickname: "Alice" }];
-    (api.get as any).mockResolvedValue({ data: mockData });
+    (api.get as Mock).mockResolvedValue({ data: mockData });
 
     const result = await getServerMembers(2);
 

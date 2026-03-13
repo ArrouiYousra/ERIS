@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import type { InternalAxiosRequestConfig } from 'axios';
 
 describe('client', () => {
   beforeEach(() => {
@@ -28,9 +29,9 @@ describe('client', () => {
     const { api } = await import('../client');
 
     // Simulate the interceptor by calling it manually
-    const interceptors = api.interceptors.request as any;
+    const interceptors = api.interceptors.request as { handlers: Array<{ fulfilled: (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig }> };
     // The interceptor was registered, so we can test it via a mock request
-    const config = { headers: {} as Record<string, string> } as any;
+    const config = { headers: {} as Record<string, string> } as InternalAxiosRequestConfig;
 
     // Get the interceptor function (first handler registered)
     if (interceptors.handlers && interceptors.handlers.length > 0) {
