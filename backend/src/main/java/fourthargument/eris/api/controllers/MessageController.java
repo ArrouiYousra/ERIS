@@ -44,7 +44,7 @@ public class MessageController {
     public ResponseEntity<List<MessageDTO>> getMessageHistory(
             @PathVariable Long id) throws MessageException, ChannelException {
 
-        List<MessageDTO> messages = messageService.getMessageHistory(id);
+        List<MessageDTO> messages = messageService.getMessageHistoryChannel(id);
 
         return ResponseEntity.ok(messages);
 

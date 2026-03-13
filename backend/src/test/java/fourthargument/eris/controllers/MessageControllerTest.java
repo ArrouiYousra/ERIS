@@ -71,7 +71,7 @@ class MessageControllerTest {
 
     @Test
     void getMessageHistory_success() throws Exception {
-        when(messageService.getMessageHistory(1L)).thenReturn(List.of(messageDTO));
+        when(messageService.getMessageHistoryChannel(1L)).thenReturn(List.of(messageDTO));
 
         ResponseEntity<List<MessageDTO>> response = controller.getMessageHistory(1L);
 
@@ -79,15 +79,15 @@ class MessageControllerTest {
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
 
-        verify(messageService).getMessageHistory(1L);
+        verify(messageService).getMessageHistoryChannel(1L);
     }
 
     @Test
     void getMessageHistory_channelNotFound() throws Exception {
-        when(channelRepository.findById(99L)).thenReturn(Optional.empty());
+        when(channelRepository.findById(null)).thenReturn(null);
 
         assertThrows(ChannelException.class,
-                () -> controller.getMessageHistory(99L));
+                () -> messageService.getMessageHistoryChannel(null));
     }
 
     @Test
