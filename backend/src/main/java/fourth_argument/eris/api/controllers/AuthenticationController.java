@@ -26,6 +26,9 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final UserService userService;
 
+    /*
+     * TRY this
+     **/
     public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService,
             UserService userService) {
         this.jwtService = jwtService;
