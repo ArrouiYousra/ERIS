@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import type { Message } from './useMessages';
 
 const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL || "ws://localhost:8081";
 
 export function useMessagesSocket(channelId: number | null) {
-  const [messages, setMessages] = useState<Message[]>([]); //eslint
+  const [messages, setMessages] = useState<any[]>([]); //eslint
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
