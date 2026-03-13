@@ -13,14 +13,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import fourth_argument.eris.exceptions.ChannelException;
-import fourth_argument.eris.exceptions.ErrorDetails;
-import fourth_argument.eris.exceptions.GlobalExceptions;
-import fourth_argument.eris.exceptions.MessageException;
-import fourth_argument.eris.exceptions.RoleException;
-import fourth_argument.eris.exceptions.ServerException;
-import fourth_argument.eris.exceptions.ServerMemberException;
-import fourth_argument.eris.exceptions.UserException;
+import fourthargument.eris.exceptions.ChannelException;
+import fourthargument.eris.exceptions.ErrorDetails;
+import fourthargument.eris.exceptions.GlobalExceptions;
+import fourthargument.eris.exceptions.MessageException;
+import fourthargument.eris.exceptions.RoleException;
+import fourthargument.eris.exceptions.ServerException;
+import fourthargument.eris.exceptions.ServerMemberException;
+import fourthargument.eris.exceptions.UserException;
 
 class GlobalExceptionsTest {
 

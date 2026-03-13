@@ -10,9 +10,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import fourth_argument.eris.api.controllers.RealtimeChatController;
-import fourth_argument.eris.api.dto.MessageDTO;
-import fourth_argument.eris.api.services.MessageService;
+import fourthargument.eris.api.controllers.RealtimeChatController;
+import fourthargument.eris.api.dto.MessageDTO;
+import fourthargument.eris.api.services.MessageService;
 
 @ExtendWith(MockitoExtension.class)
 class RealtimeChatControllerTest {

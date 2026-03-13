@@ -2,7 +2,7 @@ package Fourth_Argument.eris;
 
 import org.junit.jupiter.api.Test;
 
-import fourth_argument.eris.ErisApplicationMain;
+import fourthargument.eris.ErisApplicationMain;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

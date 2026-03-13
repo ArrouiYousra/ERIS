@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import fourth_argument.eris.api.model.User;
-import fourth_argument.eris.api.services.JwtService;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.services.JwtService;
 
 class JwtServiceTest {
 

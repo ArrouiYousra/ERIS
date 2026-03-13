@@ -15,17 +15,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import fourth_argument.eris.api.controllers.ServerController;
-import fourth_argument.eris.api.dto.InvitationDTO;
-import fourth_argument.eris.api.dto.ServerDTO;
-import fourth_argument.eris.api.dto.ServerMemberDTO;
-import fourth_argument.eris.api.dto.request.JoinInviteRequestDTO;
-import fourth_argument.eris.api.dto.response.JoinInviteResponseDTO;
-import fourth_argument.eris.api.model.User;
-import fourth_argument.eris.api.services.InvitationService;
-import fourth_argument.eris.api.services.ServerMemberService;
-import fourth_argument.eris.api.services.ServerService;
-import fourth_argument.eris.api.services.UserService;
+import fourthargument.eris.api.controllers.ServerController;
+import fourthargument.eris.api.dto.InvitationDTO;
+import fourthargument.eris.api.dto.ServerDTO;
+import fourthargument.eris.api.dto.ServerMemberDTO;
+import fourthargument.eris.api.dto.request.JoinInviteRequestDTO;
+import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.services.InvitationService;
+import fourthargument.eris.api.services.ServerMemberService;
+import fourthargument.eris.api.services.ServerService;
+import fourthargument.eris.api.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 @org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)

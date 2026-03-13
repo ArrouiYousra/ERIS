@@ -14,18 +14,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fourth_argument.eris.api.dto.ChannelDTO;
-import fourth_argument.eris.api.mapper.ChannelMapper;
-import fourth_argument.eris.api.model.Channel;
-import fourth_argument.eris.api.model.Server;
-import fourth_argument.eris.api.repository.ChannelRepository;
-import fourth_argument.eris.api.repository.MessageRepository;
-import fourth_argument.eris.api.repository.ServerMemberRepository;
-import fourth_argument.eris.api.repository.ServerRepository;
-import fourth_argument.eris.api.services.ChannelService;
-import fourth_argument.eris.api.services.UserService;
-import fourth_argument.eris.exceptions.ChannelException;
-import fourth_argument.eris.exceptions.ServerException;
+import fourthargument.eris.api.dto.ChannelDTO;
+import fourthargument.eris.api.mapper.ChannelMapper;
+import fourthargument.eris.api.model.Channel;
+import fourthargument.eris.api.model.Server;
+import fourthargument.eris.api.repository.ChannelRepository;
+import fourthargument.eris.api.repository.MessageRepository;
+import fourthargument.eris.api.repository.ServerMemberRepository;
+import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.services.ChannelService;
+import fourthargument.eris.api.services.UserService;
+import fourthargument.eris.exceptions.ChannelException;
+import fourthargument.eris.exceptions.ServerException;
 
 @ExtendWith(MockitoExtension.class)
 class ChannelServiceTest {

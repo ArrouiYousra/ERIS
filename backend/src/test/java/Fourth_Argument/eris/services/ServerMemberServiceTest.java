@@ -14,18 +14,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fourth_argument.eris.api.dto.ServerMemberDTO;
-import fourth_argument.eris.api.mapper.ServerMemberMapper;
-import fourth_argument.eris.api.model.Role;
-import fourth_argument.eris.api.model.Server;
-import fourth_argument.eris.api.model.ServerMember;
-import fourth_argument.eris.api.model.User;
-import fourth_argument.eris.api.repository.ServerMemberRepository;
-import fourth_argument.eris.api.repository.ServerRepository;
-import fourth_argument.eris.api.services.ServerMemberService;
-import fourth_argument.eris.api.services.UserService;
-import fourth_argument.eris.exceptions.ServerException;
-import fourth_argument.eris.exceptions.ServerMemberException;
+import fourthargument.eris.api.dto.ServerMemberDTO;
+import fourthargument.eris.api.mapper.ServerMemberMapper;
+import fourthargument.eris.api.model.Role;
+import fourthargument.eris.api.model.Server;
+import fourthargument.eris.api.model.ServerMember;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.repository.ServerMemberRepository;
+import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.services.ServerMemberService;
+import fourthargument.eris.api.services.UserService;
+import fourthargument.eris.exceptions.ServerException;
+import fourthargument.eris.exceptions.ServerMemberException;
 
 @ExtendWith(MockitoExtension.class)
 class ServerMemberServiceTest {

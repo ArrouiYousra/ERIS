@@ -14,19 +14,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fourth_argument.eris.api.dto.MessageDTO;
-import fourth_argument.eris.api.mapper.MessageMapper;
-import fourth_argument.eris.api.model.Channel;
-import fourth_argument.eris.api.model.Message;
-import fourth_argument.eris.api.model.Server;
-import fourth_argument.eris.api.model.User;
-import fourth_argument.eris.api.repository.ChannelRepository;
-import fourth_argument.eris.api.repository.MessageRepository;
-import fourth_argument.eris.api.repository.UserRepository;
-import fourth_argument.eris.api.services.MessageService;
-import fourth_argument.eris.exceptions.ChannelException;
-import fourth_argument.eris.exceptions.MessageException;
-import fourth_argument.eris.exceptions.UserException;
+import fourthargument.eris.api.dto.MessageDTO;
+import fourthargument.eris.api.mapper.MessageMapper;
+import fourthargument.eris.api.model.Channel;
+import fourthargument.eris.api.model.Message;
+import fourthargument.eris.api.model.Server;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.repository.ChannelRepository;
+import fourthargument.eris.api.repository.MessageRepository;
+import fourthargument.eris.api.repository.UserRepository;
+import fourthargument.eris.api.services.MessageService;
+import fourthargument.eris.exceptions.ChannelException;
+import fourthargument.eris.exceptions.MessageException;
+import fourthargument.eris.exceptions.UserException;
 
 @ExtendWith(MockitoExtension.class)
 class MessageServiceTest {

@@ -14,26 +14,26 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fourth_argument.eris.api.dto.InvitationDTO;
-import fourth_argument.eris.api.dto.response.JoinInviteResponseDTO;
-import fourth_argument.eris.api.mapper.InvitationMapper;
-import fourth_argument.eris.api.model.Invitation;
-import fourth_argument.eris.api.model.Role;
-import fourth_argument.eris.api.model.Server;
-import fourth_argument.eris.api.model.ServerMember;
-import fourth_argument.eris.api.model.User;
-import fourth_argument.eris.api.repository.InvitationRepository;
-import fourth_argument.eris.api.repository.RoleRepository;
-import fourth_argument.eris.api.repository.ServerMemberRepository;
-import fourth_argument.eris.api.repository.ServerRepository;
-import fourth_argument.eris.api.repository.UserRepository;
-import fourth_argument.eris.api.services.InvitationService;
-import fourth_argument.eris.api.services.ServerMemberService;
-import fourth_argument.eris.api.services.UserService;
-import fourth_argument.eris.exceptions.RoleException;
-import fourth_argument.eris.exceptions.ServerException;
-import fourth_argument.eris.exceptions.ServerMemberException;
-import fourth_argument.eris.exceptions.UserException;
+import fourthargument.eris.api.dto.InvitationDTO;
+import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
+import fourthargument.eris.api.mapper.InvitationMapper;
+import fourthargument.eris.api.model.Invitation;
+import fourthargument.eris.api.model.Role;
+import fourthargument.eris.api.model.Server;
+import fourthargument.eris.api.model.ServerMember;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.repository.InvitationRepository;
+import fourthargument.eris.api.repository.RoleRepository;
+import fourthargument.eris.api.repository.ServerMemberRepository;
+import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.repository.UserRepository;
+import fourthargument.eris.api.services.InvitationService;
+import fourthargument.eris.api.services.ServerMemberService;
+import fourthargument.eris.api.services.UserService;
+import fourthargument.eris.exceptions.RoleException;
+import fourthargument.eris.exceptions.ServerException;
+import fourthargument.eris.exceptions.ServerMemberException;
+import fourthargument.eris.exceptions.UserException;
 
 @ExtendWith(MockitoExtension.class)
 class InvitationServiceTest {
