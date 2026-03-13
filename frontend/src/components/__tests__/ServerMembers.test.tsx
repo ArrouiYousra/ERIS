@@ -3,9 +3,13 @@ import { render, screen } from "@testing-library/react";
 import { ServerMembers } from "../ServersMembers";
 import { vi, type Mock } from 'vitest';
 
-vi.mock("../../hooks/useServers", () => ({
-  useServerMember: vi.fn(),
-}));
+vi.mock("../../hooks/useServers", async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
+  return {
+    ...actual,
+    useServerMembers: vi.fn(),
+  };
+});
 
 import { useServerMembers } from "../../hooks/useServers";
 

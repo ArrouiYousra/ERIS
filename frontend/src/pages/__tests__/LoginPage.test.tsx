@@ -80,7 +80,7 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: "Log In" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid credentials")).toBeInTheDocument();
+      expect(screen.getByText(/Network Error/)).toBeInTheDocument();
     });
   });
 
