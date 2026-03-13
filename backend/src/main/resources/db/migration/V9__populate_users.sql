@@ -8,6 +8,15 @@ INSERT INTO users (
     updated_at
 ) VALUES
 (
+    'SystemBot',
+    'bot@eris.com',
+    '$2a$10$fakehashedpasswordalex',
+    'SystemBot',
+    'online',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+),
+(
     'alex',
     'alex@test.com',
     '$2a$10$fakehashedpasswordalex',

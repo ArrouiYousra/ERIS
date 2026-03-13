@@ -5,6 +5,7 @@ import {
   createServer,
   updateServer,
   deleteServer as deleteServerApi,
+  leaveServer,
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
@@ -60,6 +61,16 @@ export function useDeleteServer() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => deleteServerApi(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+    },
+  });
+}
+
+export function useLeaveServer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => leaveServer(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["servers"] });
     },

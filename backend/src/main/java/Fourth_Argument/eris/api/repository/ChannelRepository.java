@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import Fourth_Argument.eris.api.model.Channel;
+import Fourth_Argument.eris.api.model.Server;
 
 public interface ChannelRepository extends CrudRepository<Channel, Long> {
 
@@ -18,5 +19,7 @@ public interface ChannelRepository extends CrudRepository<Channel, Long> {
     @Transactional
     @Query("DELETE FROM Channel c WHERE c.server.id = :serverId")
     void deleteAllByServerId(Long serverId);
+
+    List<Channel> getChannelsByServer(Server server);
 
 }
