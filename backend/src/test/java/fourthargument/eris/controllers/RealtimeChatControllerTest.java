@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.controllers;
+package fourthargument.eris.controllers;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

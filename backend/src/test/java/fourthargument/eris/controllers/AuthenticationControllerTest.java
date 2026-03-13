@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.controllers;
+package fourthargument.eris.controllers;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -85,15 +85,21 @@ class AuthenticationControllerTest {
     void getMe_success() throws Exception {
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("test@example.com");
-        when(userService.getUserEntityByEmail("test@example.com")).thenReturn(testUser);
 
+        // 2. CORRECTION : On mocke getUserByEmail (et non getUserEntityByEmail)
+        // On s'assure de renvoyer un DTO et non une entité si c'est ce que le service
+        // attend
+        UserResponseDTO mockResponse = new UserResponseDTO(1L, "test@example.com", "username", "alex");
+        when(userService.getUserByEmail("test@example.com")).thenReturn(mockResponse);
+
+        // 3. Appel
         ResponseEntity<UserResponseDTO> response = controller.getMe(userDetails);
 
+        // 4. Assertions
         assertEquals(200, response.getStatusCode().value());
-        UserResponseDTO body = response.getBody();
-        assertNotNull(body);
-        assertEquals(1L, body.getId());
-        assertEquals("test@example.com", body.getEmail());
+        assertNotNull(response.getBody()); // Cette fois, ce ne sera plus null !
+        assertEquals(1L, response.getBody().getId());
+        assertEquals("test@example.com", response.getBody().getEmail());
     }
 
     @Test

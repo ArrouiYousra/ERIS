@@ -1,4 +1,4 @@
-package Fourth_Argument.eris;
+package fourthargument.eris;
 
 import org.junit.jupiter.api.Test;
 

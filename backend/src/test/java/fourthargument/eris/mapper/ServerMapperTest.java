@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.mapper;
+package fourthargument.eris.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 

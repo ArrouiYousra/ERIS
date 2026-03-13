@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.controllers;
+package fourthargument.eris.controllers;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,7 +21,7 @@ import fourthargument.eris.api.model.Server;
 import fourthargument.eris.api.model.User;
 import fourthargument.eris.api.repository.ChannelRepository;
 import fourthargument.eris.api.services.MessageService;
-import fourthargument.eris.exceptions.MessageException;
+import fourthargument.eris.exceptions.ChannelException;
 
 @ExtendWith(MockitoExtension.class)
 class MessageControllerTest {
@@ -71,20 +71,22 @@ class MessageControllerTest {
 
     @Test
     void getMessageHistory_success() throws Exception {
-        when(channelRepository.findById(1L)).thenReturn(Optional.of(channel));
-        when(messageService.getMessageHistory(channel.getId())).thenReturn(List.of(messageDTO));
+        when(messageService.getMessageHistory(1L)).thenReturn(List.of(messageDTO));
 
         ResponseEntity<List<MessageDTO>> response = controller.getMessageHistory(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
+
+        verify(messageService).getMessageHistory(1L);
     }
 
     @Test
-    void getMessageHistory_channelNotFound() {
+    void getMessageHistory_channelNotFound() throws Exception {
         when(channelRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(MessageException.class,
+        assertThrows(ChannelException.class,
                 () -> controller.getMessageHistory(99L));
     }
 

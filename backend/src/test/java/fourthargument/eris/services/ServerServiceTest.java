@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.services;
+package fourthargument.eris.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

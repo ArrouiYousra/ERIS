@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.exceptions;
+package fourthargument.eris.exceptions;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

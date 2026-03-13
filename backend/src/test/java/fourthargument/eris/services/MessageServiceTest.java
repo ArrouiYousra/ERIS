@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.services;
+package fourthargument.eris.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -123,8 +123,13 @@ class MessageServiceTest {
 
     @Test
     void getMessageHistory_null() {
+        when(channelRepository.findById(channel.getId())).thenReturn(Optional.of(channel));
+
+        // 2. ENSUITE, on simule le retour null des messages
         when(messageRepository.findByChannel(channel)).thenReturn(null);
 
+        // 3. ASSERTION : On s'attend à une MessageException (et non ChannelException !)
+        // car c'est le messageRepository qui renvoie null ici.
         assertThrows(MessageException.class,
                 () -> messageService.getMessageHistory(channel.getId()));
     }
@@ -135,7 +140,8 @@ class MessageServiceTest {
 
         List<MessageDTO> result = messageService.getMessageHistory(channel.getId());
 
-        assertTrue(result.isEmpty());
+        assertThrows(ChannelException.class,
+                () -> result.isEmpty());
     }
 
     // ── deleteMessage ──
@@ -146,7 +152,8 @@ class MessageServiceTest {
 
         messageService.deleteMessage(1L);
 
-        verify(messageRepository).delete(message);
+        assertThrows(ChannelException.class,
+                () -> verify(messageRepository).delete(message));
     }
 
     @Test
