@@ -235,24 +235,32 @@
 
 			<plugin>
             <groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<version>3.13.0</version>
-			<configuration>
-				<source>21</source>
-				<target>21</target>
-				<release>21</release>
-
-
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.13.0</version>
+            <configuration>
+                <source>21</source>
+                <target>21</target>
+                <release>21</release>
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
-                        <version>1.18.42</version>
-                    </path>
+                        <version>1.18.30</version> </path>
                 </annotationProcessorPaths>
             </configuration>
         </plugin>
 
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>3.3.1</version>
+            <configuration>
+                <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+                <consoleOutput>true</consoleOutput>
+                <failsOnError>true</failsOnError>
+                <linkXRef>false</linkXRef>
+            </configuration>
+        </plugin>
 			<!-- JaCoCo for code coverage -->
 			<plugin>
 				<groupId>org.jacoco</groupId>

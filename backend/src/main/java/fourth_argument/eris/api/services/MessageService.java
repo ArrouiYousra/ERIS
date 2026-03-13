@@ -1,0 +1,79 @@
+package fourth_argument.eris.api.services;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import fourth_argument.eris.api.dto.MessageDTO;
+import fourth_argument.eris.api.mapper.MessageMapper;
+import fourth_argument.eris.api.model.Channel;
+import fourth_argument.eris.api.model.Message;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.repository.ChannelRepository;
+import fourth_argument.eris.api.repository.MessageRepository;
+import fourth_argument.eris.api.repository.UserRepository;
+import fourth_argument.eris.exceptions.ChannelException;
+import fourth_argument.eris.exceptions.MessageException;
+import fourth_argument.eris.exceptions.UserException;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class MessageService {
+
+    private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
+    private final MessageMapper messageMapper;
+
+    public MessageDTO sendMessage(MessageDTO dto, Long channelId) throws ChannelException, UserException {
+
+        User sender = userRepository.findById(dto.senderId())
+                .orElseThrow(() -> new UserException("User not found"));
+
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new ChannelException("Channel not found"));
+
+        Message messageSend = messageMapper.toEntity(dto, sender, channel);
+
+        Message saved = messageRepository.save(messageSend);
+
+        return messageMapper.toDTO(saved);
+
+    }
+
+    public List<MessageDTO> getMessageHistory(Long channelId) throws MessageException, ChannelException {
+
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new ChannelException("This channel is not found !"));
+
+        List<Message> messages = messageRepository.findByChannel(channel);
+
+        if (messages == null) {
+            throw new MessageException("Aucun message dans ce serveur !");
+        }
+
+        List<MessageDTO> dtoList = messages.stream()
+                .map(messageMapper::toDTO)
+                .toList();
+
+        return dtoList;
+
+    }
+
+    public void deleteMessage(Long messageId) throws MessageException {
+
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new MessageException("Pas de message trouvé"));
+
+        messageRepository.delete(message);
+
+    }
+
+    public void deleteMessages(List<Message> messages) {
+
+        messageRepository.deleteAll(messages);
+
+    }
+
+}

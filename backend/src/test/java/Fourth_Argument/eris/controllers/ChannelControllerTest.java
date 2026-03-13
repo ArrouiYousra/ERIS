@@ -14,9 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import Fourth_Argument.eris.api.controllers.ChannelController;
-import Fourth_Argument.eris.api.dto.ChannelDTO;
-import Fourth_Argument.eris.api.services.ChannelService;
+import fourth_argument.eris.api.controllers.ChannelController;
+import fourth_argument.eris.api.dto.ChannelDTO;
+import fourth_argument.eris.api.services.ChannelService;
 
 @ExtendWith(MockitoExtension.class)
 class ChannelControllerTest {

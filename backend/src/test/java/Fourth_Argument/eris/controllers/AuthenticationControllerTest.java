@@ -12,15 +12,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import Fourth_Argument.eris.api.controllers.AuthenticationController;
-import Fourth_Argument.eris.api.dto.request.LoginRequestDTO;
-import Fourth_Argument.eris.api.dto.request.UserRequestDTO;
-import Fourth_Argument.eris.api.dto.response.LoginResponseDTO;
-import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.services.AuthenticationService;
-import Fourth_Argument.eris.api.services.JwtService;
-import Fourth_Argument.eris.api.services.UserService;
+import fourth_argument.eris.api.controllers.AuthenticationController;
+import fourth_argument.eris.api.dto.request.LoginRequestDTO;
+import fourth_argument.eris.api.dto.request.UserRequestDTO;
+import fourth_argument.eris.api.dto.response.LoginResponseDTO;
+import fourth_argument.eris.api.dto.response.UserResponseDTO;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.services.AuthenticationService;
+import fourth_argument.eris.api.services.JwtService;
+import fourth_argument.eris.api.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationControllerTest {

@@ -18,13 +18,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import Fourth_Argument.eris.api.model.Role;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.ServerMember;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.repository.ServerMemberRepository;
-import Fourth_Argument.eris.api.repository.ServerRepository;
-import Fourth_Argument.eris.api.services.PresenceTracker;
+import fourth_argument.eris.api.model.Role;
+import fourth_argument.eris.api.model.Server;
+import fourth_argument.eris.api.model.ServerMember;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.repository.ServerMemberRepository;
+import fourth_argument.eris.api.repository.ServerRepository;
+import fourth_argument.eris.api.services.PresenceTracker;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

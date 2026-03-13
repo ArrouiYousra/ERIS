@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
-import Fourth_Argument.eris.api.dto.MessageDTO;
-import Fourth_Argument.eris.api.mapper.MessageMapper;
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Message;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.User;
+import fourth_argument.eris.api.dto.MessageDTO;
+import fourth_argument.eris.api.mapper.MessageMapper;
+import fourth_argument.eris.api.model.Channel;
+import fourth_argument.eris.api.model.Message;
+import fourth_argument.eris.api.model.Server;
+import fourth_argument.eris.api.model.User;
 
 class MessageMapperTest {
 

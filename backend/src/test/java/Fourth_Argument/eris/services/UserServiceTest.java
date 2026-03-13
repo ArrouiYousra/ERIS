@@ -12,12 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import Fourth_Argument.eris.api.dto.response.UserResponseDTO;
-import Fourth_Argument.eris.api.mapper.UserMapper;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.repository.UserRepository;
-import Fourth_Argument.eris.api.services.UserService;
-import Fourth_Argument.eris.exceptions.UserException;
+import fourth_argument.eris.api.dto.response.UserResponseDTO;
+import fourth_argument.eris.api.mapper.UserMapper;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.repository.UserRepository;
+import fourth_argument.eris.api.services.UserService;
+import fourth_argument.eris.exceptions.UserException;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
