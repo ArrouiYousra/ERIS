@@ -300,19 +300,6 @@ export function ChannelList({
         )}
       </div>
 
-<<<<<<< HEAD
-      {/* Channel settings page */}
-      <ChannelSettings
-        isOpen={!!channelToEdit}
-        channel={channelToEdit}
-        isPrivate={channelToEdit?.isPrivate}
-        onClose={() => setChannelToEdit(null)}
-        onSave={handleSaveChannel}
-        onDelete={handleDeleteChannel}
-      />
-
-=======
->>>>>>> eeca5dd (task: Improve mobile chat UX)
       {/* Channel creation wizard */}
       <ChannelWizard
         isOpen={showChannelWizard}

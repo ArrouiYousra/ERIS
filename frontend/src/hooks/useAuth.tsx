@@ -9,13 +9,6 @@ import { login as loginApi, signup as signupApi } from "../api/authApi";
 import { api } from "../api/client";
 import type { AuthUser } from "../types/shared";
 
-type AuthUser = {
-  id: number;
-  email: string;
-  username: string;
-  displayName?: string;
-};
-
 type LoginResponse = {
   token: string;
   expiresIn: number;

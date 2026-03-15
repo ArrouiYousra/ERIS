@@ -14,6 +14,7 @@ import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
+import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.UserException;
