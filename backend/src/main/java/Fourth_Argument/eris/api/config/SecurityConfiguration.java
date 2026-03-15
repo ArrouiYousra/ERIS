@@ -24,7 +24,9 @@ public class SecurityConfiguration {
 
     public SecurityConfiguration(
             JwtAuthenticationFilter jwtAuthenticationFilter,
-            @Value("${app.cors.allowed-origins:http://localhost:5173}") String corsAllowedOrigins) {
+            AuthenticationProvider authenticationProvider,
+            @Value("${app.cors.allowed-origins:http://localhost:*,http://127.0.0.1:*}") String corsAllowedOrigins) {
+        this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.corsAllowedOrigins = corsAllowedOrigins;
     }
@@ -49,7 +51,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(
+        configuration.setAllowedOriginPatterns(
                 Arrays.stream(corsAllowedOrigins.split(","))
                         .map(String::trim)
                         .filter(origin -> !origin.isEmpty())

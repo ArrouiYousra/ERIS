@@ -1,20 +1,17 @@
-import { useState, useRef, useEffect } from "react";
+ import { useState, useRef, useEffect } from "react";
 import {
   Plus,
   Hash,
   Lock,
   ChevronDown,
-  Settings,
   UserPlus,
   Trash2,
 } from "lucide-react";
 import {
   useCreateChannel,
-  useUpdateChannel,
   useDeleteChannel,
 } from "../hooks/useChannels";
 import { ChannelWizard, type ChannelWizardData } from "./ChannelWizard";
-import { ChannelSettings } from "./ChannelSettings";
 import type { Channel } from "../api/channelsApi";
 import {
   createInvitation,
@@ -27,7 +24,7 @@ import { UserBar } from "./friends/UserBar";
 interface ChannelListProps {
   serverId: number | null;
   channels?: Channel[];
-  onSelectChannel: (channelId: number) => void;
+  onSelectChannel: (channelId: number | null) => void;
   selectedChannelId?: number | null;
   serverName?: string;
   serverMembers?: { id: number; username: string }[];
@@ -49,9 +46,7 @@ export function ChannelList({
 }: ChannelListProps) {
   const [showChannelWizard, setShowChannelWizard] = useState(false);
   const [channelsCategoryOpen, setChannelsCategoryOpen] = useState(true);
-  const [channelToEdit, setChannelToEdit] = useState<Channel | null>(null);
   const createChannel = useCreateChannel();
-  const updateChannel = useUpdateChannel();
   const deleteChannel = useDeleteChannel();
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteCode, setInviteCode] = useState("");
@@ -75,7 +70,7 @@ export function ChannelList({
   if (!serverId) {
     return (
       <div className="channel-list">
-        <div className="channel-list-empty">Message privés</div>
+        <div className="channel-list-empty">Messages prives</div>
       </div>
     );
   }
@@ -83,14 +78,11 @@ export function ChannelList({
   const handleCreateChannel = async (
     data: ChannelWizardData,
   ): Promise<number | null> => {
-    console.log("Creating channel with data:", data);
-    console.log("ServerId:", serverId);
     try {
       const result = await createChannel.mutateAsync({
         serverId,
         payload: { name: data.name, serverId },
       });
-      console.log("Channel created, result:", result);
       return result?.id ?? null;
     } catch (error) {
       console.error("Error creating channel:", error);
@@ -102,31 +94,25 @@ export function ChannelList({
     onSelectChannel(channelId);
   };
 
-  const handleSaveChannel = async (data: { name: string; topic: string }) => {
-    if (!channelToEdit || !serverId) return;
-    await updateChannel.mutateAsync({
-      channelId: channelToEdit.id,
-      serverId,
-      payload: { name: data.name, topic: data.topic },
-    });
-    // Update the local channel reference with new data
-    setChannelToEdit({ ...channelToEdit, name: data.name, topic: data.topic });
-  };
+  const handleDeleteChannel = async (channelId: number, channelName: string) => {
+    if (!serverId) return;
+    const confirmed = window.confirm(
+      `Supprimer le salon "${channelName}" ? Cette action est irreversible.`,
+    );
+    if (!confirmed) return;
 
-  const handleDeleteChannel = async () => {
-    if (!channelToEdit || !serverId) return;
     await deleteChannel.mutateAsync({
-      channelId: channelToEdit.id,
+      channelId,
       serverId,
     });
-    // If the deleted channel was selected, deselect it
-    if (selectedChannelId === channelToEdit.id) {
+
+    // If the deleted channel was selected, select another one or go back to server view
+    if (selectedChannelId === channelId) {
       const remainingChannels = channels.filter(
-        (c) => c.id !== channelToEdit.id,
+        (c) => c.id !== channelId,
       );
-      onSelectChannel(remainingChannels[0]?.id ?? 0);
+      onSelectChannel(remainingChannels[0]?.id ?? null);
     }
-    setChannelToEdit(null);
   };
 
   const handleCreateInvite = async () => {
@@ -134,11 +120,11 @@ export function ChannelList({
 
     try {
       const newInvite: InvitationDTO = await createInvitation(serverId);
-      alert(`Invite created! Code: ${newInvite.code}`);
+      alert(`Invitation creee ! Code : ${newInvite.code}`);
       // Optionally: copy to clipboard
       navigator.clipboard.writeText(newInvite.code);
     } catch (err) {
-      console.error("Failed to create invite:", err);
+      console.error("Echec de creation de l'invitation :", err);
     }
   };
 
@@ -147,13 +133,13 @@ export function ChannelList({
 
     try {
       const response = await joinWithInvitation(inviteCode);
-      alert(`Joined server: ${response.serverName}`);
+      alert(`Serveur rejoint : ${response.serverName}`);
       setInviteCode(""); // clear input
       setShowInviteModal(false); // close modal if using one
       // Optionally: refresh server list / reload server data
     } catch (err) {
-      console.error("Failed to join server:", err);
-      alert("Invalid or expired invite code");
+      console.error("Echec de connexion via invitation :", err);
+      alert("Code d'invitation invalide ou expire");
     }
   };
 
@@ -162,23 +148,13 @@ export function ChannelList({
       {/* Server header with dropdown */}
       <div className="relative" ref={dropdownRef}>
         <div
-          onClick={() => setShowServerDropdown(!showServerDropdown)}
+          onClick={() => setShowServerDropdown(!showServerDropdown)} // toggle the server dropdown
           className="h-12 px-4 flex items-center justify-between border-b border-black/20 shadow-sm hover:bg-[#35373c] cursor-pointer transition-colors group"
         >
           <div className="flex items-center gap-1 flex-1 min-w-0">
-            <h2 className="text-white font-semibold truncate">{serverName}</h2>
             <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${showServerDropdown ? "rotate-180" : ""}`} />
+            <h2 className="text-white font-semibold truncate">{serverName}</h2>
           </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowInviteModal(true);
-            }}
-            className="icon-btn opacity-0 group-hover:opacity-100 text-gray-400 hover:text-white transition-all"
-            title="Inviter des personnes"
-          >
-            <UserPlus className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Server dropdown menu */}
@@ -304,22 +280,12 @@ export function ChannelList({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          // TODO: Invite functionality
+                          void handleDeleteChannel(channel.id, channel.name);
                         }}
-                        className="icon-btn text-gray-400 hover:text-gray-200 transition-colors"
-                        title="Créer une invitation"
+                        className="icon-btn text-red-400 hover:text-red-300 transition-colors"
+                        title="Supprimer le salon"
                       >
-                        <UserPlus className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setChannelToEdit(channel);
-                        }}
-                        className="icon-btn text-gray-400 hover:text-gray-200 transition-colors"
-                        title="Modifier le salon"
-                      >
-                        <Settings className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -334,6 +300,7 @@ export function ChannelList({
         )}
       </div>
 
+<<<<<<< HEAD
       {/* Channel settings page */}
       <ChannelSettings
         isOpen={!!channelToEdit}
@@ -344,6 +311,8 @@ export function ChannelList({
         onDelete={handleDeleteChannel}
       />
 
+=======
+>>>>>>> eeca5dd (task: Improve mobile chat UX)
       {/* Channel creation wizard */}
       <ChannelWizard
         isOpen={showChannelWizard}

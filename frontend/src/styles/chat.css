@@ -43,9 +43,24 @@
   min-height: 0;
 }
 
+.chat-mobile-back-button {
+  display: none !important;
+}
+
+.chat-dm-mobile-userbar {
+  position: fixed;
+  left: 56px;
+  right: 0;
+  bottom: 0;
+  z-index: 25;
+}
+
 .chat-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 72px;
   z-index: 20;
   border: none;
   background: rgba(0, 0, 0, 0.6);
@@ -180,12 +195,25 @@
     min-width: 192px;
   }
 
+  .chat-server-mode--mobile-list-only .chat-main-shell {
+    display: none;
+  }
+
+  .chat-server-mode--mobile-list-only .chat-sidebar--channels {
+    width: calc(100vw - 72px);
+    min-width: calc(100vw - 72px);
+  }
+
   .chat-main-welcome {
     padding: 28px 20px;
   }
 }
 
 @media (max-width: 768px) {
+  .chat-dm-wrapper {
+    padding-bottom: 52px;
+  }
+
   .chat-sidebar--servers {
     width: 56px;
     min-width: 56px;
@@ -196,10 +224,29 @@
     left: 56px;
   }
 
+  .chat-overlay {
+    left: 56px;
+  }
+
   .chat-sidebar--channels,
   .chat-dm-sidebar {
     width: min(76vw, 240px);
     min-width: min(76vw, 240px);
+  }
+
+  .chat-server-mode--mobile-list-only .chat-sidebar--channels {
+    width: calc(100vw - 56px);
+    min-width: calc(100vw - 56px);
+  }
+
+  .chat-server-mode--mobile-channel-open .chat-sidebar--channels {
+    display: none;
+  }
+
+  .chat-server-mode--mobile-channel-open .chat-main-shell {
+    display: flex;
+    flex: 1;
+    min-width: 0;
   }
 
   .chat-main-welcome {
@@ -221,6 +268,54 @@
   .chat-dm-sidebar {
     width: min(72vw, 208px);
     min-width: min(72vw, 208px);
+  }
+}
+
+@media (max-width: 400px) {
+  .chat-mobile-back-button {
+    display: inline-flex !important;
+  }
+
+  .chat-server-mode {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chat-server-mode .chat-sidebar--channels,
+  .chat-server-mode .chat-main-shell {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    min-width: 100%;
+    transition: transform 220ms ease, opacity 220ms ease;
+    will-change: transform, opacity;
+  }
+
+  .chat-server-mode--mobile-list-only .chat-sidebar--channels {
+    display: flex;
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .chat-server-mode--mobile-list-only .chat-main-shell {
+    display: flex;
+    transform: translateX(100%);
+    opacity: 0.75;
+    pointer-events: none;
+  }
+
+  .chat-server-mode--mobile-channel-open .chat-sidebar--channels {
+    display: flex;
+    transform: translateX(-100%);
+    opacity: 0.75;
+    pointer-events: none;
+  }
+
+  .chat-server-mode--mobile-channel-open .chat-main-shell {
+    display: flex;
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 

@@ -20,7 +20,7 @@ export function ServerBar({
 
   return (
     <aside
-      className="h-full w-[72px] max-sm:w-14 shrink-0 flex flex-col items-center py-3 max-sm:py-2 bg-[#0f1115] border-r border-white/[0.06]"
+      className="relative z-40 h-full w-[72px] max-sm:w-14 shrink-0 flex flex-col items-center py-3 max-sm:py-2 bg-[#0f1115] border-r border-white/[0.06]"
       aria-label="Barre des serveurs"
     >
       {/* Messages privés — actif = barre à gauche */}

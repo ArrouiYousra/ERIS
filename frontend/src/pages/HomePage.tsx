@@ -1,17 +1,10 @@
-import { useEffect, useState } from "react";
 import { Header } from "../components/Header";
 import erisIcone from "../assets/eris_icone.png";
 import "../styles/home.css";
 
 export function HomePage() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
-    <div className={`home-page ${mounted ? "home-page--visible" : ""}`}>
+    <div className="home-page home-page--visible">
       <Header />
       {/* Hero Section */}
       <section className="home-hero">

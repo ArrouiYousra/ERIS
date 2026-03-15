@@ -1,5 +1,6 @@
 import { type SubmitEventHandler, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/auth.css";
 import "../styles/signup.css";
@@ -14,6 +15,18 @@ export function SignupPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const getErrorMessage = (error: unknown) => {
+    if (axios.isAxiosError<{ message?: string; error?: string }>(error)) {
+      return (
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Error during registration. Please try again."
+      );
+    }
+    return "Error during registration. Please try again.";
+  };
+
   const onSubmit: SubmitEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     setError(null);
@@ -23,13 +36,9 @@ export function SignupPage() {
     try {
       await signup(email, username, password, displayName || "");
       navigate("/app");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Signup error:", err);
-      const errorMessage =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        err?.message ||
-        "Error during registration. Please try again.";
+      const errorMessage = getErrorMessage(err);
       setError(errorMessage);
     } finally {
       setLoading(false);

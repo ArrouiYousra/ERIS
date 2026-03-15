@@ -12,7 +12,7 @@ export interface UpdateServerPayload {
   name: string;
 }
 
-export async function createServer(payload: CreateServerPayload) {
+export async function createServer(payload: CreateServerPayload): Promise<Server> {
   const { data } = await api.post<Server>("/api/servers", payload);
   return data;
 }
@@ -27,8 +27,11 @@ export async function getServerById(id: number): Promise<Server> {
   return data;
 }
 
-export async function updateServer(id: number, payload: UpdateServerPayload) {
-  const { data } = await api.put(`/api/servers/${id}`, payload);
+export async function updateServer(
+  id: number,
+  payload: UpdateServerPayload,
+): Promise<Server> {
+  const { data } = await api.put<Server>(`/api/servers/${id}`, payload);
   return data;
 }
 

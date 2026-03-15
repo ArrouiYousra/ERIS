@@ -1,5 +1,6 @@
 import { type SubmitEventHandler, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/auth.css";
 import "../styles/login.css";
@@ -12,16 +13,22 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const getErrorMessage = (error: unknown) => {
+    if (axios.isAxiosError<{ message?: string }>(error)) {
+      return error.response?.data?.message || "Erreur de connexion. Vérifiez vos identifiants.";
+    }
+    return "Erreur de connexion. Vérifiez vos identifiants.";
+  };
+
   const onSubmit: SubmitEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
 
     try {
       await login(email, password);
       navigate("/app");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Erreur de connexion. Vérifiez vos identifiants.");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

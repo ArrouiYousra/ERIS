@@ -4,10 +4,17 @@ import {
   useServers,
   useCreateServer,
   useDeleteServer,
+  useLeaveServer,
 } from "../hooks/useServers";
 import { useAuth } from "../hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
-import { ServerBar, RightPanel, UserBar } from "../components/friends";
+import type { Channel } from "../api/channelsApi";
+import type { Server } from "../api/serversApi";
+import {
+  ServerBar,
+  RightPanel,
+  UserBar,
+} from "../components/friends";
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
 import { ServerGate } from "../components/ServerGate";
@@ -18,12 +25,6 @@ import {
 import "../styles/chat.css";
 import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
-import { useServerMembers } from "../hooks/useServers";
-import { usePresence } from "../hooks/usePresence";
-import type { Channel } from "../api/channelsApi";
-import type { Server } from "../api/serversApi";
-import type { ServerMember } from "../api/serverMembersApi";
-import { useServerSocket } from '../hooks/useServerSocket';
 
 export function ChatLayout() {
   const queryClient = useQueryClient();
@@ -32,20 +33,15 @@ export function ChatLayout() {
     null,
   );
 
-  const { data: members = [] } = useServerMembers(selectedServerId);
-  const { onlineUserIds } = usePresence(selectedServerId);
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [serverModalOpen, setServerModalOpen] = useState(false);
-  const [showMemberList, setShowMemberList] = useState(true);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [mobileMemberListOpen, setMobileMemberListOpen] = useState(false);
 
   const { user } = useAuth();
   const { data: servers = [] } = useServers();
   const { data: channels = [] } = useChannels(selectedServerId);
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
-  useServerSocket();
+  const leaveServer = useLeaveServer();
 
   const serverIds = servers.map((s: Server) => s.id);
   const serverNames = Object.fromEntries(
@@ -56,11 +52,7 @@ export function ChatLayout() {
 
   // Check if current user is the owner of the selected server
   const currentServer = servers.find((s: Server) => s.id === selectedServerId);
-  const isServerOwner = !!(
-    currentServer &&
-    user &&
-    currentServer.ownerId === user.id
-  );
+  const isServerOwner = !!(currentServer && user && currentServer.ownerId === user.id);
   const selectedChannel = channels.find(
     (channel: Channel) => channel.id === selectedChannelId,
   );
@@ -74,11 +66,7 @@ export function ChatLayout() {
 
   const handleSelectServer = (id: number | null) => {
     setSelectedServerId(id);
-    setMobileSidebarOpen(false);
-    setMobileMemberListOpen(false);
-    if (id === null) {
-      setSelectedChannelId(null);
-    }
+    setSelectedChannelId(null);
   };
 
   // Handler for ServerWizard modal (full data object)
@@ -86,16 +74,13 @@ export function ChatLayout() {
     data: ServerWizardData,
   ): Promise<number | null> => {
     const result = await createServer.mutateAsync({ name: data.name });
-    console.log("Server created, API response:", result);
-    console.log("Server ID from response:", result?.id);
     return result?.id ?? null;
   };
 
   // Handler for navigating to a newly created server
   const handleGoToServer = (serverId: number) => {
-    console.log("handleGoToServer called with serverId:", serverId);
-    console.log("Current serverIds in list:", serverIds);
     setSelectedServerId(serverId);
+    setSelectedChannelId(null);
   };
 
   // Handler for ServerGate (simple string name - legacy)
@@ -110,13 +95,15 @@ export function ChatLayout() {
     setServerModalOpen(false);
   };
 
-  const handleToggleMemberList = () => {
-    if (typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches) {
-      setShowMemberList((prev) => !prev);
-      return;
+  const handleLeaveServer = async () => {
+    if (!selectedServerId) return;
+    try {
+      await leaveServer.mutateAsync(selectedServerId);
+      setSelectedServerId(null);
+      setSelectedChannelId(null);
+    } catch (error) {
+      console.error("Impossible de quitter le serveur :", error);
     }
-    setMobileSidebarOpen(false);
-    setMobileMemberListOpen((open) => !open);
   };
 
   return (
@@ -147,38 +134,21 @@ export function ChatLayout() {
             collapsed={rightPanelCollapsed}
             onToggle={() => setRightPanelCollapsed((c) => !c)}
           />
+          <div className="chat-dm-mobile-userbar md:hidden">
+            <UserBar />
+          </div>
         </div>
       ) : (
-        <div className="chat-server-mode">
-          {mobileSidebarOpen && (
-            <button
-              type="button"
-              className="chat-overlay lg:hidden"
-              onClick={() => setMobileSidebarOpen(false)}
-              aria-label="Fermer la liste des salons"
-            />
-          )}
-          {mobileMemberListOpen && (
-            <button
-              type="button"
-              className="chat-overlay lg:hidden"
-              onClick={() => setMobileMemberListOpen(false)}
-              aria-label="Fermer la liste des membres"
-            />
-          )}
-
+        <div
+          className={`chat-server-mode ${selectedChannelId === null ? "chat-server-mode--mobile-list-only" : ""} ${selectedChannelId !== null ? "chat-server-mode--mobile-channel-open" : ""}`}
+        >
           {/* Mode serveur : sidebar canaux + zone messages */}
-          <div
-            className={`chat-sidebar chat-sidebar--channels shrink-0 chat-sidebar-drawer ${
-              mobileSidebarOpen ? "chat-drawer-visible" : "chat-drawer-hidden-left"
-            }`}
-          >
+          <div className="chat-sidebar chat-sidebar--channels shrink-0">
             <ChannelList
               serverId={selectedServerId}
               channels={channels}
               onSelectChannel={(channelId) => {
                 setSelectedChannelId(channelId);
-                setMobileSidebarOpen(false);
               }}
               selectedChannelId={selectedChannelId}
               serverName={
@@ -192,85 +162,15 @@ export function ChatLayout() {
             <div className="chat-main-messages">
               <MessageList
                 channelId={selectedChannelId}
-                channelName={channels.find((c: any) => c.id === selectedChannelId)?.name}
-                channelTopic={(channels.find((c: any) => c.id === selectedChannelId) as any)?.topic}
-                isPrivate={(channels.find((c: any) => c.id === selectedChannelId) as any)?.isPrivate}
+                serverId={selectedServerId}
+                channelName={selectedChannel?.name}
+                channelTopic={selectedChannel?.topic}
+                isPrivate={selectedChannel?.isPrivate}
                 serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
-                showMemberList={showMemberList || mobileMemberListOpen}
-                onToggleSidebar={() => {
-                  setMobileMemberListOpen(false);
-                  setMobileSidebarOpen((open) => !open);
-                }}
-                onToggleMemberList={handleToggleMemberList}
+                onToggleSidebar={() => setSelectedChannelId(null)}
+                onLeaveServer={handleLeaveServer}
               />
             </div>
-            {(showMemberList || mobileMemberListOpen) && (() => {
-              const onlineMembers = members.filter((m: any) => onlineUserIds.has(m.userId));
-              const offlineMembers = members.filter((m: any) => !onlineUserIds.has(m.userId));
-              return (
-                <div
-                  className={`chat-member-list chat-member-drawer shrink-0 ${
-                    mobileMemberListOpen ? "chat-drawer-visible" : "chat-drawer-hidden-right"
-                  }`}
-                >
-                  <div className="chat-member-list-content p-4 space-y-3">
-                    {/* En ligne */}
-                    {onlineMembers.length > 0 && (
-                      <div>
-                        <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                          En ligne — {onlineMembers.length}
-                        </h3>
-                        <div className="space-y-0.5">
-                          {onlineMembers.map((member: any) => (
-                            <div key={member.userId} className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer">
-                              <div className="relative">
-                                <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
-                                  {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
-                                </div>
-                                <span className="text-gray-300 text-sm">
-                                  {member.nickname ||
-                                    member.username ||
-                                    `User ${member.userId}`}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {/* Hors ligne */}
-                      {offlineMembers.length > 0 && (
-                        <div>
-                          <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                            Hors ligne — {offlineMembers.length}
-                          </h3>
-                          <div className="space-y-0.5">
-                            {offlineMembers.map((member: ServerMember) => (
-                              <div
-                                key={member.userId}
-                                className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40"
-                              >
-                                <div className="relative">
-                                  <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
-                                    {(member.nickname || member.username || "U")
-                                      .charAt(0)
-                                      .toUpperCase()}
-                                  </div>
-                                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#80848e] rounded-full border-2 border-[#2b2d31]" />
-                                </div>
-                                <span className="text-gray-300 text-sm">
-                                  {member.nickname ||
-                                    member.username ||
-                                    `User ${member.userId}`}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })()}
           </div>
         </div>
       )}
