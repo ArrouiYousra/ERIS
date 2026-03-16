@@ -9,7 +9,7 @@ import {
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
-import { getServerMembers } from "../api/serverMembersApi";
+import { getServerMembers, updateMemberRole, getServerRoles } from "../api/serverMembersApi";
 
 import { useAuth } from "./useAuth";
 
@@ -81,6 +81,32 @@ export function useServerMembers(serverId: number | null) {
   return useQuery({
     queryKey: ["serverMembers", serverId],
     queryFn: () => (serverId ? getServerMembers(serverId) : []),
+    enabled: !!serverId,
+  });
+}
+
+export function useUpdateMemberRole() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      serverId,
+      memberId,
+      roleId,
+    }: {
+      serverId: number;
+      memberId: number;
+      roleId: number;
+    }) => updateMemberRole(serverId, memberId, roleId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+    },
+  });
+}
+
+export function useServerRoles(serverId: number | null) {
+  return useQuery({
+    queryKey: ["serverRoles", serverId],
+    queryFn: () => (serverId ? getServerRoles(serverId) : []),
     enabled: !!serverId,
   });
 }

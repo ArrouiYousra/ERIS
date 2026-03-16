@@ -27,8 +27,6 @@ public class ChannelService {
     private final ChannelRepository channelRepository;
     private final ServerRepository serverRepository;
     private final MessageRepository messageRepository;
-    private final UserService userService;
-    private final ServerMemberRepository serverMemberRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     public ChannelDTO createChannel(Long serverId, ChannelDTO dto) throws ChannelException, ServerException {
@@ -105,7 +103,7 @@ public class ChannelService {
 
         channelRepository.delete(channel);
 
-        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "DELETED", "channelId", id));
+        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "DELETED", "serverMemberId", id));
 
     }
 }
