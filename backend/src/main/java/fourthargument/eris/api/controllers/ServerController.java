@@ -140,4 +140,16 @@ public class ServerController {
 
         return ResponseEntity.status(HttpStatus.OK).body("Server left");
     }
+
+    @PutMapping("/{serverId}/members/{memberId}")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerOwner(#serverId, authentication.name)")
+    public ResponseEntity<String> updateMemberRole(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long serverId, @PathVariable Long memberId, @RequestBody UpdateMemberRoleRequestDTO dto)
+            throws RoleException, ServerException, ServerMemberException, UserException {
+
+        String email = userDetails.getUsername();
+        serverMemberService.updateServerMember(email, serverId, memberId, dto);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Member role updated");
+    }
 }
