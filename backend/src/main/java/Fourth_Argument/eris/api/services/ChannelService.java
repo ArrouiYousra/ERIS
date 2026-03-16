@@ -28,7 +28,6 @@ public class ChannelService {
     private final ServerRepository serverRepository;
     private final MessageRepository messageRepository;
     private final UserService userService;
-    private final ServerMemberRepository serverMemberRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     public ChannelDTO createChannel(Long serverId, ChannelDTO dto) throws ChannelException, ServerException {
