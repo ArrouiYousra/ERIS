@@ -22,6 +22,8 @@ import Fourth_Argument.eris.api.dto.ServerMemberDTO;
 import Fourth_Argument.eris.api.dto.request.JoinInviteRequestDTO;
 import Fourth_Argument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
 import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
+import Fourth_Argument.eris.api.dto.response.RoleResponseDTO;
+import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.services.InvitationService;
 import Fourth_Argument.eris.api.services.ServerMemberService;
@@ -149,5 +151,15 @@ public class ServerController {
         serverMemberService.updateServerMember(email, serverId, memberId, dto);
 
         return ResponseEntity.status(HttpStatus.OK).body("Member role updated");
+    }
+
+    @GetMapping("/{serverId}/roles")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
+    public ResponseEntity<List<RoleResponseDTO>> getServerRoles(@PathVariable Long serverId,
+            @AuthenticationPrincipal UserDetails userDetails) throws RoleException {
+
+        List<RoleResponseDTO> roles = serverService.getServerRoles(serverId);
+
+        return ResponseEntity.ok(roles);
     }
 }
