@@ -20,6 +20,7 @@ import fourthargument.eris.api.dto.InvitationDTO;
 import fourthargument.eris.api.dto.ServerDTO;
 import fourthargument.eris.api.dto.ServerMemberDTO;
 import fourthargument.eris.api.dto.request.JoinInviteRequestDTO;
+import fourthargument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
 import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
 import fourthargument.eris.api.dto.response.RoleResponseDTO;
 import fourthargument.eris.api.model.User;
