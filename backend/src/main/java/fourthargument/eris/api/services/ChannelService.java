@@ -103,7 +103,7 @@ public class ChannelService {
 
         channelRepository.delete(channel);
 
-        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "DELETED", "channelId", id));
+        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "DELETED", "serverMemberId", id));
 
     }
 }

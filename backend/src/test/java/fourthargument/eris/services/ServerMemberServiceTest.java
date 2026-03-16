@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
+import Fourth_Argument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
 import Fourth_Argument.eris.api.mapper.ServerMemberMapper;
 import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.Server;
@@ -132,12 +133,12 @@ class ServerMemberServiceTest {
 
     @Test
     void updateServerMember_success() throws Exception {
-        Role newRole = new Role();
-        newRole.setName("ADMIN");
+        UpdateMemberRoleRequestDTO dto = new UpdateMemberRoleRequestDTO();
+        dto.setRoleId(1L);
 
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
-        serverMemberService.updateServerMember(server, user, newRole);
+        serverMemberService.updateServerMember(user.getEmail(), server.getId(), user.getId(), dto);
 
         assertEquals("ADMIN", serverMember.getRole().getName());
         verify(serverMemberRepository).save(serverMember);
@@ -145,9 +146,12 @@ class ServerMemberServiceTest {
 
     @Test
     void updateServerMember_notFound() {
+        UpdateMemberRoleRequestDTO dto = new UpdateMemberRoleRequestDTO();
+        dto.setRoleId(1L);
+
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
 
         assertThrows(ServerMemberException.class,
-                () -> serverMemberService.updateServerMember(server, user, role));
+                () -> serverMemberService.updateServerMember(user.getEmail(), server.getId(), user.getId(), dto));
     }
 }

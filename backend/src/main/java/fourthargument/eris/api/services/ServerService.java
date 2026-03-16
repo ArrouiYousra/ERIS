@@ -31,6 +31,7 @@ public class ServerService {
 
     private final ServerRepository serverRepository;
     private final ServerMapper serverMapper;
+    private final RoleMapper roleMapper;
     private final ServerMemberRepository serverMemberRepository;
     private final ChannelRepository channelRepository;
     private final RoleRepository roleRepository;
@@ -137,4 +138,20 @@ public class ServerService {
         serverRepository.save(server);
     }
 
+<<<<<<< HEAD:backend/src/main/java/fourthargument/eris/api/services/ServerService.java
+=======
+    public List<RoleResponseDTO> getServerRoles(Long id) throws RoleException {
+        List<Role> roles = roleRepository.findAll();
+
+        if (roles == null) {
+            throw new RoleException("No role found");
+        }
+
+        List<RoleResponseDTO> roleDTOs = roles.stream()
+                .map(role -> roleMapper.toDTO(role))
+                .toList();
+
+        return roleDTOs;
+    }
+>>>>>>> feature/update-roles:backend/src/main/java/Fourth_Argument/eris/api/services/ServerService.java
 }

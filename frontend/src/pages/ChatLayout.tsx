@@ -25,8 +25,13 @@ import type { Channel } from "../api/channelsApi";
 import type { Server } from "../api/serversApi";
 import type { ServerMember } from "../api/serverMembersApi";
 import { useServerSocket } from '../hooks/useServerSocket';
+import { usePresenceSocket } from '../hooks/usePresenceSocket';
+
+import { MemberContextMenu } from "../components/MemberContextMenu";
 
 export function ChatLayout() {
+  const [ctxMenu, setCtxMenu] = useState<{ member: ServerMember; x: number; y: number } | null>(null);
+
   const queryClient = useQueryClient();
   const [selectedServerId, setSelectedServerId] = useState<number | null>(null);
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(
@@ -46,7 +51,9 @@ export function ChatLayout() {
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
   const leaveServer = useLeaveServer();
+  
   useServerSocket();
+  usePresenceSocket(selectedServerId);
 
   const serverIds = servers.map((s: Server) => s.id);
   const serverNames = Object.fromEntries(
@@ -222,6 +229,10 @@ export function ChatLayout() {
                               <div
                                 key={member.userId}
                                 className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer"
+                                onContextMenu={(e) => {
+                                  e.preventDefault();
+                                  setCtxMenu({ member, x: e.clientX, y: e.clientY });
+                                }}
                               >
                                 <div className="relative">
                                   <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
@@ -252,6 +263,10 @@ export function ChatLayout() {
                               <div
                                 key={member.userId}
                                 className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40"
+                                onContextMenu={(e) => {
+                                  e.preventDefault();
+                                  setCtxMenu({ member, x: e.clientX, y: e.clientY });
+                                }}
                               >
                                 <div className="relative">
                                   <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
@@ -286,6 +301,18 @@ export function ChatLayout() {
         onCreateServer={handleCreateServerFromWizard}
         onGoToServer={handleGoToServer}
       />
+      {ctxMenu && (
+        <MemberContextMenu
+          member={ctxMenu.member}
+          serverId={selectedServerId!}
+          isOwner={isServerOwner}
+          currentUserId={user!.id}
+          position={{ x: ctxMenu.x, y: ctxMenu.y }}
+          onClose={() => setCtxMenu(null)}
+          onKick={(m) => console.log("kick", m)}
+          onBan={(m) => console.log("ban", m)}
+        />
+      )}
     </div>
   );
 }
