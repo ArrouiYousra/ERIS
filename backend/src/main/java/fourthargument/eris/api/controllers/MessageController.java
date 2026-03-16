@@ -42,7 +42,7 @@ public class MessageController {
     @GetMapping("/channels/{id}/messages")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MessageDTO>> getMessageHistory(
-            @PathVariable Long id) throws MessageException {
+            @PathVariable Long id) throws MessageException, ChannelException {
 
         List<MessageDTO> messages = messageService.getMessageHistoryChannel(id);
 
@@ -53,7 +53,7 @@ public class MessageController {
     @DeleteMapping("/messages/{id}")
     @PreAuthorize("isAuthenticated() and @messageSecurityService.canDeleteMessage(#id, authentication.name)")
     public ResponseEntity<String> deleteMessage(
-            @PathVariable Long id) throws MessageException {
+            @PathVariable Long id) throws MessageException, ChannelException {
 
         messageService.deleteMessage(id);
 
