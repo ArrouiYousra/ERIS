@@ -7,7 +7,8 @@ const mockUseAuth = vi.fn();
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => mockUseAuth(),
-  AuthProvider: ({ children }: any) => children,
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+
 }));
 
 vi.mock('../../api/wsApi', () => ({
@@ -16,7 +17,7 @@ vi.mock('../../api/wsApi', () => ({
     publish: vi.fn(),
     connected: false,
   }),
-  SocketProvider: ({ children }: any) => children,
+  SocketProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock('../../pages/ChatLayout', () => ({
