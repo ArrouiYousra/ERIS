@@ -89,6 +89,8 @@ class ServerMemberServiceTest {
 
     @Test
     void deleteServerMember_success() throws Exception {
+        when(userService.getUserEntityByEmail(user.getEmail())).thenReturn(user);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
         serverMemberService.deleteServerMember(user.getEmail(), server.getId());
@@ -97,7 +99,9 @@ class ServerMemberServiceTest {
     }
 
     @Test
-    void deleteServerMember_notFound() {
+    void deleteServerMember_notFound() throws Exception {
+        when(userService.getUserEntityByEmail(user.getEmail())).thenReturn(user);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
 
         assertThrows(ServerMemberException.class,

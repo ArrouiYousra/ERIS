@@ -44,7 +44,10 @@ public class ChannelService {
             throw new ChannelException("Le channel doit avoir un nom !");
         }
 
-        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "CREATED", "channelId", savedChannel.getId()));
+        if (messagingTemplate != null) {
+            messagingTemplate.convertAndSend("/topic/channels",
+                    (Object) Map.of("type", "CREATED", "channelId", savedChannel.getId()));
+        }
 
 
         return channelMapper.toDTO(savedChannel);
@@ -106,7 +109,9 @@ public class ChannelService {
 
         channelRepository.delete(channel);
 
-        messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "DELETED", "channelId", id));
+        if (messagingTemplate != null) {
+            messagingTemplate.convertAndSend("/topic/channels", (Object) Map.of("type", "DELETED", "channelId", id));
+        }
 
     }
 }

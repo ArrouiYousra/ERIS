@@ -40,7 +40,7 @@ public class MessageController {
     @GetMapping("/channels/{id}/messages")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MessageDTO>> getMessageHistory(
-            @PathVariable Long id) throws MessageException, ChannelException {
+            @PathVariable Long id) throws MessageException {
 
         List<MessageDTO> messages = messageService.getMessageHistory(id);
 

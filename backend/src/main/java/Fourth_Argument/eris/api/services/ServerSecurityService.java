@@ -9,8 +9,6 @@ import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
-import Fourth_Argument.eris.api.repository.UserRepository;
-import Fourth_Argument.eris.exceptions.UserException;
 import lombok.AllArgsConstructor;
 
 @Service("serverSecurityService")
@@ -20,12 +18,11 @@ public class ServerSecurityService {
     private final ChannelRepository channelRepository;
     private final ServerRepository serverRepository;
     private final ServerMemberRepository serverMemberRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     public boolean isMemberOfServer(Long serverId, String userEmail) {
         try {
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new UserException("No user with this email exist !"));
+            User user = userService.getUserEntityByEmail(userEmail);
             Server server = serverRepository.findById(serverId).orElse(null);
 
             if (server == null || user == null) {
@@ -40,12 +37,14 @@ public class ServerSecurityService {
 
     public boolean isMemberOfChannel(Long channelId, String userEmail) {
         try {
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new UserException("No user with this email exist !"));
+            User user = userService.getUserEntityByEmail(userEmail);
             Channel channel = channelRepository.findById(channelId).orElse(null);
-            Server server = channel.getServer();
 
-            if (channel == null || server == null || user == null) {
+            if (channel == null || user == null) {
+                return false;
+            }
+            Server server = channel.getServer();
+            if (server == null) {
                 return false;
             }
 
@@ -57,8 +56,7 @@ public class ServerSecurityService {
 
     public boolean isServerAdmin(Long serverId, String userEmail) {
         try {
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new UserException("No user with this email exist !"));
+            User user = userService.getUserEntityByEmail(userEmail);
             Server server = serverRepository.findById(serverId).orElse(null);
 
             if (server == null || user == null) {
@@ -71,6 +69,9 @@ public class ServerSecurityService {
                 return false;
             }
 
+            if (serverMember.getRole() == null) {
+                return false;
+            }
             String roleName = serverMember.getRole().getName();
             return "OWNER".equals(roleName) || "ADMIN".equals(roleName);
         } catch (Exception e) {
@@ -80,12 +81,14 @@ public class ServerSecurityService {
 
     public boolean isChannelAdmin(Long channelId, String userEmail) {
         try {
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new UserException("No user with this email exist !"));
+            User user = userService.getUserEntityByEmail(userEmail);
             Channel channel = channelRepository.findById(channelId).orElse(null);
-            Server server = channel.getServer();
 
-            if (channel == null || server == null || user == null) {
+            if (channel == null || user == null) {
+                return false;
+            }
+            Server server = channel.getServer();
+            if (server == null) {
                 return false;
             }
 
@@ -95,6 +98,9 @@ public class ServerSecurityService {
                 return false;
             }
 
+            if (serverMember.getRole() == null) {
+                return false;
+            }
             String roleName = serverMember.getRole().getName();
             return "OWNER".equals(roleName) || "ADMIN".equals(roleName);
         } catch (Exception e) {
@@ -104,8 +110,7 @@ public class ServerSecurityService {
 
     public boolean isServerOwner(Long serverId, String userEmail) {
         try {
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new UserException("No user with this email exist !"));
+            User user = userService.getUserEntityByEmail(userEmail);
             Server server = serverRepository.findById(serverId).orElse(null);
 
             if (server == null || user == null) {
@@ -118,6 +123,9 @@ public class ServerSecurityService {
                 return false;
             }
 
+            if (serverMember.getRole() == null) {
+                return false;
+            }
             return "OWNER".equals(serverMember.getRole().getName());
         } catch (Exception e) {
             return false;

@@ -113,6 +113,7 @@ class MessageServiceTest {
 
     @Test
     void getMessageHistory_success() throws Exception {
+        when(channelRepository.findById(channel.getId())).thenReturn(Optional.of(channel));
         when(messageRepository.findByChannel(channel)).thenReturn(List.of(message));
         when(messageMapper.toDTO(message)).thenReturn(messageDTO);
 
@@ -123,6 +124,7 @@ class MessageServiceTest {
 
     @Test
     void getMessageHistory_null() {
+        when(channelRepository.findById(channel.getId())).thenReturn(Optional.of(channel));
         when(messageRepository.findByChannel(channel)).thenReturn(null);
 
         assertThrows(MessageException.class,
@@ -131,6 +133,7 @@ class MessageServiceTest {
 
     @Test
     void getMessageHistory_empty() throws Exception {
+        when(channelRepository.findById(channel.getId())).thenReturn(Optional.of(channel));
         when(messageRepository.findByChannel(channel)).thenReturn(Collections.emptyList());
 
         List<MessageDTO> result = messageService.getMessageHistory(channel.getId());

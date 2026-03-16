@@ -106,7 +106,8 @@ class AuthenticationControllerTest {
         ResponseEntity<UserResponseDTO> response = controller.getMe(userDetails);
 
         UserResponseDTO body = response.getBody();
-        // User.getUsername() returns email, so fallback is email
-        assertEquals("testuser", body.getEmail());
+        assertNotNull(body);
+        assertEquals("testuser", body.getUsername());
+        assertEquals("testuser", body.getDisplayName());
     }
 }

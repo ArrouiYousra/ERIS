@@ -42,10 +42,10 @@ public class MessageService {
 
     }
 
-    public List<MessageDTO> getMessageHistory(Long channelId) throws MessageException, ChannelException {
+    public List<MessageDTO> getMessageHistory(Long channelId) throws MessageException {
 
         Channel channel = channelRepository.findById(channelId)
-                .orElseThrow(() -> new ChannelException("This channel is not found !"));
+                .orElseThrow(() -> new MessageException("This channel is not found !"));
 
         List<Message> messages = messageRepository.findByChannel(channel);
 

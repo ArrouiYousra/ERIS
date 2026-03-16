@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,10 +15,6 @@ import org.springframework.http.ResponseEntity;
 
 import Fourth_Argument.eris.api.controllers.MessageController;
 import Fourth_Argument.eris.api.dto.MessageDTO;
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.repository.ChannelRepository;
 import Fourth_Argument.eris.api.services.MessageService;
 import Fourth_Argument.eris.exceptions.MessageException;
 
@@ -28,32 +23,15 @@ class MessageControllerTest {
 
     @Mock
     private MessageService messageService;
-    @Mock
-    private ChannelRepository channelRepository;
 
     private MessageController controller;
 
-    private Channel channel;
     private MessageDTO messageDTO;
 
     @BeforeEach
     void setUp() {
         // MessageController uses @RequiredArgsConstructor, create manually
         controller = new MessageController(messageService);
-
-        User owner = new User();
-        owner.setId(1L);
-        owner.setEmail("owner@test.com");
-
-        Server server = new Server();
-        server.setId(1L);
-        server.setName("Server");
-        server.setOwner(owner);
-
-        channel = new Channel();
-        channel.setId(1L);
-        channel.setName("general");
-        channel.setServer(server);
 
         messageDTO = new MessageDTO(1L, 1L, "sender@test.com", "Hello", 1L, null);
     }
@@ -71,8 +49,7 @@ class MessageControllerTest {
 
     @Test
     void getMessageHistory_success() throws Exception {
-        when(channelRepository.findById(1L)).thenReturn(Optional.of(channel));
-        when(messageService.getMessageHistory(channel.getId())).thenReturn(List.of(messageDTO));
+        when(messageService.getMessageHistory(1L)).thenReturn(List.of(messageDTO));
 
         ResponseEntity<List<MessageDTO>> response = controller.getMessageHistory(1L);
 
@@ -82,7 +59,7 @@ class MessageControllerTest {
 
     @Test
     void getMessageHistory_channelNotFound() {
-        when(channelRepository.findById(99L)).thenReturn(Optional.empty());
+        when(messageService.getMessageHistory(99L)).thenThrow(new MessageException("This channel is not found !"));
 
         assertThrows(MessageException.class,
                 () -> controller.getMessageHistory(99L));
