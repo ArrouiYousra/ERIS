@@ -8,10 +8,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import fourthargument.eris.api.dto.InvitationDTO;
+import fourthargument.eris.api.dto.MessageDTO;
 import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
 import fourthargument.eris.api.mapper.InvitationMapper;
 import fourthargument.eris.api.mapper.MessageMapper;
 import fourthargument.eris.api.model.Invitation;
+import fourthargument.eris.api.model.Message;
 import fourthargument.eris.api.model.Role;
 import fourthargument.eris.api.model.Server;
 import fourthargument.eris.api.model.ServerMember;
@@ -125,7 +127,7 @@ public class InvitationService {
 
         // Récupération des infos utilisées dans le cadre du message d'invit, Bot User +
         // General channel
-        User bot = userRepository.findByUsername("SystemBot");
+        User bot = userRepository.findByUsername("SystemBot").orElseThrow(() -> new UserException("Invalid username."));
 
         Role role = roleRepository.findByName("MEMBER")
                 .orElseThrow(() -> new RuntimeException("Role MEMBER not found"));

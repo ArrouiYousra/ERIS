@@ -1,4 +1,3 @@
-<<<<<<<< HEAD:backend/src/main/java/fourthargument/eris/api/mapper/UserMapper.java
 package fourthargument.eris.api.mapper;
 
 import org.springframework.stereotype.Component;
@@ -6,15 +5,6 @@ import org.springframework.stereotype.Component;
 import fourthargument.eris.api.dto.request.UserRequestDTO;
 import fourthargument.eris.api.dto.response.UserResponseDTO;
 import fourthargument.eris.api.model.User;
-========
-package fourth_argument.eris.api.mapper;
-
-import org.springframework.stereotype.Component;
-
-import fourth_argument.eris.api.dto.request.UserRequestDTO;
-import fourth_argument.eris.api.dto.response.UserResponseDTO;
-import fourth_argument.eris.api.model.User;
->>>>>>>> origin/feature/CI-backend:backend/src/main/java/fourth_argument/eris/api/mapper/UserMapper.java
 
 @Component
 public class UserMapper {

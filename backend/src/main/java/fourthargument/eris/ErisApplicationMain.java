@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/fourthargument/eris/ErisApplicationMain.java
 package fourthargument.eris;
-========
-package fourth_argument.eris;
->>>>>>>> origin/feature/CI-backend:backend/src/main/java/fourth_argument/eris/ErisApplicationMain.java
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
