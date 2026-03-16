@@ -228,7 +228,7 @@ class InvitationServiceTest {
         // 2. Mock du Bot (Le coupable !)
         User bot = new User();
         bot.setUsername("SystemBot");
-        when(userRepository.findByUsername("SystemBot")).thenReturn(Optional.of(bot));
+        when(userRepository.findByUsername("SystemBot")).thenReturn(bot);
 
         // 3. Mocks habituels
         when(userService.getUserEntityByEmail("joiner@example.com")).thenReturn(user);

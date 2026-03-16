@@ -1,9 +1,9 @@
-package Fourth_Argument.eris.api.repository;
+package fourthargument.eris.api.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import Fourth_Argument.eris.api.model.User;
+import fourthargument.eris.api.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

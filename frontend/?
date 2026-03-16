@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.api.config;
+package fourthargument.eris.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

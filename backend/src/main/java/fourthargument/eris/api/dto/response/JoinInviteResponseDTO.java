@@ -1,6 +1,6 @@
-package Fourth_Argument.eris.api.dto.response;
+package fourthargument.eris.api.dto.response;
 
-import Fourth_Argument.eris.api.model.Message;
+import fourthargument.eris.api.model.Message;
 import lombok.Getter;
 import lombok.Setter;
 
