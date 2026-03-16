@@ -10,8 +10,11 @@ import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.Server;
 import Fourth_Argument.eris.api.model.ServerMember;
 import Fourth_Argument.eris.api.model.User;
+import Fourth_Argument.eris.api.repository.ChannelRepository;
+import Fourth_Argument.eris.api.repository.MessageRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
+import Fourth_Argument.eris.api.repository.UserRepository;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
 import Fourth_Argument.eris.exceptions.UserException;
@@ -27,7 +30,10 @@ public class ServerMemberService {
     public ServerMemberService(
             ServerMemberRepository serverMemberRepository,
             ServerRepository serverRepository,
-            ServerMemberMapper mapper, UserService userService) {
+            ServerMemberMapper mapper, UserService userService,
+            ChannelRepository channelRepository,
+            MessageRepository messageRepository,
+            UserRepository userRepository) {
         this.serverMemberRepository = serverMemberRepository;
         this.serverRepository = serverRepository;
         this.serverMemberMapper = mapper;
@@ -45,7 +51,8 @@ public class ServerMemberService {
         serverMemberRepository.save(serverMember);
     }
 
-    public void deleteServerMember(String email, Long serverId) throws ServerException, ServerMemberException, UserException {
+    public void deleteServerMember(String email, Long serverId)
+            throws ServerException, ServerMemberException, UserException {
 
         User user = userService.getUserEntityByEmail(email);
         Server server = serverRepository.findById(serverId)
@@ -72,18 +79,16 @@ public class ServerMemberService {
                 .toList();
     }
 
-    public void updateServerMember(Server server, User user, Role role) throws
-    ServerMemberException {
-    ServerMember serverMember =
-    serverMemberRepository.findServerMemberByUserAndServer(user, server);
+    public void updateServerMember(Server server, User user, Role role) throws ServerMemberException {
+        ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
 
-    if (serverMember == null) {
-    throw new ServerMemberException("ServerMember not found");
-    }
+        if (serverMember == null) {
+            throw new ServerMemberException("ServerMember not found");
+        }
 
-    // tu ne peux pas changer le tien, il faut toujours un owner
-    // si tu changes en owner, le tien change en admin
-    serverMember.setRole(role);
-    serverMemberRepository.save(serverMember);
+        // tu ne peux pas changer le tien, il faut toujours un owner
+        // si tu changes en owner, le tien change en admin
+        serverMember.setRole(role);
+        serverMemberRepository.save(serverMember);
     }
 }
