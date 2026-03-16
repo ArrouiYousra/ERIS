@@ -1,7 +1,9 @@
 package Fourth_Argument.eris.api.services;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import Fourth_Argument.eris.api.dto.ServerMemberDTO;
@@ -33,6 +35,7 @@ public class ServerMemberService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final ServerService serverService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public void createServerMember(Server server, User user, Role role) throws ServerMemberException {
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
@@ -59,6 +62,8 @@ public class ServerMemberService {
         }
 
         serverMemberRepository.delete(serverMember);
+        messagingTemplate.convertAndSend("/topic/server_member", (Object) Map.of("type", "DELETED", "serverMemberId", serverMember.getId()));
+
     }
 
     public List<ServerMemberDTO> getMembersByServerId(Long serverId) throws ServerException {
@@ -87,12 +92,15 @@ public class ServerMemberService {
         }
 
         Role role = setMemberRoleById(serverMember, dto.getRoleId());
+        messagingTemplate.convertAndSend("/topic/server_member", serverMemberMapper.toDTO(serverMember));
 
         if (role.getName() == "OWNER") {
             User ownerUser = userService.getUserEntityByEmail(email);
             ServerMember ownerMember = serverMemberRepository.findServerMemberByUserAndServer(ownerUser, server);
             setMemberRoleByName(ownerMember, "ADMIN");
             serverService.changeOwner(server, user);
+
+            messagingTemplate.convertAndSend("/topic/server_member", serverMemberMapper.toDTO(ownerMember));
         }
     }
 

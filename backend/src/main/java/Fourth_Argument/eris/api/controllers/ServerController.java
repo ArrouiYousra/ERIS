@@ -23,7 +23,6 @@ import Fourth_Argument.eris.api.dto.request.JoinInviteRequestDTO;
 import Fourth_Argument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
 import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
 import Fourth_Argument.eris.api.dto.response.RoleResponseDTO;
-import Fourth_Argument.eris.api.model.Role;
 import Fourth_Argument.eris.api.model.User;
 import Fourth_Argument.eris.api.services.InvitationService;
 import Fourth_Argument.eris.api.services.ServerMemberService;
