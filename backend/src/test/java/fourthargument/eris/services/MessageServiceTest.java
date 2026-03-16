@@ -113,6 +113,7 @@ class MessageServiceTest {
 
     @Test
     void getMessageHistory_success() throws Exception {
+        when(channelRepository.findById(channel.getId())).thenReturn(Optional.of(channel));
         when(messageRepository.findByChannel(channel)).thenReturn(List.of(message));
         when(messageMapper.toDTO(message)).thenReturn(messageDTO);
 
@@ -136,12 +137,12 @@ class MessageServiceTest {
 
     @Test
     void getMessageHistory_empty() throws Exception {
+        when(channelRepository.findById(channel.getId())).thenReturn(Optional.of(channel));
         when(messageRepository.findByChannel(channel)).thenReturn(Collections.emptyList());
 
         List<MessageDTO> result = messageService.getMessageHistoryChannel(channel.getId());
 
-        assertThrows(ChannelException.class,
-                () -> result.isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     // ── deleteMessage ──
@@ -152,8 +153,8 @@ class MessageServiceTest {
 
         messageService.deleteMessage(1L);
 
-        assertThrows(ChannelException.class,
-                () -> verify(messageRepository).delete(message));
+        verify(messageRepository).delete(message);
+
     }
 
     @Test

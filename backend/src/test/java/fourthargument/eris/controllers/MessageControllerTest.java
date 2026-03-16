@@ -84,10 +84,12 @@ class MessageControllerTest {
 
     @Test
     void getMessageHistory_channelNotFound() throws Exception {
-        when(channelRepository.findById(null)).thenReturn(null);
+        when(messageService.getMessageHistoryChannel(99L))
+                .thenThrow(new ChannelException("This channel is not found !"));
 
+        // On vérifie que l'appel au service déclenche bien l'exception
         assertThrows(ChannelException.class,
-                () -> messageService.getMessageHistoryChannel(null));
+                () -> controller.getMessageHistory(99L));
     }
 
     @Test

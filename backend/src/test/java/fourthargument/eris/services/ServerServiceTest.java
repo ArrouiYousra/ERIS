@@ -2,6 +2,7 @@ package fourthargument.eris.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import fourthargument.eris.api.dto.ServerDTO;
 import fourthargument.eris.api.mapper.ServerMapper;
@@ -40,6 +42,8 @@ class ServerServiceTest {
     private ChannelRepository channelRepository;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks
     private ServerService serverService;
@@ -150,6 +154,7 @@ class ServerServiceTest {
         assertNotNull(result);
         verify(channelRepository).save(any(Channel.class));
         verify(serverMemberRepository).save(any());
+        verify(messagingTemplate).convertAndSend(eq("/topic/servers"), any(Object.class));
     }
 
     @Test

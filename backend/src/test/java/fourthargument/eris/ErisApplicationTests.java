@@ -2,8 +2,6 @@ package fourthargument.eris;
 
 import org.junit.jupiter.api.Test;
 
-import fourthargument.eris.ErisApplicationMain;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ErisApplicationTests {

@@ -1,16 +1,15 @@
 package fourthargument.eris.api.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserResponseDTO {
-
-    public UserResponseDTO(long l, String string, String string2, String string3) {
-    }
 
     private Long id;
     private String email;

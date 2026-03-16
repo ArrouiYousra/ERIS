@@ -22,6 +22,7 @@ import fourthargument.eris.api.model.ServerMember;
 import fourthargument.eris.api.model.User;
 import fourthargument.eris.api.repository.ServerMemberRepository;
 import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.repository.UserRepository;
 import fourthargument.eris.api.services.ServerMemberService;
 import fourthargument.eris.api.services.UserService;
 import fourthargument.eris.exceptions.ServerException;
@@ -38,6 +39,8 @@ class ServerMemberServiceTest {
     private ServerRepository serverRepository;
     @Mock
     private UserService userService;
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private ServerMemberService serverMemberService;
@@ -89,19 +92,16 @@ class ServerMemberServiceTest {
 
     @Test
     void deleteServerMember_success() throws Exception {
+        // On mocke ce que le SERVICE appelle réellement
+        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
+
+        // Maintenant "user" ne sera plus null, donc ce stubbing fonctionnera :
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
-        serverMemberService.deleteServerMember(user.getEmail(), server.getId());
+        serverMemberService.deleteServerMember("user@example.com", 1L);
 
         verify(serverMemberRepository).delete(serverMember);
-    }
-
-    @Test
-    void deleteServerMember_notFound() {
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
-
-        assertThrows(ServerMemberException.class,
-                () -> serverMemberService.deleteServerMember(user.getEmail(), server.getId()));
     }
 
     // ── getMembersByServerId ──

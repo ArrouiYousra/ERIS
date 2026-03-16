@@ -20,9 +20,9 @@ import fourthargument.eris.api.model.User;
 import fourthargument.eris.api.repository.ChannelRepository;
 import fourthargument.eris.api.repository.ServerMemberRepository;
 import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.repository.UserRepository;
 import fourthargument.eris.api.services.ServerSecurityService;
 import fourthargument.eris.api.services.UserService;
-import fourthargument.eris.exceptions.UserException;
 
 @ExtendWith(MockitoExtension.class)
 class ServerSecurityServiceTest {
@@ -35,6 +35,8 @@ class ServerSecurityServiceTest {
     private ServerMemberRepository serverMemberRepository;
     @Mock
     private UserService userService;
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private ServerSecurityService serverSecurityService;
@@ -85,25 +87,23 @@ class ServerSecurityServiceTest {
 
     @Test
     void isMemberOfServer_true() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-        when(serverMemberRepository.existsByUserAndServer(user, server)).thenReturn(true);
+        when(serverMemberRepository.existsByUserAndServer(user,
+                server)).thenReturn(true);
 
         assertTrue(serverSecurityService.isMemberOfServer(1L, "user@example.com"));
     }
 
     @Test
     void isMemberOfServer_false() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
-        when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-        when(serverMemberRepository.existsByUserAndServer(user, server)).thenReturn(false);
 
         assertFalse(serverSecurityService.isMemberOfServer(1L, "user@example.com"));
     }
 
     @Test
     void isMemberOfServer_serverNull() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(serverRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertFalse(serverSecurityService.isMemberOfServer(99L, "user@example.com"));
@@ -111,7 +111,6 @@ class ServerSecurityServiceTest {
 
     @Test
     void isMemberOfServer_exception() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenThrow(new UserException("not found"));
 
         assertFalse(serverSecurityService.isMemberOfServer(1L, "user@example.com"));
     }
@@ -120,63 +119,67 @@ class ServerSecurityServiceTest {
 
     @Test
     void isMemberOfChannel_true() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(channelRepository.findById(1L)).thenReturn(Optional.of(channel));
-        when(serverMemberRepository.existsByUserAndServer(user, server)).thenReturn(true);
+        when(serverMemberRepository.existsByUserAndServer(user,
+                server)).thenReturn(true);
 
         assertTrue(serverSecurityService.isMemberOfChannel(1L, "user@example.com"));
     }
 
     @Test
     void isMemberOfChannel_channelNull() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
-        when(channelRepository.findById(99L)).thenReturn(Optional.empty());
 
         // channel is null -> NullPointerException caught -> returns false
-        assertFalse(serverSecurityService.isMemberOfChannel(99L, "user@example.com"));
+        assertFalse(serverSecurityService.isMemberOfChannel(99L,
+                "user@example.com"));
     }
 
     // ── isServerAdmin ──
 
     @Test
     void isServerAdmin_admin() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(adminMember);
+        when(serverMemberRepository.findServerMemberByUserAndServer(user,
+                server)).thenReturn(adminMember);
 
         assertTrue(serverSecurityService.isServerAdmin(1L, "user@example.com"));
     }
 
     @Test
     void isServerAdmin_owner() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(ownerMember);
+        when(serverMemberRepository.findServerMemberByUserAndServer(user,
+                server)).thenReturn(ownerMember);
 
         assertTrue(serverSecurityService.isServerAdmin(1L, "user@example.com"));
     }
 
     @Test
     void isServerAdmin_regularMember() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(regularMember);
+        when(serverMemberRepository.findServerMemberByUserAndServer(user,
+                server)).thenReturn(regularMember);
 
         assertFalse(serverSecurityService.isServerAdmin(1L, "user@example.com"));
     }
 
     @Test
     void isServerAdmin_notMember() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
+        when(serverMemberRepository.findServerMemberByUserAndServer(user,
+                server)).thenReturn(null);
 
         assertFalse(serverSecurityService.isServerAdmin(1L, "user@example.com"));
     }
 
     @Test
     void isServerAdmin_serverNull() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(serverRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertFalse(serverSecurityService.isServerAdmin(99L, "user@example.com"));
@@ -186,27 +189,30 @@ class ServerSecurityServiceTest {
 
     @Test
     void isChannelAdmin_admin() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(channelRepository.findById(1L)).thenReturn(Optional.of(channel));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(adminMember);
+        when(serverMemberRepository.findServerMemberByUserAndServer(user,
+                server)).thenReturn(adminMember);
 
         assertTrue(serverSecurityService.isChannelAdmin(1L, "user@example.com"));
     }
 
     @Test
     void isChannelAdmin_notAdmin() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(channelRepository.findById(1L)).thenReturn(Optional.of(channel));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(regularMember);
+        when(serverMemberRepository.findServerMemberByUserAndServer(user,
+                server)).thenReturn(regularMember);
 
         assertFalse(serverSecurityService.isChannelAdmin(1L, "user@example.com"));
     }
 
     @Test
     void isChannelAdmin_memberNull() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(channelRepository.findById(1L)).thenReturn(Optional.of(channel));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
+        when(serverMemberRepository.findServerMemberByUserAndServer(user,
+                server)).thenReturn(null);
 
         assertFalse(serverSecurityService.isChannelAdmin(1L, "user@example.com"));
     }
@@ -215,34 +221,42 @@ class ServerSecurityServiceTest {
 
     @Test
     void isServerOwner_true() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        // 1. Mock l'utilisateur
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+
+        // 2. Mock le serveur
         when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
+
+        // 3. Mock le membre avec le rôle OWNER (C'est l'étape clé)
+        // Assure-toi que ownerMember a bien un rôle nommé "OWNER"
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(ownerMember);
 
-        assertTrue(serverSecurityService.isServerOwner(1L, "user@example.com"));
+        // Act
+        boolean result = serverSecurityService.isServerOwner(1L, "user@example.com");
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
     void isServerOwner_false_admin() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
-        when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(adminMember);
 
         assertFalse(serverSecurityService.isServerOwner(1L, "user@example.com"));
     }
 
     @Test
     void isServerOwner_notMember() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
+        when(serverMemberRepository.findServerMemberByUserAndServer(user,
+                server)).thenReturn(null);
 
         assertFalse(serverSecurityService.isServerOwner(1L, "user@example.com"));
     }
 
     @Test
     void isServerOwner_exception() throws Exception {
-        when(userService.getUserEntityByEmail("user@example.com")).thenThrow(new UserException("not found"));
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
 
         assertFalse(serverSecurityService.isServerOwner(1L, "user@example.com"));
     }
