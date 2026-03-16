@@ -7,9 +7,6 @@ on:
   pull_request:
     #paths:
       #- 'frontend/**'
-  commit :
-    #paths:
-      #- 'frontend/**'
 
 jobs:
   # ─── Job 1: Lint (ESLint) ───
