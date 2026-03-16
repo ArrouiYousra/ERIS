@@ -2,9 +2,11 @@ package fourthargument.eris.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,16 +15,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import fourthargument.eris.api.dto.InvitationDTO;
+import fourthargument.eris.api.dto.MessageDTO;
 import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
 import fourthargument.eris.api.mapper.InvitationMapper;
+import fourthargument.eris.api.mapper.MessageMapper;
+import fourthargument.eris.api.model.Channel;
 import fourthargument.eris.api.model.Invitation;
+import fourthargument.eris.api.model.Message;
 import fourthargument.eris.api.model.Role;
 import fourthargument.eris.api.model.Server;
 import fourthargument.eris.api.model.ServerMember;
 import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.repository.ChannelRepository;
 import fourthargument.eris.api.repository.InvitationRepository;
+import fourthargument.eris.api.repository.MessageRepository;
 import fourthargument.eris.api.repository.RoleRepository;
 import fourthargument.eris.api.repository.ServerMemberRepository;
 import fourthargument.eris.api.repository.ServerRepository;
@@ -54,6 +64,15 @@ class InvitationServiceTest {
     private ServerRepository serverRepository;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private MessageRepository messageRepository;
+    @Mock
+    private ChannelRepository channelRepository;
+    @Mock
+    private MessageMapper messageMapper; // Celui qui causait la NPE
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate; // Indispensable pour le convertAndSend
 
     @InjectMocks
     private InvitationService invitationService;
@@ -183,23 +202,55 @@ class InvitationServiceTest {
 
     @Test
     void joinServerWithInvite_success() throws Exception {
+        // 1. Setup Invitation & Role
         Invitation invite = new Invitation();
         invite.setCode("abc12345");
-        invite.setServer(server);
+        invite.setServer(server); // Assure-toi que server.getName() est "Test Server"
         invite.setExpiresAt(LocalDateTime.now().plusDays(1));
 
         Role memberRole = new Role();
         memberRole.setName("MEMBER");
 
+        Channel channel = new Channel();
+        channel.setId(123L); // Pour éviter /topic/channels/null
+
+        // Configurer le mapper pour qu'il ne renvoie pas null
+        MessageDTO mockDto = new MessageDTO(
+                1L, // id
+                1L, // senderId
+                "Bienvenue !", // content
+                "SystemBot", // senderName
+                123L, // channelId
+                "2026-03-16" // timestamp (ou autre String selon ton DTO)
+        );
+
+        when(messageMapper.toDTO(any(Message.class))).thenReturn(mockDto);
+
+        // 2. Mock du Bot (Le coupable !)
+        User bot = new User();
+        bot.setUsername("SystemBot");
+        when(userRepository.findByUsername("SystemBot")).thenReturn(Optional.of(bot));
+
+        // 3. Mocks habituels
         when(userService.getUserEntityByEmail("joiner@example.com")).thenReturn(user);
         when(invitationRepository.findByCode("abc12345")).thenReturn(Optional.of(invite));
         when(roleRepository.findByName("MEMBER")).thenReturn(Optional.of(memberRole));
 
+        // 4. Mocks pour la fin de la méthode (Messages & Channels)
+        when(channelRepository.getChannelsByServer(server)).thenReturn(List.of(channel));
+        // Pas besoin de mapper le retour de save, mais Mockito aime bien avoir les
+        // mocks
+        when(messageRepository.save(any(Message.class))).thenReturn(new Message());
+
+        // Act
         JoinInviteResponseDTO result = invitationService.joinServerWithInvite("joiner@example.com", "abc12345");
 
+        // Assert
         assertNotNull(result);
         assertEquals("Test Server", result.getServerName());
         verify(serverMemberService).createServerMember(server, user, memberRole);
+
+        verify(messagingTemplate).convertAndSend(anyString(), any(MessageDTO.class));
     }
 
     @Test
@@ -234,9 +285,8 @@ class InvitationServiceTest {
 
         when(userService.getUserEntityByEmail("joiner@example.com")).thenReturn(user);
         when(invitationRepository.findByCode("abc12345")).thenReturn(Optional.of(invite));
-        when(roleRepository.findByName("MEMBER")).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class,
+        assertThrows(UserException.class,
                 () -> invitationService.joinServerWithInvite("joiner@example.com", "abc12345"));
     }
 }

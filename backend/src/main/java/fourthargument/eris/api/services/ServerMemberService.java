@@ -78,7 +78,7 @@ public class ServerMemberService {
         Server server = serverRepository.findById(serverId)
                 .orElseThrow(() -> new ServerException("Server  not found"));
         User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new UserException("Server  not found"));
+                .orElseThrow(() -> new UserException("User  not found"));
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
 
         if (serverMember == null) {
