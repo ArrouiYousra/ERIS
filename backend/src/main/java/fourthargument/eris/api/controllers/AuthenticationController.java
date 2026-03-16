@@ -36,6 +36,7 @@ public class AuthenticationController {
         this.userService = userService;
     }
 
+    // Ah ouais jsuis con
     @PostMapping("/signup")
     public ResponseEntity<User> register(@RequestBody UserRequestDTO registerUserDto) {
         User registeredUser = authenticationService.signup(registerUserDto);
