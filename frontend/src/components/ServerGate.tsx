@@ -56,10 +56,11 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
       await onJoinServer(inviteLink.trim()); // ✅ backend call
       setInviteLink("");
       // Optional: show a toast or alert: "Vous avez rejoint le serveur !"
-    } catch (err: any) {
-      console.error(err);
-      setError(err?.message || "Lien invalide ou expiré");
-    } finally {
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      console.error(error);
+      setError(error?.message || "Lien invalide ou expiré");
+    }  finally {
       setIsSubmitting(false);
     }
   };

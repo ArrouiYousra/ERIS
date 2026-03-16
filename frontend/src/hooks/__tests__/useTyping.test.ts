@@ -3,6 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 
 const mockSubscribe = vi.fn();
 const mockPublish = vi.fn();
+type StompCallback = (msg: { body: string }) => void;
 
 vi.mock('../../api/wsApi', () => ({
   useSocket: () => ({
@@ -10,7 +11,7 @@ vi.mock('../../api/wsApi', () => ({
     publish: mockPublish,
     connected: true,
   }),
-  SocketProvider: ({ children }: any) => children,
+  SocketProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock('../useAuth', () => ({
@@ -116,8 +117,8 @@ describe('useTyping', () => {
 
   it('shows typing text for 1 user', () => {
     // Simulate receiving a typing event from another user
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });
@@ -134,8 +135,8 @@ describe('useTyping', () => {
   });
 
   it('shows typing text for 2 users', () => {
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });
@@ -155,8 +156,8 @@ describe('useTyping', () => {
   });
 
   it('shows typing text for 3+ users', () => {
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });
@@ -179,8 +180,8 @@ describe('useTyping', () => {
   });
 
   it('ignores own typing events', () => {
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });
@@ -198,8 +199,8 @@ describe('useTyping', () => {
   });
 
   it('removes user from typing when they stop', () => {
-    let subscribeCallback: (msg: any) => void;
-    mockSubscribe.mockImplementation((_topic: string, cb: any) => {
+    let subscribeCallback: StompCallback;
+    mockSubscribe.mockImplementation((_topic: string, cb: StompCallback) => {
       subscribeCallback = cb;
       return { unsubscribe: vi.fn() };
     });

@@ -37,12 +37,13 @@ export function SignupPage() {
       const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
       await signup(email, username, password, displayName || "", birthDate);
       navigate("/app");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Signup error:", err);
+      const axiosError = err as { response?: { data?: { message?: string; error?: string } }; message?: string };
       const errorMessage =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        err?.message ||
+        axiosError?.response?.data?.message ||
+        axiosError?.response?.data?.error ||
+        axiosError?.message ||
         "Error during registration. Please try again.";
       setError(errorMessage);
     } finally {

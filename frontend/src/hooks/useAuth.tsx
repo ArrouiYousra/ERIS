@@ -7,9 +7,10 @@ import {
 } from "react";
 import { login as loginApi, signup as signupApi } from "../api/authApi";
 import { api } from "../api/client";
+import type { AuthUser } from "../types/shared";
 
 type AuthContextValue = {
-  user: any | null;
+  user: AuthUser | null;
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -26,19 +27,19 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function useProvideAuth(): AuthContextValue {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   // ── Fetch /api/auth/me au reload pour récupérer le user avec son id ──
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
-      setLoading(false);
+      Promise.resolve().then(() => setLoading(false));
       return;
     }
     api
-      .get("/api/auth/me")
-      .then(({ data }) => setUser(data))
+      .get<AuthUser>("/api/auth/me")
+      .then((response: { data: AuthUser }) => setUser(response.data))
       .catch(() => {
         localStorage.removeItem("access_token");
         setUser(null);
@@ -55,7 +56,7 @@ function useProvideAuth(): AuthContextValue {
     }
 
     // Fetch le user complet via /me maintenant qu'on a le token
-    const { data: userData } = await api.get("/api/auth/me");
+    const { data: userData } = await api.get<AuthUser>("/api/auth/me");
     setUser(userData);
   };
 
@@ -99,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) {

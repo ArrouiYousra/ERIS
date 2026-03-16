@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -36,7 +38,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         console.log('✅ STOMP connected');
         setConnected(true);
 
-        // Enregistrer la présence si on a le user.id
+        // Enregistrer la présence si on a le user.id 
         if (user?.id) {
           stomp.publish({
             destination: '/app/presence.connect',
