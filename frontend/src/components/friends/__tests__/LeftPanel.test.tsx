@@ -6,11 +6,11 @@ const mockUseServerMember = vi.fn();
 const mockUsePresence = vi.fn();
 
 vi.mock("../../../hooks/useServers", () => ({
-  useServerMember: (...args: any[]) => mockUseServerMember(...args),
+  useServerMembers: (...args: unknown[]) => mockUseServerMember(...args),
 }));
 
 vi.mock("../../../hooks/usePresence", () => ({
-  usePresence: (...args: any[]) => mockUsePresence(...args),
+  usePresence: (...args: unknown[]) => mockUsePresence(...args),
 }));
 
 import { LeftPanel } from "../LeftPanel";

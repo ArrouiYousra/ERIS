@@ -59,6 +59,7 @@ jobs:
         with:
           name: frontend-test-reports
           path: frontend/coverage/
+          retention-days: 1
 
   # ─── Job 3: Build ───
   build:
@@ -88,6 +89,7 @@ jobs:
         with:
           name: frontend-build
           path: frontend/dist/
+          retention-days: 1
 
   # ─── Job 4: Security Scan ───
   security:
@@ -132,3 +134,4 @@ jobs:
         with:
           name: npm-audit-report
           path: frontend/audit-report.json
+          retention-days: 1

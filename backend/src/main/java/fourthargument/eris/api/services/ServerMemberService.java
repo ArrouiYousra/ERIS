@@ -27,7 +27,10 @@ public class ServerMemberService {
     public ServerMemberService(
             ServerMemberRepository serverMemberRepository,
             ServerRepository serverRepository,
-            ServerMemberMapper mapper, UserService userService) {
+            ServerMemberMapper mapper, UserService userService,
+            ChannelRepository channelRepository,
+            MessageRepository messageRepository,
+            UserRepository userRepository) {
         this.serverMemberRepository = serverMemberRepository;
         this.serverRepository = serverRepository;
         this.serverMemberMapper = mapper;
