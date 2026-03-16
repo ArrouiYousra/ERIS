@@ -65,13 +65,13 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: postgres
         run: mvn clean verify
 
-      - name: Upload test reports
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: backend/target/surefire-reports/
-          retention-days: 1
+      # - name: Upload test reports
+      #   if: failure()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: test-reports
+      #     path: backend/target/surefire-reports/
+      #     retention-days: 1
 
   # ─── Job 3: Code Coverage (JaCoCo) ───
   coverage:
@@ -112,12 +112,12 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: postgres
         run: mvn clean verify jacoco:report
 
-      - name: Upload JaCoCo report
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-report
-          path: backend/target/site/jacoco/
-          retention-days: 1
+      # - name: Upload JaCoCo report
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: jacoco-report
+      #     path: backend/target/site/jacoco/
+      #     retention-days: 1
 
       - name: Check coverage threshold
         working-directory: backend
@@ -150,10 +150,10 @@ jobs:
         run: mvn dependency:tree -DoutputType=text
         continue-on-error: true
 
-      - name: Upload security report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: backend/target/dependency-check-report.html
-          retention-days: 1
+      # - name: Upload security report
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: dependency-check-report
+      #     path: backend/target/dependency-check-report.html
+      #     retention-days: 1

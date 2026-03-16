@@ -53,13 +53,13 @@ jobs:
         working-directory: frontend
         run: npm test
 
-      - name: Upload test reports
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-test-reports
-          path: frontend/coverage/
-          retention-days: 1
+      # - name: Upload test reports
+      #   if: failure()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: frontend-test-reports
+      #     path: frontend/coverage/
+      #     retention-days: 1
 
   # ─── Job 3: Build ───
   build:
@@ -84,12 +84,12 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-      - name: Upload build
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/dist/
-          retention-days: 1
+      # - name: Upload build
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: frontend-build
+      #     path: frontend/dist/
+      #     retention-days: 1
 
   # ─── Job 4: Security Scan ───
   security:
@@ -128,10 +128,10 @@ jobs:
           fi
           echo "No critical vulnerabilities"
 
-      - name: Upload audit report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: npm-audit-report
-          path: frontend/audit-report.json
-          retention-days: 1
+      # - name: Upload audit report
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: npm-audit-report
+      #     path: frontend/audit-report.json
+      #     retention-days: 1
