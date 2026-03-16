@@ -25,6 +25,7 @@ import type { Channel } from "../api/channelsApi";
 import type { Server } from "../api/serversApi";
 import type { ServerMember } from "../api/serverMembersApi";
 import { useServerSocket } from '../hooks/useServerSocket';
+import { usePresenceSocket } from '../hooks/usePresenceSocket';
 
 import { MemberContextMenu } from "../components/MemberContextMenu";
 
@@ -50,7 +51,9 @@ export function ChatLayout() {
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
   const leaveServer = useLeaveServer();
+  
   useServerSocket();
+  usePresenceSocket(selectedServerId);
 
   const serverIds = servers.map((s: Server) => s.id);
   const serverNames = Object.fromEntries(

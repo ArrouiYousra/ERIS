@@ -17,7 +17,6 @@ import Fourth_Argument.eris.api.repository.RoleRepository;
 import Fourth_Argument.eris.api.repository.ServerMemberRepository;
 import Fourth_Argument.eris.api.repository.ServerRepository;
 import Fourth_Argument.eris.api.repository.UserRepository;
-import Fourth_Argument.eris.exceptions.ChannelException;
 import Fourth_Argument.eris.exceptions.RoleException;
 import Fourth_Argument.eris.exceptions.ServerException;
 import Fourth_Argument.eris.exceptions.ServerMemberException;
@@ -46,6 +45,7 @@ public class ServerMemberService {
 
         serverMember = new ServerMember(user, server, role);
         serverMemberRepository.save(serverMember);
+        messagingTemplate.convertAndSend("/topic/server_member/" + server.getId(), (Object) Map.of("type", "CREATED", "serverMemberId", serverMember.getId()));
     }
 
     public void deleteServerMember(String email, Long serverId)
@@ -62,7 +62,7 @@ public class ServerMemberService {
         }
 
         serverMemberRepository.delete(serverMember);
-        messagingTemplate.convertAndSend("/topic/server_member", (Object) Map.of("type", "DELETED", "serverMemberId", serverMember.getId()));
+        messagingTemplate.convertAndSend("/topic/server_member/" + serverId, (Object) Map.of("type", "DELETED", "serverMemberId", serverMember.getId()));
 
     }
 
@@ -94,7 +94,7 @@ public class ServerMemberService {
         Role role = setMemberRoleById(serverMember, dto.getRoleId());
         messagingTemplate.convertAndSend("/topic/server_member", serverMemberMapper.toDTO(serverMember));
 
-        if (role.getName() == "OWNER") {
+        if ("OWNER".equals(role.getName())) {
             User ownerUser = userService.getUserEntityByEmail(email);
             ServerMember ownerMember = serverMemberRepository.findServerMemberByUserAndServer(ownerUser, server);
             setMemberRoleByName(ownerMember, "ADMIN");
