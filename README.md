@@ -1,3 +1,7 @@
+
+
+[![Frontend CI](https://github.com/EpitechMscProPromo2028/T-DEV-600-TLS_2/actions/workflows/frontend.yml/badge.svg)](https://github.com/EpitechMscProPromo2028/T-DEV-600-TLS_2/actions/workflows/frontend.yml)
+
 # Eris
 
 Eris est une application de messagerie en temps réel, type Discord, développée dans le cadre du projet T-JSF-600.
