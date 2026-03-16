@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.api.controllers;
+package fourthargument.eris.api.controllers;
 
 import java.util.List;
 
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import Fourth_Argument.eris.api.dto.MessageDTO;
-import Fourth_Argument.eris.api.model.Message;
-import Fourth_Argument.eris.api.services.MessageService;
-import Fourth_Argument.eris.exceptions.ChannelException;
-import Fourth_Argument.eris.exceptions.MessageException;
-import Fourth_Argument.eris.exceptions.UserException;
+import fourthargument.eris.api.dto.MessageDTO;
+import fourthargument.eris.api.model.Message;
+import fourthargument.eris.api.services.MessageService;
+import fourthargument.eris.exceptions.ChannelException;
+import fourthargument.eris.exceptions.MessageException;
+import fourthargument.eris.exceptions.UserException;
 import lombok.RequiredArgsConstructor;
 
 @RestController

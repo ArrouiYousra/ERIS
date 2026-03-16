@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.api.controllers;
+package fourthargument.eris.api.controllers;
 
 import java.util.List;
 
@@ -16,20 +16,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import Fourth_Argument.eris.api.dto.InvitationDTO;
-import Fourth_Argument.eris.api.dto.ServerDTO;
-import Fourth_Argument.eris.api.dto.ServerMemberDTO;
-import Fourth_Argument.eris.api.dto.request.JoinInviteRequestDTO;
-import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.services.InvitationService;
-import Fourth_Argument.eris.api.services.ServerMemberService;
-import Fourth_Argument.eris.api.services.ServerService;
-import Fourth_Argument.eris.api.services.UserService;
-import Fourth_Argument.eris.exceptions.RoleException;
-import Fourth_Argument.eris.exceptions.ServerException;
-import Fourth_Argument.eris.exceptions.ServerMemberException;
-import Fourth_Argument.eris.exceptions.UserException;
+import fourthargument.eris.api.dto.InvitationDTO;
+import fourthargument.eris.api.dto.ServerDTO;
+import fourthargument.eris.api.dto.ServerMemberDTO;
+import fourthargument.eris.api.dto.request.JoinInviteRequestDTO;
+import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.services.InvitationService;
+import fourthargument.eris.api.services.ServerMemberService;
+import fourthargument.eris.api.services.ServerService;
+import fourthargument.eris.api.services.UserService;
+import fourthargument.eris.exceptions.RoleException;
+import fourthargument.eris.exceptions.ServerException;
+import fourthargument.eris.exceptions.ServerMemberException;
+import fourthargument.eris.exceptions.UserException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
