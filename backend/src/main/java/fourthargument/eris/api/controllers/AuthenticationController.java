@@ -59,8 +59,12 @@ public class AuthenticationController {
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getMe(@AuthenticationPrincipal UserDetails userDetails)
             throws UserException {
-        UserResponseDTO user = userService.getUserByEmail(userDetails.getUsername());
-        // Retourner un Map simple puisqu'il n'y a pas de UserResponseDTO
-        return ResponseEntity.ok(user);
+        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+        UserResponseDTO response = new UserResponseDTO();
+        response.setId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setUsername(user.getUser());
+        response.setDisplayName(user.getDisplayName() != null ? user.getDisplayName() : user.getUser());
+        return ResponseEntity.ok(response);
     }
 }

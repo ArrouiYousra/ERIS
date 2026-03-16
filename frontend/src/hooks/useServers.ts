@@ -1,11 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAllServers,
   getServerById,
   createServer,
   updateServer,
   deleteServer as deleteServerApi,
-  leaveServer,
+  leaveServer as leaveServerApi,
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
@@ -70,9 +70,11 @@ export function useDeleteServer() {
 export function useLeaveServer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => leaveServer(id),
-    onSuccess: () => {
+    mutationFn: (serverId: number) => leaveServerApi(serverId),
+    onSuccess: (_, serverId) => {
       queryClient.invalidateQueries({ queryKey: ["servers"] });
+      queryClient.invalidateQueries({ queryKey: ["serverMembers", serverId] });
+      queryClient.invalidateQueries({ queryKey: ["channels", serverId] });
     },
   });
 }

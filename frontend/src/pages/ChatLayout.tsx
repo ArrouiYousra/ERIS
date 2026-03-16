@@ -8,7 +8,11 @@ import {
 } from "../hooks/useServers";
 import { useAuth } from "../hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
-import { ServerBar, RightPanel, UserBar } from "../components/friends";
+import {
+  ServerBar,
+  RightPanel,
+  UserBar,
+} from "../components/friends";
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
 import { ServerGate } from "../components/ServerGate";
@@ -64,11 +68,7 @@ export function ChatLayout() {
 
   // Check if current user is the owner of the selected server
   const currentServer = servers.find((s: Server) => s.id === selectedServerId);
-  const isServerOwner = !!(
-    currentServer &&
-    user &&
-    currentServer.ownerId === user.id
-  );
+  const isServerOwner = !!(currentServer && user && currentServer.ownerId === user.id);
   const selectedChannel = channels.find(
     (channel: Channel) => channel.id === selectedChannelId,
   );
@@ -82,11 +82,7 @@ export function ChatLayout() {
 
   const handleSelectServer = (id: number | null) => {
     setSelectedServerId(id);
-    if (id !== null) {
-      setSelectedDMId(null);
-    } else {
-      setSelectedChannelId(null);
-    }
+    setSelectedChannelId(null);
   };
 
   // Handler for ServerWizard modal (full data object)
@@ -94,16 +90,13 @@ export function ChatLayout() {
     data: ServerWizardData,
   ): Promise<number | null> => {
     const result = await createServer.mutateAsync({ name: data.name });
-    console.log("Server created, API response:", result);
-    console.log("Server ID from response:", result?.id);
     return result?.id ?? null;
   };
 
   // Handler for navigating to a newly created server
   const handleGoToServer = (serverId: number) => {
-    console.log("handleGoToServer called with serverId:", serverId);
-    console.log("Current serverIds in list:", serverIds);
     setSelectedServerId(serverId);
+    setSelectedChannelId(null);
   };
 
   // Handler for ServerGate (simple string name - legacy)
@@ -120,26 +113,17 @@ export function ChatLayout() {
 
   const handleLeaveServer = async () => {
     if (!selectedServerId) return;
-    await leaveServer.mutateAsync(selectedServerId);
-    setSelectedServerId(null);
-    setSelectedChannelId(null);
+    try {
+      await leaveServer.mutateAsync(selectedServerId);
+      setSelectedServerId(null);
+      setSelectedChannelId(null);
+    } catch (error) {
+      console.error("Impossible de quitter le serveur :", error);
+    }
   };
 
   return (
-    <div
-      className="chat-layout-root bg-[#0f1115] text-[#f2f3f5]"
-      style={{
-        width: "100%",
-        minWidth: 0,
-        flex: 1,
-        height: "100%",
-        minHeight: 0,
-        display: "flex",
-        flexDirection: "row",
-        overflow: "hidden",
-        boxSizing: "border-box",
-      }}
-    >
+    <div className="chat-layout-root">
       {/* Zone 1: Server bar — 72px */}
       <ServerBar
         selectedServerId={selectedServerId}
@@ -150,18 +134,9 @@ export function ChatLayout() {
       />
 
       {isDMMode ? (
-        <div
-          className="chat-dm-wrapper"
-          style={{
-            flex: 1,
-            minWidth: 0,
-            display: "flex",
-            flexDirection: "row",
-            overflow: "hidden",
-          }}
-        >
+        <div className="chat-dm-wrapper">
           {/* Sidebar DM avec UserBar en bas */}
-          <div className="w-[240px] min-w-[240px] shrink-0 h-full flex flex-col bg-[#2b2d31]">
+          <div className="chat-dm-sidebar shrink-0 h-full hidden md:flex flex-col bg-[#2b2d31]">
             <div className="flex-1 overflow-y-auto" />
             <UserBar />
           </div>
@@ -175,15 +150,22 @@ export function ChatLayout() {
             collapsed={rightPanelCollapsed}
             onToggle={() => setRightPanelCollapsed((c) => !c)}
           />
+          <div className="chat-dm-mobile-userbar md:hidden">
+            <UserBar />
+          </div>
         </div>
       ) : (
-        <div className="flex flex-row flex-1 h-full min-w-0 overflow-hidden">
+        <div
+          className={`chat-server-mode ${selectedChannelId === null ? "chat-server-mode--mobile-list-only" : ""} ${selectedChannelId !== null ? "chat-server-mode--mobile-channel-open" : ""}`}
+        >
           {/* Mode serveur : sidebar canaux + zone messages */}
-          <div className="chat-sidebar chat-sidebar--channels w-[240px] min-w-[240px] shrink-0 h-full">
+          <div className="chat-sidebar chat-sidebar--channels shrink-0">
             <ChannelList
               serverId={selectedServerId}
               channels={channels}
-              onSelectChannel={setSelectedChannelId}
+              onSelectChannel={(channelId) => {
+                setSelectedChannelId(channelId);
+              }}
               selectedChannelId={selectedChannelId}
               serverName={
                 selectedServerId ? serverNames[selectedServerId] : "Serveur"
@@ -193,18 +175,17 @@ export function ChatLayout() {
               onLeaveServer={handleLeaveServer}
             />
           </div>
-          <div className="chat-main flex-1 flex flex-row min-w-0 h-full bg-[#313338]">
-            <div className="flex-1 flex flex-col min-w-0 h-full">
+          <div className="chat-main-shell">
+            <div className="chat-main-messages">
               <MessageList
                 channelId={selectedChannelId}
+                serverId={selectedServerId}
                 channelName={selectedChannel?.name}
                 channelTopic={selectedChannel?.topic}
                 isPrivate={selectedChannel?.isPrivate}
-                serverName={
-                  selectedServerId ? serverNames[selectedServerId] : "Serveur"
-                }
-                showMemberList={showMemberList}
-                onToggleMemberList={() => setShowMemberList(!showMemberList)}
+                serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
+                onToggleSidebar={() => setSelectedChannelId(null)}
+                onLeaveServer={handleLeaveServer}
               />
             </div>
             {showMemberList &&

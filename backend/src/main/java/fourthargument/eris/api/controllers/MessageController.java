@@ -68,7 +68,7 @@ public class MessageController {
     @DeleteMapping("/messages/{id}")
     @PreAuthorize("isAuthenticated() and @messageSecurityService.canDeleteMessage(#id, authentication.name)")
     public ResponseEntity<String> deleteMessage(
-            @PathVariable Long id) throws MessageException {
+            @PathVariable Long id) throws MessageException, ChannelException {
 
         messageService.deleteMessage(id);
 

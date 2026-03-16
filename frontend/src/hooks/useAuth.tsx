@@ -9,6 +9,11 @@ import { login as loginApi, signup as signupApi } from "../api/authApi";
 import { api } from "../api/client";
 import type { AuthUser } from "../types/shared";
 
+type LoginResponse = {
+  token: string;
+  expiresIn: number;
+};
+
 type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
@@ -19,7 +24,6 @@ type AuthContextValue = {
     username: string,
     password: string,
     displayName: string,
-    birthDate: string,
   ) => Promise<void>;
   logout: () => void;
 };
@@ -28,18 +32,19 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function useProvideAuth(): AuthContextValue {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(
+    () => !!localStorage.getItem("access_token"),
+  );
 
   // ── Fetch /api/auth/me au reload pour récupérer le user avec son id ──
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
-      Promise.resolve().then(() => setLoading(false));
       return;
     }
     api
       .get<AuthUser>("/api/auth/me")
-      .then((response: { data: AuthUser }) => setUser(response.data))
+      .then(({ data }) => setUser(data))
       .catch(() => {
         localStorage.removeItem("access_token");
         setUser(null);
@@ -49,7 +54,7 @@ function useProvideAuth(): AuthContextValue {
 
   const login = async (email: string, password: string) => {
     // loginApi retourne { token, expiresIn } (LoginResponseDTO)
-    const data = await loginApi({ email, password });
+    const data = (await loginApi({ email, password })) as LoginResponse;
 
     if (data.token) {
       localStorage.setItem("access_token", data.token);
@@ -65,14 +70,12 @@ function useProvideAuth(): AuthContextValue {
     username: string,
     password: string,
     displayName: string,
-    birthDate: string,
   ) => {
     await signupApi({
       email,
       username,
       password,
       displayName,
-      birthDate,
     });
     // On se connecte automatiquement après l'inscription
     await login(email, password);
@@ -100,7 +103,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) {

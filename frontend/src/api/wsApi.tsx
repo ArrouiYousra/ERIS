@@ -1,5 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
-
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';

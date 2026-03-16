@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import "../styles/serverGate.css";
 
 export type ServerModalStep = "choice" | "create" | "join";
@@ -14,6 +15,13 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
   const [inviteLink, setInviteLink] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const getErrorMessage = (errorValue: unknown) => {
+    if (axios.isAxiosError<{ message?: string }>(errorValue)) {
+      return errorValue.response?.data?.message || errorValue.message;
+    }
+    return "Lien invalide ou expiré";
+  };
 
   const handleBack = () => {
     setStep("choice");
@@ -53,14 +61,13 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
     setError(null);
 
     try {
-      await onJoinServer(inviteLink.trim()); // ✅ backend call
+      await onJoinServer(inviteLink.trim());
       setInviteLink("");
-      // Optional: show a toast or alert: "Vous avez rejoint le serveur !"
+      // Optionnel : afficher un message de confirmation
     } catch (err: unknown) {
-      const error = err as { message?: string };
-      console.error(error);
-      setError(error?.message || "Lien invalide ou expiré");
-    }  finally {
+      console.error(err);
+      setError(getErrorMessage(err));
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -70,19 +77,11 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
       {/* ================= CHOICE ================= */}
       {step === "choice" && (
         <>
-          <h2 className="server-gate-title">Créer ou rejoindre un serveur</h2>
-
-          <p className="server-gate-subtitle">
-            Crée ton propre espace ou rejoins une communauté existante
-          </p>
-
           <div className="server-gate-choices">
             <button
               className="server-gate-choice"
               onClick={() => setStep("create")}
             >
-              <span className="server-gate-choice-icon">🚀</span>
-
               <span className="server-gate-choice-label">Créer un serveur</span>
 
               <span className="server-gate-choice-desc">
@@ -94,8 +93,6 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
               className="server-gate-choice"
               onClick={() => setStep("join")}
             >
-              <span className="server-gate-choice-icon">🔗</span>
-
               <span className="server-gate-choice-label">
                 Rejoindre un serveur
               </span>

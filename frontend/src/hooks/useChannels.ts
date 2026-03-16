@@ -43,12 +43,16 @@ export function useUpdateChannel() {
   return useMutation({
     mutationFn: ({
       channelId,
+      serverId,
       payload,
     }: {
       channelId: number;
       serverId: number;
       payload: UpdateChannelPayload;
-    }) => updateChannel(channelId, payload),
+    }) => {
+      void serverId;
+      return updateChannel(channelId, payload);
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["channels", variables.serverId],
@@ -63,8 +67,16 @@ export function useUpdateChannel() {
 export function useDeleteChannel() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ channelId }: { channelId: number; serverId: number }) =>
-      deleteChannel(channelId),
+    mutationFn: ({
+      channelId,
+      serverId,
+    }: {
+      channelId: number;
+      serverId: number;
+    }) => {
+      void serverId;
+      return deleteChannel(channelId);
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["channels", variables.serverId],

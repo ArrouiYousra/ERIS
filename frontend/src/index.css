@@ -1,13 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --app-height: 100dvh;
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --color-bg-canvas: #0f1115;
+  --color-bg-surface: #1a1d24;
+  --color-bg-panel: #2b2d31;
+  --color-bg-muted: #313338;
+  --color-text-primary: #f2f3f5;
+  --color-text-secondary: #b5bac1;
+  --color-text-muted: #949ba4;
+  --color-border-subtle: rgba(255, 255, 255, 0.1);
+  --color-brand-start: #ec4899;
+  --color-brand-end: #a855f7;
+  --color-brand-solid: #5865f2;
+  --color-danger: #ef4444;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-focus: 0 0 0 2px rgba(168, 85, 247, 0.25);
+
+  --motion-fast: 160ms ease;
+  --motion-medium: 260ms ease;
+
+  --bp-mobile-m: 375px;
+  --bp-mobile-l: 425px;
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+
+  font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: dark;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-canvas);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,13 +60,12 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
+  min-height: 100%;
   overflow: hidden;
   box-sizing: border-box;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg-canvas);
+  color: var(--color-text-primary);
 }
 
 *,
@@ -38,26 +76,22 @@ body {
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-brand-solid);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #4752c4;
 }
 
 #root {
-  width: 100vw;
-  min-width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  height: var(--app-height);
+  min-height: var(--app-height);
   margin: 0;
   padding: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -69,32 +103,28 @@ a:hover {
   flex: 1 1 0%;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-/* Style pour les boutons principaux (formulaires, modals, etc.) */
 button.btn-primary {
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  padding: var(--space-3) var(--space-5);
+  font-size: 1rem;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: border-color var(--motion-fast), transform var(--motion-fast);
 }
 button.btn-primary:hover {
-  border-color: #646cff;
+  border-color: var(--color-brand-solid);
+  transform: translateY(-1px);
 }
 button.btn-primary:focus,
 button.btn-primary:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
+  box-shadow: var(--shadow-focus);
 }
 
-/* Reset pour les boutons icône uniquement (classe .icon-btn ou boutons sans classes de fond) */
 button.icon-btn {
   background: transparent;
   border: none;
@@ -105,15 +135,8 @@ button.icon-btn {
   outline: none;
 }
 
-@media (prefers-color-scheme: light) {
+@supports not (height: 100dvh) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+    --app-height: 100vh;
   }
 }

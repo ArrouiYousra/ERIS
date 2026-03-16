@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.api.repository;
+package fourthargument.eris.api.repository;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Server;
+import fourthargument.eris.api.model.Channel;
+import fourthargument.eris.api.model.Server;
 
 public interface ChannelRepository extends CrudRepository<Channel, Long> {
 

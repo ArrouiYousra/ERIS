@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.api.services;
+package fourthargument.eris.api.services;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -7,29 +7,29 @@ import java.util.UUID;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import Fourth_Argument.eris.api.dto.InvitationDTO;
-import Fourth_Argument.eris.api.dto.MessageDTO;
-import Fourth_Argument.eris.api.dto.response.JoinInviteResponseDTO;
-import Fourth_Argument.eris.api.mapper.InvitationMapper;
-import Fourth_Argument.eris.api.mapper.MessageMapper;
-import Fourth_Argument.eris.api.model.Channel;
-import Fourth_Argument.eris.api.model.Invitation;
-import Fourth_Argument.eris.api.model.Message;
-import Fourth_Argument.eris.api.model.Role;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.ServerMember;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.repository.ChannelRepository;
-import Fourth_Argument.eris.api.repository.InvitationRepository;
-import Fourth_Argument.eris.api.repository.MessageRepository;
-import Fourth_Argument.eris.api.repository.RoleRepository;
-import Fourth_Argument.eris.api.repository.ServerMemberRepository;
-import Fourth_Argument.eris.api.repository.ServerRepository;
-import Fourth_Argument.eris.api.repository.UserRepository;
-import Fourth_Argument.eris.exceptions.RoleException;
-import Fourth_Argument.eris.exceptions.ServerException;
-import Fourth_Argument.eris.exceptions.ServerMemberException;
-import Fourth_Argument.eris.exceptions.UserException;
+import fourthargument.eris.api.dto.InvitationDTO;
+import fourthargument.eris.api.dto.MessageDTO;
+import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
+import fourthargument.eris.api.mapper.InvitationMapper;
+import fourthargument.eris.api.mapper.MessageMapper;
+import fourthargument.eris.api.model.Channel;
+import fourthargument.eris.api.model.Invitation;
+import fourthargument.eris.api.model.Message;
+import fourthargument.eris.api.model.Role;
+import fourthargument.eris.api.model.Server;
+import fourthargument.eris.api.model.ServerMember;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.repository.ChannelRepository;
+import fourthargument.eris.api.repository.InvitationRepository;
+import fourthargument.eris.api.repository.MessageRepository;
+import fourthargument.eris.api.repository.RoleRepository;
+import fourthargument.eris.api.repository.ServerMemberRepository;
+import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.repository.UserRepository;
+import fourthargument.eris.exceptions.RoleException;
+import fourthargument.eris.exceptions.ServerException;
+import fourthargument.eris.exceptions.ServerMemberException;
+import fourthargument.eris.exceptions.UserException;
 
 @Service
 public class InvitationService {

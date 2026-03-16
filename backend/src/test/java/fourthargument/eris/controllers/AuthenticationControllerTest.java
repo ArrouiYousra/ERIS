@@ -16,7 +16,6 @@ import fourthargument.eris.api.controllers.AuthenticationController;
 import fourthargument.eris.api.dto.request.LoginRequestDTO;
 import fourthargument.eris.api.dto.request.UserRequestDTO;
 import fourthargument.eris.api.dto.response.LoginResponseDTO;
-import fourthargument.eris.api.dto.response.UserResponseDTO;
 import fourthargument.eris.api.model.User;
 import fourthargument.eris.api.services.AuthenticationService;
 import fourthargument.eris.api.services.JwtService;
@@ -86,16 +85,15 @@ class AuthenticationControllerTest {
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("test@example.com");
 
-        // 2. CORRECTION : On mocke getUserByEmail (et non getUserEntityByEmail)
-        // On s'assure de renvoyer un DTO et non une entité si c'est ce que le service
-        // attend
-        UserResponseDTO mockResponse = new UserResponseDTO(1L, "test@example.com", "username", "alex");
-        when(userService.getUserByEmail("test@example.com")).thenReturn(mockResponse);
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+        user.setUsername("username");
+        user.setDisplayName("alex");
+        when(userService.getUserEntityByEmail("test@example.com")).thenReturn(user);
 
-        // 3. Appel
-        ResponseEntity<UserResponseDTO> response = controller.getMe(userDetails);
+        ResponseEntity<fourthargument.eris.api.dto.response.UserResponseDTO> response = controller.getMe(userDetails);
 
-        // 4. Assertions
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals("alex", response.getBody().getDisplayName());
@@ -107,18 +105,18 @@ class AuthenticationControllerTest {
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("test@example.com");
 
-        // On crée un DTO où le displayName est null pour tester la logique
-        UserResponseDTO mockDto = new UserResponseDTO(1L, "test@example.com", "testuser", null);
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+        user.setUsername("testuser");
+        user.setDisplayName(null);
+        when(userService.getUserEntityByEmail("test@example.com")).thenReturn(user);
 
-        // 2. On mocke la méthode APPELÉE par le controller
-        when(userService.getUserByEmail("test@example.com")).thenReturn(mockDto);
+        ResponseEntity<fourthargument.eris.api.dto.response.UserResponseDTO> response = controller.getMe(userDetails);
 
-        // 3. Appel
-        ResponseEntity<UserResponseDTO> response = controller.getMe(userDetails);
-
-        // 4. Assertions
-        UserResponseDTO body = response.getBody();
+        fourthargument.eris.api.dto.response.UserResponseDTO body = response.getBody();
         assertNotNull(body, "Le body ne devrait pas être nul !");
         assertEquals("test@example.com", body.getEmail());
+        assertEquals("testuser", body.getDisplayName());
     }
 }

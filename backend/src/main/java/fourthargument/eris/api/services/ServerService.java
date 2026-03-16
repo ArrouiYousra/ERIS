@@ -8,6 +8,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import fourthargument.eris.api.dto.ServerDTO;
+import fourthargument.eris.api.dto.response.RoleResponseDTO;
+import fourthargument.eris.api.mapper.RoleMapper;
 import fourthargument.eris.api.mapper.ServerMapper;
 import fourthargument.eris.api.model.Channel;
 import fourthargument.eris.api.model.Role;
@@ -20,6 +22,7 @@ import fourthargument.eris.api.repository.MessageRepository;
 import fourthargument.eris.api.repository.RoleRepository;
 import fourthargument.eris.api.repository.ServerMemberRepository;
 import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.exceptions.RoleException;
 import fourthargument.eris.exceptions.ServerException;
 import fourthargument.eris.exceptions.UserException;
 
@@ -138,8 +141,6 @@ public class ServerService {
         serverRepository.save(server);
     }
 
-<<<<<<< HEAD:backend/src/main/java/fourthargument/eris/api/services/ServerService.java
-=======
     public List<RoleResponseDTO> getServerRoles(Long id) throws RoleException {
         List<Role> roles = roleRepository.findAll();
 
@@ -153,5 +154,4 @@ public class ServerService {
 
         return roleDTOs;
     }
->>>>>>> feature/update-roles:backend/src/main/java/Fourth_Argument/eris/api/services/ServerService.java
 }

@@ -37,7 +37,7 @@ describe('authApi', () => {
   });
 
   describe('signup', () => {
-    it('sends POST to /api/auth/signup without birthDate', async () => {
+    it('sends POST to /api/auth/signup with payload', async () => {
       const mockData = { id: 1, email: 'test@example.com' };
       (api.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockData });
 
@@ -46,10 +46,8 @@ describe('authApi', () => {
         password: 'Password1',
         username: 'testuser',
         displayName: 'Test',
-        birthDate: '2000-01-01',
       });
 
-      // birthDate should be stripped
       expect(api.post).toHaveBeenCalledWith('/api/auth/signup', {
         email: 'test@example.com',
         password: 'Password1',
@@ -57,25 +55,6 @@ describe('authApi', () => {
         displayName: 'Test',
       });
       expect(result).toEqual(mockData);
-    });
-
-    it('works without birthDate in payload', async () => {
-      const mockData = { id: 1 };
-      (api.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockData });
-
-      await signup({
-        email: 'a@b.c',
-        password: 'Abc12345',
-        username: 'user',
-        displayName: 'U',
-      });
-
-      expect(api.post).toHaveBeenCalledWith('/api/auth/signup', {
-        email: 'a@b.c',
-        password: 'Abc12345',
-        username: 'user',
-        displayName: 'U',
-      });
     });
   });
 

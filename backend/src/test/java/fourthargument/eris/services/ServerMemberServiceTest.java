@@ -1,4 +1,4 @@
-package Fourth_Argument.eris.services;
+package fourthargument.eris.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,19 +14,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import Fourth_Argument.eris.api.dto.ServerMemberDTO;
-import Fourth_Argument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
-import Fourth_Argument.eris.api.mapper.ServerMemberMapper;
-import Fourth_Argument.eris.api.model.Role;
-import Fourth_Argument.eris.api.model.Server;
-import Fourth_Argument.eris.api.model.ServerMember;
-import Fourth_Argument.eris.api.model.User;
-import Fourth_Argument.eris.api.repository.ServerMemberRepository;
-import Fourth_Argument.eris.api.repository.ServerRepository;
-import Fourth_Argument.eris.api.services.ServerMemberService;
-import Fourth_Argument.eris.api.services.UserService;
-import Fourth_Argument.eris.exceptions.ServerException;
-import Fourth_Argument.eris.exceptions.ServerMemberException;
+import fourthargument.eris.api.dto.ServerMemberDTO;
+import fourthargument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
+import fourthargument.eris.api.mapper.ServerMemberMapper;
+import fourthargument.eris.api.model.Role;
+import fourthargument.eris.api.model.Server;
+import fourthargument.eris.api.model.ServerMember;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.repository.RoleRepository;
+import fourthargument.eris.api.repository.ServerMemberRepository;
+import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.repository.UserRepository;
+import fourthargument.eris.api.services.ServerService;
+import fourthargument.eris.api.services.ServerMemberService;
+import fourthargument.eris.api.services.UserService;
+import fourthargument.eris.exceptions.ServerException;
+import fourthargument.eris.exceptions.ServerMemberException;
 
 @ExtendWith(MockitoExtension.class)
 class ServerMemberServiceTest {
@@ -39,6 +42,12 @@ class ServerMemberServiceTest {
     private ServerRepository serverRepository;
     @Mock
     private UserService userService;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private RoleRepository roleRepository;
+    @Mock
+    private ServerService serverService;
 
     @InjectMocks
     private ServerMemberService serverMemberService;
@@ -90,6 +99,8 @@ class ServerMemberServiceTest {
 
     @Test
     void deleteServerMember_success() throws Exception {
+        when(userService.getUserEntityByEmail(user.getEmail())).thenReturn(user);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
         serverMemberService.deleteServerMember(user.getEmail(), server.getId());
@@ -98,7 +109,9 @@ class ServerMemberServiceTest {
     }
 
     @Test
-    void deleteServerMember_notFound() {
+    void deleteServerMember_notFound() throws Exception {
+        when(userService.getUserEntityByEmail(user.getEmail())).thenReturn(user);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
 
         assertThrows(ServerMemberException.class,
@@ -136,6 +149,8 @@ class ServerMemberServiceTest {
         UpdateMemberRoleRequestDTO dto = new UpdateMemberRoleRequestDTO();
         dto.setRoleId(1L);
 
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
         serverMemberService.updateServerMember(user.getEmail(), server.getId(), user.getId(), dto);

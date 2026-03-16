@@ -36,9 +36,7 @@ export function LeftPanel({
   }
 
   // Séparer online / offline
-  const online = serverMembers.filter((m: ServerMember) =>
-    onlineUserIds.has(m.userId),
-  );
+  const online = serverMembers.filter((m: ServerMember) => onlineUserIds.has(m.userId));
   const offline = serverMembers.filter(
     (m: ServerMember) => !onlineUserIds.has(m.userId),
   );
@@ -63,11 +61,7 @@ export function LeftPanel({
                   En ligne — {online.length}
                 </p>
                 {online.map((member: ServerMember) => (
-                  <MemberRow
-                    key={member.userId}
-                    member={member}
-                    isOnline={true}
-                  />
+                  <MemberRow key={member.userId} member={member} isOnline={true} />
                 ))}
               </>
             )}
@@ -77,11 +71,7 @@ export function LeftPanel({
                   Hors ligne — {offline.length}
                 </p>
                 {offline.map((member: ServerMember) => (
-                  <MemberRow
-                    key={member.userId}
-                    member={member}
-                    isOnline={false}
-                  />
+                  <MemberRow key={member.userId} member={member} isOnline={false} />
                 ))}
               </>
             )}
