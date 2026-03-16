@@ -117,7 +117,7 @@ class MessageServiceTest {
         when(messageRepository.findByChannel(channel)).thenReturn(List.of(message));
         when(messageMapper.toDTO(message)).thenReturn(messageDTO);
 
-        List<MessageDTO> result = messageService.getMessageHistoryChannel(channel.getId());
+        List<MessageDTO> result = messageService.getMessageHistory(channel.getId());
 
         assertEquals(1, result.size());
     }
@@ -132,7 +132,7 @@ class MessageServiceTest {
         // 3. ASSERTION : On s'attend à une MessageException (et non ChannelException !)
         // car c'est le messageRepository qui renvoie null ici.
         assertThrows(MessageException.class,
-                () -> messageService.getMessageHistoryChannel(channel.getId()));
+                () -> messageService.getMessageHistory(channel.getId()));
     }
 
     @Test
@@ -140,7 +140,7 @@ class MessageServiceTest {
         when(channelRepository.findById(channel.getId())).thenReturn(Optional.of(channel));
         when(messageRepository.findByChannel(channel)).thenReturn(Collections.emptyList());
 
-        List<MessageDTO> result = messageService.getMessageHistoryChannel(channel.getId());
+        List<MessageDTO> result = messageService.getMessageHistory(channel.getId());
 
         assertTrue(result.isEmpty());
     }

@@ -25,6 +25,7 @@ import fourthargument.eris.api.repository.RoleRepository;
 import fourthargument.eris.api.repository.ServerMemberRepository;
 import fourthargument.eris.api.repository.ServerRepository;
 import fourthargument.eris.api.repository.UserRepository;
+import fourthargument.eris.api.services.ServerService;
 import fourthargument.eris.api.services.ServerMemberService;
 import fourthargument.eris.api.services.UserService;
 import fourthargument.eris.exceptions.ServerException;
@@ -43,11 +44,13 @@ class ServerMemberServiceTest {
     private UserService userService;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private RoleRepository roleRepository;
+    @Mock
+    private ServerService serverService;
 
     @InjectMocks
     private ServerMemberService serverMemberService;
-    @Mock
-    private RoleRepository roleRepository;
 
     private User user;
     private Server server;
@@ -96,16 +99,23 @@ class ServerMemberServiceTest {
 
     @Test
     void deleteServerMember_success() throws Exception {
-        // On mocke ce que le SERVICE appelle réellement
-        when(userService.getUserEntityByEmail("user@example.com")).thenReturn(user);
-        when(serverRepository.findById(1L)).thenReturn(Optional.of(server));
-
-        // Maintenant "user" ne sera plus null, donc ce stubbing fonctionnera :
+        when(userService.getUserEntityByEmail(user.getEmail())).thenReturn(user);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
-        serverMemberService.deleteServerMember("user@example.com", 1L);
+        serverMemberService.deleteServerMember(user.getEmail(), server.getId());
 
         verify(serverMemberRepository).delete(serverMember);
+    }
+
+    @Test
+    void deleteServerMember_notFound() throws Exception {
+        when(userService.getUserEntityByEmail(user.getEmail())).thenReturn(user);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
+        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
+
+        assertThrows(ServerMemberException.class,
+                () -> serverMemberService.deleteServerMember(user.getEmail(), server.getId()));
     }
 
     // ── getMembersByServerId ──
@@ -136,49 +146,33 @@ class ServerMemberServiceTest {
 
     @Test
     void updateServerMember_success() throws Exception {
-        Long serverId = 1L;
-        Long memberId = 9L;
-        Long roleId = 1L; // On définit l'ID du rôle
-
-        // 1. Mock du Serveur et du User (pour passer le début de la méthode)
-        when(serverRepository.findById(serverId)).thenReturn(Optional.of(server));
-        when(userRepository.findById(memberId)).thenReturn(Optional.of(user));
-        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
-
-        // 2. Mock du Rôle (Le coupable de l'erreur actuelle !)
         Role newRole = new Role();
-        newRole.setId(roleId);
+        newRole.setId(2L);
         newRole.setName("ADMIN");
-        when(roleRepository.findById(roleId)).thenReturn(Optional.of(newRole));
+        UpdateMemberRoleRequestDTO dto = new UpdateMemberRoleRequestDTO();
+        dto.setRoleId(2L);
 
-        UpdateMemberRoleRequestDTO memberRequest = new UpdateMemberRoleRequestDTO();
-        memberRequest.setRoleId(roleId);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
+        when(roleRepository.findById(2L)).thenReturn(Optional.of(newRole));
 
-        // 3. Appel de la méthode
-        serverMemberService.updateServerMember("test@example.com", serverId, memberId, memberRequest);
+        serverMemberService.updateServerMember(user.getEmail(), server.getId(), user.getId(), dto);
 
-        // 4. Assertions
-        verify(serverMemberRepository).save(serverMember);
-        // Optionnel : vérifier que le rôle a bien été mis à jour sur l'objet
         assertEquals("ADMIN", serverMember.getRole().getName());
+        verify(serverMemberRepository).save(serverMember);
     }
 
     @Test
     void updateServerMember_notFound() {
-        Long serverId = 1L;
-        Long memberId = 9L;
+        UpdateMemberRoleRequestDTO dto = new UpdateMemberRoleRequestDTO();
+        dto.setRoleId(role.getId());
 
-        // On mocke le serveur pour passer l'étape 1
-        when(serverRepository.findById(serverId)).thenReturn(Optional.of(server));
-
-        // On mocke le user pour passer l'étape 2 (memberId doit matcher l'appel)
-        when(userRepository.findById(memberId)).thenReturn(Optional.of(user));
-
-        // On simule que le membre n'existe pas pour l'étape 3
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
 
         assertThrows(ServerMemberException.class,
-                () -> serverMemberService.updateServerMember("test@example.com", serverId, memberId,
-                        new UpdateMemberRoleRequestDTO()));
+                () -> serverMemberService.updateServerMember(user.getEmail(), server.getId(), user.getId(), dto));
     }
 }

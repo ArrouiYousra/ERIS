@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import fourthargument.eris.api.dto.InvitationDTO;
@@ -221,7 +220,7 @@ class InvitationServiceTest {
                 "Bienvenue !", // content
                 "SystemBot", // senderName
                 123L, // channelId
-                "2026-03-16" // timestamp (ou autre String selon ton DTO)
+                LocalDateTime.now()// timestamp (ou autre String selon ton DTO)
         );
 
         when(messageMapper.toDTO(any(Message.class))).thenReturn(mockDto);
@@ -229,7 +228,7 @@ class InvitationServiceTest {
         // 2. Mock du Bot (Le coupable !)
         User bot = new User();
         bot.setUsername("SystemBot");
-        when(userRepository.findByUsername("SystemBot")).thenReturn(Optional.of(bot));
+        when(userRepository.findByUsername("SystemBot")).thenReturn(bot);
 
         // 3. Mocks habituels
         when(userService.getUserEntityByEmail("joiner@example.com")).thenReturn(user);
@@ -285,8 +284,9 @@ class InvitationServiceTest {
 
         when(userService.getUserEntityByEmail("joiner@example.com")).thenReturn(user);
         when(invitationRepository.findByCode("abc12345")).thenReturn(Optional.of(invite));
+        when(roleRepository.findByName("MEMBER")).thenReturn(Optional.empty());
 
-        assertThrows(UserException.class,
+        assertThrows(RuntimeException.class,
                 () -> invitationService.joinServerWithInvite("joiner@example.com", "abc12345"));
     }
 }

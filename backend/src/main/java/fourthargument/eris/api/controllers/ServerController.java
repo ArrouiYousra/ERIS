@@ -2,7 +2,6 @@ package fourthargument.eris.api.controllers;
 
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +20,6 @@ import fourthargument.eris.api.dto.InvitationDTO;
 import fourthargument.eris.api.dto.ServerDTO;
 import fourthargument.eris.api.dto.ServerMemberDTO;
 import fourthargument.eris.api.dto.request.JoinInviteRequestDTO;
-import fourthargument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
 import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
 import fourthargument.eris.api.model.User;
 import fourthargument.eris.api.services.InvitationService;
@@ -32,6 +30,7 @@ import fourthargument.eris.exceptions.RoleException;
 import fourthargument.eris.exceptions.ServerException;
 import fourthargument.eris.exceptions.ServerMemberException;
 import fourthargument.eris.exceptions.UserException;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/servers")
@@ -129,10 +128,7 @@ public class ServerController {
     }
 
     @DeleteMapping("/{id}/leave")
-    @PreAuthorize("""
-            isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)
-            and !@serverSecurityService.isServerOwner(#id, authentication.name)
-            """)
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name) and !@serverSecurityService.isServerOwner(#id, authentication.name)")
     public ResponseEntity<String> leaveServer(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id)
             throws ServerException, ServerMemberException, UserException {
 
@@ -140,17 +136,5 @@ public class ServerController {
         serverMemberService.deleteServerMember(email, id);
 
         return ResponseEntity.status(HttpStatus.OK).body("Server left");
-    }
-
-    @PutMapping("/{serverId}/members/{memberId}")
-    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerOwner(#serverId, authentication.name)")
-    public ResponseEntity<String> updateMemberRole(@AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long serverId, @PathVariable Long memberId, @RequestBody UpdateMemberRoleRequestDTO dto)
-            throws RoleException, ServerException, ServerMemberException, UserException {
-
-        String email = userDetails.getUsername();
-        serverMemberService.updateServerMember(email, serverId, memberId, dto);
-
-        return ResponseEntity.status(HttpStatus.OK).body("Member role updated");
     }
 }

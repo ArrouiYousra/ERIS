@@ -1,18 +1,21 @@
 import { useState } from "react";
 import {
+  ArrowLeft,
   Hash,
   Lock,
-  Search,
-  Plus,
   LogOut,
+  Plus,
+  Pencil,
+  Search,
   Settings,
   SlidersHorizontal,
-  ArrowLeft,
+  Users,
 } from "lucide-react";
 import { useMessages } from "../hooks/useMessages";
-import type { Message } from "../hooks/useMessages";
 import { useChannelSocket } from "../hooks/useChannelSocket";
 import { useTyping } from "../hooks/useTyping";
+import { api } from "../api/client";
+import { useAuth } from "../hooks/useAuth";
 
 interface MessageListProps {
   channelId?: number | null;
@@ -24,6 +27,14 @@ interface MessageListProps {
   conversationId?: string | null;
   onToggleSidebar?: () => void;
   onLeaveServer?: () => Promise<void> | void;
+}
+
+interface MessageItem {
+  id: number;
+  senderId: number;
+  content: string;
+  createdAt?: string;
+  senderUsername?: string;
 }
 
 export function MessageList({
@@ -38,13 +49,22 @@ export function MessageList({
   onLeaveServer,
 }: MessageListProps) {
   const [messageInput, setMessageInput] = useState("");
+  const { user } = useAuth();
   const [showFutureCard, setShowFutureCard] = useState(false);
-  const { data: messages = [] } = useMessages(channelId ?? null);
+  const [showMemberList, setShowMemberList] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState<string>("");
+  const { data: messages = [] } = useMessages(channelId ?? null) as {
+    data: MessageItem[] | undefined;
+  };
   const { sendMessage } = useChannelSocket(channelId ?? null);
-  const { typingText, onInputChange, stopTyping } = useTyping(channelId ?? null);
+  const { typingText, onInputChange, stopTyping } = useTyping(
+    channelId ?? null,
+  );
 
   const isDM = !!conversationId;
   const hasContext = !!channelId || isDM;
+  const onToggleMemberList = () => setShowMemberList((prev) => !prev);
 
   if (!hasContext && serverId) {
     return (
@@ -116,6 +136,19 @@ export function MessageList({
     stopTyping();
   };
 
+  const handleUpdateMessage = async (messageId: number) => {
+    if (!editValue.trim()) return;
+
+    try {
+      // On appelle l'API pour modifier en base de données
+      await api.patch(`api/messages/${messageId}`, { content: editValue });
+      // Une fois fini, on remet editingId à null pour repasser en mode lecture
+      setEditingId(null);
+    } catch (error) {
+      console.error("Erreur lors de la modif :", error);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-[#313338]">
       {/* Channel header */}
@@ -144,20 +177,34 @@ export function MessageList({
             {channelTopic && (
               <>
                 <div className="w-px h-6 bg-gray-600 mx-2 shrink-0" />
-                <p className="text-gray-400 text-sm truncate flex-1 hidden md:block" title={channelTopic}>
+                <p
+                  className="text-gray-400 text-sm truncate flex-1"
+                  title={channelTopic}
+                >
                   {channelTopic}
                 </p>
               </>
             )}
           </>
         )}
-        {isDM && (
-          <h3 className="text-white font-semibold">Conversation</h3>
-        )}
+        {isDM && <h3 className="text-white font-semibold">Conversation</h3>}
 
         {/* Right side of header */}
-        <div className="flex items-center gap-2 sm:gap-4 ml-auto">
-          <div className="relative hidden sm:block">
+        <div className="flex items-center gap-4 ml-auto">
+          {!isDM && (
+            <button
+              onClick={onToggleMemberList}
+              className={`text-gray-400 hover:text-gray-200 transition-colors ${showMemberList ? "text-white" : ""}`}
+              title={
+                showMemberList
+                  ? "Masquer la liste des membres"
+                  : "Afficher la liste des membres"
+              }
+            >
+              <Users className="w-5 h-5" />
+            </button>
+          )}
+          <div className="relative">
             <input
               type="text"
               placeholder={`Rechercher dans ${serverName}`}
@@ -172,8 +219,14 @@ export function MessageList({
       <div className="flex-1 overflow-y-auto">
         {messages.length > 0 ? (
           <div className="p-4 space-y-4">
-            {messages.map((message: Message) => (
-              <div key={message.id} className="flex gap-3">
+            {messages.map((message) => (
+              <div
+                key={
+                  message.id ||
+                  `${message.senderId}-${message.createdAt ?? "unknown"}-${message.content}`
+                }
+                className="group flex gap-3"
+              >
                 <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-medium shrink-0">
                   {(message.senderUsername || "U").charAt(0).toUpperCase()}
                 </div>
@@ -188,8 +241,50 @@ export function MessageList({
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-300 break-words">{message.content}</p>
+                  {editingId === message.id ? (
+                    /* Mode ÉDITION : On affiche l'input */
+                    <div className="flex flex-col gap-2 ml-auto">
+                      <input
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        className="bg-[#383a40] text-gray-200 p-2 rounded outline-none border border-[#5865F2]"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleUpdateMessage(message.id);
+                          } else if (e.key === "Escape") {
+                            setEditingId(null);
+                          }
+                        }}
+                      />
+                      <div className="flex gap-2 text-xs">
+                        <span className="text-gray-400">
+                          Échap pour annuler • Entrée pour enregistrer
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Mode LECTURE : On affiche le texte normal */
+                    <p className="text-gray-300 break-words">
+                      {message.content}
+                    </p>
+                  )}
                 </div>
+                {/* Message Editing */}
+                {message.senderId === user?.id && !editingId && (
+                  <div className="input ">
+                    <button
+                      className="text-gray-400 hover:text-gray-200 transition-colors opacity-0 group-hover:opacity-100 p-1"
+                      onClick={() => {
+                        setEditingId(message.id);
+                        setEditValue(message.content);
+                      }}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -206,7 +301,8 @@ export function MessageList({
               Bienvenue sur #{channelName || "général"}
             </h1>
             <p className="text-gray-400 text-center max-w-md">
-              C'est le début du salon #{channelName || "général"}. Commence à discuter !
+              C'est le début du salon #{channelName || "général"}. Commence à
+              discuter !
             </p>
           </div>
         )}
