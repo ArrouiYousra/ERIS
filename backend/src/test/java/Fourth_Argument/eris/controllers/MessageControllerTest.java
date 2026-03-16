@@ -1,0 +1,100 @@
+package Fourth_Argument.eris.controllers;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import fourth_argument.eris.api.controllers.MessageController;
+import fourth_argument.eris.api.dto.MessageDTO;
+import fourth_argument.eris.api.model.Channel;
+import fourth_argument.eris.api.model.Server;
+import fourth_argument.eris.api.model.User;
+import fourth_argument.eris.api.repository.ChannelRepository;
+import fourth_argument.eris.api.services.MessageService;
+import fourth_argument.eris.exceptions.MessageException;
+
+@ExtendWith(MockitoExtension.class)
+class MessageControllerTest {
+
+    @Mock
+    private MessageService messageService;
+    @Mock
+    private ChannelRepository channelRepository;
+
+    private MessageController controller;
+
+    private Channel channel;
+    private MessageDTO messageDTO;
+
+    @BeforeEach
+    void setUp() {
+        // MessageController uses @RequiredArgsConstructor, create manually
+        controller = new MessageController(messageService);
+
+        User owner = new User();
+        owner.setId(1L);
+        owner.setEmail("owner@test.com");
+
+        Server server = new Server();
+        server.setId(1L);
+        server.setName("Server");
+        server.setOwner(owner);
+
+        channel = new Channel();
+        channel.setId(1L);
+        channel.setName("general");
+        channel.setServer(server);
+
+        messageDTO = new MessageDTO(1L, 1L, "sender@test.com", "Hello", 1L, null);
+    }
+
+    @Test
+    void sendMessage_success() throws Exception {
+        MessageDTO inputDTO = new MessageDTO(null, 1L, null, "Hello", 1L, null);
+        when(messageService.sendMessage(inputDTO, 1L)).thenReturn(messageDTO);
+
+        ResponseEntity<MessageDTO> response = controller.sendMessage(inputDTO, 1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Hello", response.getBody().content());
+    }
+
+    @Test
+    void getMessageHistory_success() throws Exception {
+        when(channelRepository.findById(1L)).thenReturn(Optional.of(channel));
+        when(messageService.getMessageHistory(channel.getId())).thenReturn(List.of(messageDTO));
+
+        ResponseEntity<List<MessageDTO>> response = controller.getMessageHistory(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void getMessageHistory_channelNotFound() {
+        when(channelRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(MessageException.class,
+                () -> controller.getMessageHistory(99L));
+    }
+
+    @Test
+    void deleteMessage_success() throws Exception {
+        doNothing().when(messageService).deleteMessage(1L);
+
+        ResponseEntity<String> response = controller.deleteMessage(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().contains("supprimé"));
+    }
+}

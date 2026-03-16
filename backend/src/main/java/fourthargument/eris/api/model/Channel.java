@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:backend/src/main/java/fourthargument/eris/api/model/Channel.java
 package fourthargument.eris.api.model;
+========
+package fourth_argument.eris.api.model;
+>>>>>>>> origin/feature/CI-backend:backend/src/main/java/fourth_argument/eris/api/model/Channel.java
 
 import java.sql.Date;
 
