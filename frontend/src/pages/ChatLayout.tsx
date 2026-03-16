@@ -156,6 +156,7 @@ export function ChatLayout() {
               }
               isOwner={isServerOwner}
               onDeleteServer={handleDeleteServer}
+              onLeaveServer={handleLeaveServer}
             />
           </div>
           <div className="chat-main-shell">

@@ -31,6 +31,7 @@ interface ChannelListProps {
   serverRoles?: { id: number; name: string }[];
   isOwner?: boolean;
   onDeleteServer?: () => void;
+  onLeaveServer?: () => void;
 }
 
 export function ChannelList({
@@ -43,6 +44,7 @@ export function ChannelList({
   serverRoles = [],
   isOwner = false,
   onDeleteServer,
+  onLeaveServer,
 }: ChannelListProps) {
   const [showChannelWizard, setShowChannelWizard] = useState(false);
   const [channelsCategoryOpen, setChannelsCategoryOpen] = useState(true);
@@ -178,6 +180,19 @@ export function ChannelList({
                 >
                   <Trash2 className="w-4 h-4" />
                   Supprimer le serveur
+                </button>
+              </>
+            )}
+            {!isOwner && (
+              <>
+                <div className="mx-2 my-1 border-t border-white/10" />
+                <button
+                  onClick={() => { onLeaveServer?.(); setShowServerDropdown(false); }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white rounded-sm mx-1 transition-colors"
+                  style={{ width: "calc(100% - 8px)" }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Quitter le serveur
                 </button>
               </>
             )}

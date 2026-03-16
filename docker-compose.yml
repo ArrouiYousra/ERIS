@@ -16,6 +16,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    ports :
+      - "${EXTERNAL_DB_PORT}:5432"
+
 
   backend:
     build:
@@ -27,7 +30,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-fourth_argument}
+      DB_URL: ${DB_URL}
       DB_USER: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       PORT: 8081
