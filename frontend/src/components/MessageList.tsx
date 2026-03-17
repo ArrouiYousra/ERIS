@@ -15,7 +15,7 @@ import { useDeleteMessage, useMessages } from "../hooks/useMessages";
 import type { Message } from "../hooks/useMessages";
 import { useChannelSocket } from "../hooks/useChannelSocket";
 import { useTyping } from "../hooks/useTyping";
-import { deleteMessage, editMessage } from "../api/messageApi";
+import { editMessage } from "../api/messageApi";
 import { useAuth } from "../hooks/useAuth";
 
 interface MessageListProps {

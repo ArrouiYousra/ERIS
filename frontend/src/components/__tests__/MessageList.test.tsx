@@ -7,7 +7,6 @@ const mockSendMessage = vi.fn();
 const mockOnInputChange = vi.fn();
 const mockStopTyping = vi.fn();
 
-// Mock de useAuth (La solution à ton erreur)
 vi.mock("../../hooks/useAuth", () => ({
   useAuth: () => ({
     user: { id: 1, username: "user@test.com" },
@@ -28,6 +27,14 @@ vi.mock("../../hooks/useMessages", () => ({
           },
         ]
       : [],
+  }),
+  useDeleteMessage: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useEditMessage: () => ({
+    mutate: vi.fn(),
+    isPending: false,
   }),
 }));
 
