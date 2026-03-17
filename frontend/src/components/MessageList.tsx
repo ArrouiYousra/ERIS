@@ -11,7 +11,7 @@ import {
   SlidersHorizontal,
   ArrowLeft,
 } from "lucide-react";
-import { useMessages } from "../hooks/useMessages";
+import { useDeleteMessage, useMessages } from "../hooks/useMessages";
 import type { Message } from "../hooks/useMessages";
 import { useChannelSocket } from "../hooks/useChannelSocket";
 import { useTyping } from "../hooks/useTyping";
@@ -48,6 +48,7 @@ export function MessageList({
   const [showFutureCard, setShowFutureCard] = useState(false);
   const { data: messages = [] } = useMessages(channelId ?? null);
   const { sendMessage } = useChannelSocket(channelId ?? null);
+  const deleteMutation = useDeleteMessage(channelId);
   const { typingText, onInputChange, stopTyping } = useTyping(
     channelId ?? null,
   );
@@ -66,12 +67,13 @@ export function MessageList({
   };
 
   const handleDeleteMessage = async (messageId: number) => {
-    try {
-      // On appelle l'API pour modifier en base de données
-      await deleteMessage(messageId);
-    } catch (error) {
-      console.error("Erreur lors de la suppresion :", error);
-    }
+    // .mutate() est la version standard, .mutateAsync() permet d'utiliser await
+    deleteMutation.mutate(messageId, {
+      onError: (error) => {
+        console.error("Erreur lors de la suppression :", error);
+        alert("Impossible de supprimer le message.");
+      },
+    });
   };
 
   const isDM = !!conversationId;
@@ -255,7 +257,7 @@ export function MessageList({
                     </p>
                   )}
                 </div>
-                {message.senderId === user?.id && !editingId && (
+                {message.senderId === user?.id && editingId !== message.id && (
                   <div className="input ">
                     <button
                       className="text-gray-400 hover:text-gray-200 transition-colors opacity-0 group-hover:opacity-100 p-1"
@@ -267,12 +269,19 @@ export function MessageList({
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
-                      className="text-gray-400 hover:text-gray-200 transition-colors opacity-0 group-hover:opacity-100 p-1"
-                      onClick={() => {
-                        handleDeleteMessage(message.id);
-                      }}
+                      className={`text-gray-400 hover:text-red-400 transition-colors p-1 ${
+                        deleteMutation.isPending
+                          ? "opacity-50 cursor-not-allowed"
+                          : "opacity-0 group-hover:opacity-100"
+                      }`}
+                      onClick={() => handleDeleteMessage(message.id)}
+                      disabled={deleteMutation.isPending} // Empêche le double-clic !
                     >
-                      <Trash className="w-4 h-4" />
+                      {deleteMutation.isPending ? (
+                        <span className="animate-spin text-xs">...</span> // Petit spinner optionnel
+                      ) : (
+                        <Trash className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 )}

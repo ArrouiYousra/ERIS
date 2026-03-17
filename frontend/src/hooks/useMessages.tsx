@@ -25,12 +25,12 @@ export function useMessages(channelId: number | null) {
   });
 }
 
-export function useDeleteMessage() {
+export function useDeleteMessage(channelId: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => deleteMessage(id),
+    mutationFn: (messageId: number) => deleteMessage(messageId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
     },
   });
 }
