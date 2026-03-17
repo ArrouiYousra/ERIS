@@ -1,6 +1,7 @@
 package fourthargument.eris.api.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,8 @@ public class ServerMemberService {
         }
 
         serverMember = new ServerMember(user, server, role);
-        serverMemberRepository.save(serverMember);
+        serverMember = serverMemberRepository.save(serverMember);
+        messagingTemplate.convertAndSend("/topic/server_member/" + server.getId(), (Object) Map.of("type", "CREATED", "serverMemberId", serverMember.getId()));
     }
 
     public void deleteServerMember(String email, Long serverId)
@@ -60,6 +62,7 @@ public class ServerMemberService {
         }
 
         serverMemberRepository.delete(serverMember);
+        messagingTemplate.convertAndSend("/topic/server_member/" + serverId, (Object) Map.of("type", "DELETED", "serverMemberId", serverMember.getId()));
     }
 
     public List<ServerMemberDTO> getMembersByServerId(Long serverId) throws ServerException {
@@ -104,7 +107,7 @@ public class ServerMemberService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RoleException("Role  not found"));
         member.setRole(role);
-        serverMemberRepository.save(member);
+        member = serverMemberRepository.save(member);
         return role;
     }
 
@@ -112,7 +115,7 @@ public class ServerMemberService {
         Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RoleException("Role  not found"));
         member.setRole(role);
-        serverMemberRepository.save(member);
+        member = serverMemberRepository.save(member);
         return role;
 
     }
