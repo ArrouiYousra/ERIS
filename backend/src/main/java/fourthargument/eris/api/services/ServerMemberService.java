@@ -90,7 +90,7 @@ public class ServerMemberService {
         Role role = setMemberRoleById(serverMember, dto.getRoleId());
         messagingTemplate.convertAndSend("/topic/server_member/" + serverId, serverMemberMapper.toDTO(serverMember));
 
-        if (role.getName() == "OWNER") {
+        if ("OWNER".equals(role.getName())) {
             User ownerUser = userService.getUserEntityByEmail(email);
             ServerMember ownerMember = serverMemberRepository.findServerMemberByUserAndServer(ownerUser, server);
             setMemberRoleByName(ownerMember, "ADMIN");

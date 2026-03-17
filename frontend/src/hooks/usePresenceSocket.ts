@@ -17,5 +17,5 @@ export function usePresenceSocket(serverId: number | null) {
     return () => {
       sub?.unsubscribe();
     };
-  }, [connected, subscribe, queryClient]);
+  }, [connected, subscribe, queryClient, serverId]);
 }
