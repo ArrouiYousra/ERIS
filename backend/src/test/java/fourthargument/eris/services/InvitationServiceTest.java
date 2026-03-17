@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import fourthargument.eris.api.dto.InvitationDTO;
@@ -221,7 +220,7 @@ class InvitationServiceTest {
                 "Bienvenue !", // content
                 "SystemBot", // senderName
                 123L, // channelId
-                "2026-03-16" // timestamp (ou autre String selon ton DTO)
+                LocalDateTime.now() // timestamp (ou autre String selon ton DTO)
         );
 
         when(messageMapper.toDTO(any(Message.class))).thenReturn(mockDto);
