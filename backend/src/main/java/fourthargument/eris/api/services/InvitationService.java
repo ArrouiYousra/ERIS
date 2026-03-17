@@ -19,6 +19,7 @@ import fourthargument.eris.api.model.Role;
 import fourthargument.eris.api.model.Server;
 import fourthargument.eris.api.model.ServerMember;
 import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.repository.BannedMemberRepository;
 import fourthargument.eris.api.repository.ChannelRepository;
 import fourthargument.eris.api.repository.InvitationRepository;
 import fourthargument.eris.api.repository.MessageRepository;
@@ -46,6 +47,7 @@ public class InvitationService {
     private final MessageRepository messageRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageMapper messageMapper;
+    private final BannedMemberRepository bannedMemberRepository;
 
     public InvitationService(InvitationRepository invitationRepository, InvitationMapper invitationMapper,
             UserRepository userRepository, ServerMemberRepository serverMemberRepository,
@@ -131,6 +133,11 @@ public class InvitationService {
 
         Role role = roleRepository.findByName("MEMBER")
                 .orElseThrow(() -> new RuntimeException("Role MEMBER not found"));
+
+
+        if (bannedMemberRepository.isCurrentlyBanned(user, invite.getServer())) {
+            throw new RuntimeException("You are banned from this server");
+        }
 
         // ✅ Add user as MEMBER
         serverMemberService.createServerMember(invite.getServer(), user, role);

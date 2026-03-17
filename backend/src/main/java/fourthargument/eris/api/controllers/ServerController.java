@@ -33,6 +33,8 @@ import fourthargument.eris.exceptions.ServerException;
 import fourthargument.eris.exceptions.ServerMemberException;
 import fourthargument.eris.exceptions.UserException;
 import lombok.RequiredArgsConstructor;
+import fourthargument.eris.api.dto.request.BanRequestDTO;
+import fourthargument.eris.api.services.BanService;
 
 @RestController
 @RequestMapping("/api/servers")
@@ -43,6 +45,7 @@ public class ServerController {
     private final ServerMemberService serverMemberService;
     private final UserService userService;
     private final InvitationService invitationService;
+    private final BanService banService;
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
@@ -160,5 +163,30 @@ public class ServerController {
         List<RoleResponseDTO> roles = serverService.getServerRoles(serverId);
 
         return ResponseEntity.ok(roles);
+    }
+
+    @PostMapping("/{serverId}/ban")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerAdmin(#serverId, authentication.name)")
+    public ResponseEntity<String> banUser(
+            @PathVariable Long serverId,
+            @RequestBody BanRequestDTO request,
+            @AuthenticationPrincipal UserDetails userDetails) throws UserException, ServerException {
+
+        banService.banUser(serverId, request.getUserId(), userDetails.getUsername(),
+                request.getReason(), request.getDurationInHours());
+
+        return ResponseEntity.ok("User banned");
+    }
+
+    @DeleteMapping("/{serverId}/ban/{userId}")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerAdmin(#serverId, authentication.name)")
+    public ResponseEntity<String> unbanUser(
+            @PathVariable Long serverId,
+            @PathVariable Long userId,
+            @AuthenticationPrincipal UserDetails userDetails) throws UserException, ServerException {
+
+        banService.unbanUser(serverId, userId, userDetails.getUsername());
+
+        return ResponseEntity.ok("User unbanned");
     }
 }
