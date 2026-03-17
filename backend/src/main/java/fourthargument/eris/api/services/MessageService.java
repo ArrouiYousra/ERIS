@@ -1,9 +1,8 @@
 package fourthargument.eris.api.services;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import fourthargument.eris.api.dto.MessageDTO;
@@ -17,7 +16,6 @@ import fourthargument.eris.api.repository.UserRepository;
 import fourthargument.eris.exceptions.ChannelException;
 import fourthargument.eris.exceptions.MessageException;
 import fourthargument.eris.exceptions.UserException;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +25,6 @@ public class MessageService {
     private final UserRepository userRepository;
     private final ChannelRepository channelRepository;
     private final MessageMapper messageMapper;
-    private final SimpMessagingTemplate messagingTemplate;
 
     public MessageDTO sendMessage(MessageDTO dto, Long channelId) throws ChannelException, UserException {
 
@@ -45,7 +42,7 @@ public class MessageService {
 
     }
 
-    public List<MessageDTO> getMessageHistory(Long channelId) throws MessageException, ChannelException {
+    public List<MessageDTO> getMessageHistoryChannel(Long channelId) throws MessageException, ChannelException {
 
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new ChannelException("This channel is not found !"));
@@ -70,27 +67,6 @@ public class MessageService {
                 .orElseThrow(() -> new MessageException("Pas de message trouvé"));
 
         messageRepository.delete(message);
-
-    }
-
-    public Message editMessage(String email, MessageDTO messageDTO, Long messageId) throws MessageException {
-
-        Message updatedMessage = messageRepository.findById(messageId)
-                .orElseThrow(() -> new MessageException("Pas de message trouvé"));
-
-        if (!updatedMessage.getSender().getEmail().equals(email)) {
-            throw new MessageException("Vous n'êtes pas autorisé à modifier ce message");
-        }
-
-        updatedMessage.setContent(messageDTO.content());
-        updatedMessage.setUpdatedAt(LocalDateTime.now());
-
-        messageRepository.save(updatedMessage);
-
-        messagingTemplate.convertAndSend("/topic/channels/" + updatedMessage.getChannel().getId(),
-                messageMapper.toDTO(updatedMessage));
-
-        return updatedMessage;
 
     }
 

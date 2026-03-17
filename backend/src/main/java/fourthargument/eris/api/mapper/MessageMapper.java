@@ -17,7 +17,7 @@ public class MessageMapper {
                 message.getSender().getUser(),
                 message.getContent(),
                 message.getChannel().getId(),
-                message.getCreatedAt() != null ? message.getCreatedAt() : null);
+                message.getCreatedAt() != null ? message.getCreatedAt().toString() : null);
     }
 
     public Message toEntity(MessageDTO dto, User sender, Channel channel) {

@@ -39,12 +39,6 @@ vi.mock('../../hooks/useTyping', () => ({
   }),
 }));
 
-vi.mock('../../hooks/useAuth', () => ({
-  useAuth: () => ({
-    user: { id: 1 },
-  }),
-}));
-
 describe('MessageList', () => {
   beforeEach(() => {
     vi.clearAllMocks();
