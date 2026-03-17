@@ -14,8 +14,8 @@ import fourthargument.eris.api.model.User;
 import fourthargument.eris.api.repository.BannedMemberRepository;
 import fourthargument.eris.api.repository.ServerMemberRepository;
 import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.repository.UserRepository;
 import fourthargument.eris.exceptions.ServerException;
-import fourthargument.eris.exceptions.ServerMemberException;
 import fourthargument.eris.exceptions.UserException;
 import lombok.RequiredArgsConstructor;
 
@@ -26,29 +26,37 @@ public class BanService {
     private final BannedMemberRepository bannedMemberRepository;
     private final ServerMemberRepository serverMemberRepository;
     private final ServerRepository serverRepository;
+    private final UserRepository userRepository;
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
 
     public BannedMember banUser(final Long serverId, final Long userId, final String bannedByEmail,
             final String reason, final Integer durationInHours) throws UserException, ServerException {
 
-        final User user = userService.getUserById(userId);
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException("User not found"));
         final Server server = serverRepository.findById(serverId)
                 .orElseThrow(() -> new ServerException("Server not found"));
         final User bannedBy = userService.getUserEntityByEmail(bannedByEmail);
 
-        // Vérifier que l'utilisateur n'est pas déjà banni
-        if (bannedMemberRepository.isCurrentlyBanned(user, server)) {
-            throw new ServerException("User is already banned from this server");
+        // Vérifier les rôles
+        final ServerMember bannerMember = serverMemberRepository.findServerMemberByUserAndServer(bannedBy, server);
+        final ServerMember targetMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
+
+        if (bannerMember == null) {
+            throw new ServerException("You are not a member of this server");
+        }
+        if (targetMember == null) {
+            throw new ServerException("Target user is not a member of this server");
         }
 
-        // Supprimer le membre du serveur
-        final ServerMember member = serverMemberRepository.findServerMemberByUserAndServer(user, server);
-        if (member != null) {
-            serverMemberRepository.delete(member);
+        final int bannerRank = getRoleRank(bannerMember.getRole().getName());
+        final int targetRank = getRoleRank(targetMember.getRole().getName());
+
+        if (bannerRank <= targetRank) {
+            throw new ServerException("You cannot ban a member with equal or higher role");
         }
 
-        // Créer le ban
         final BannedMember ban = new BannedMember();
         ban.setUser(user);
         ban.setServer(server);
@@ -62,7 +70,6 @@ public class BanService {
 
         final BannedMember saved = bannedMemberRepository.save(ban);
 
-        // Broadcast
         messagingTemplate.convertAndSend("/topic/servers/" + serverId + "/members",
                 (Object) Map.of("type", "MEMBER_BANNED", "userId", userId));
         messagingTemplate.convertAndSend("/topic/servers",
@@ -74,7 +81,8 @@ public class BanService {
     public void unbanUser(final Long serverId, final Long userId, final String unbannedByEmail)
             throws UserException, ServerException {
 
-        final User user = userService.getUserById(userId);
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException("User not found"));
         final Server server = serverRepository.findById(serverId)
                 .orElseThrow(() -> new ServerException("Server not found"));
 
@@ -83,7 +91,6 @@ public class BanService {
 
         bannedMemberRepository.delete(ban);
 
-        // Broadcast
         messagingTemplate.convertAndSend("/topic/servers/" + serverId + "/members",
                 (Object) Map.of("type", "MEMBER_UNBANNED", "userId", userId));
     }
@@ -97,4 +104,13 @@ public class BanService {
     public boolean isUserBanned(final User user, final Server server) {
         return bannedMemberRepository.isCurrentlyBanned(user, server);
     }
+
+    private int getRoleRank(final String roleName) {
+    return switch (roleName) {
+        case "OWNER" -> 3;
+        case "ADMIN" -> 2;
+        case "MEMBER" -> 1;
+        default -> 1;
+    };
+}
 }

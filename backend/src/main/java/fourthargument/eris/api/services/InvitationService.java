@@ -53,7 +53,8 @@ public class InvitationService {
             UserRepository userRepository, ServerMemberRepository serverMemberRepository,
             ServerMemberService serverMemberService, UserService userService,
             ServerRepository serverRepository, RoleRepository roleRepository, ChannelRepository channelRepository,
-            MessageRepository messageRepository, SimpMessagingTemplate messagingTemplate, MessageMapper messageMapper) {
+            MessageRepository messageRepository, SimpMessagingTemplate messagingTemplate, MessageMapper messageMapper,
+            BannedMemberRepository bannedMemberRepository) {
         this.invitationRepository = invitationRepository;
         this.invitationMapper = invitationMapper;
         this.userRepository = userRepository;
@@ -66,7 +67,7 @@ public class InvitationService {
         this.messageRepository = messageRepository;
         this.messagingTemplate = messagingTemplate;
         this.messageMapper = messageMapper;
-
+        this.bannedMemberRepository = bannedMemberRepository;
     }
 
     public String generateCode() {
@@ -133,7 +134,6 @@ public class InvitationService {
 
         Role role = roleRepository.findByName("MEMBER")
                 .orElseThrow(() -> new RuntimeException("Role MEMBER not found"));
-
 
         if (bannedMemberRepository.isCurrentlyBanned(user, invite.getServer())) {
             throw new RuntimeException("You are banned from this server");
