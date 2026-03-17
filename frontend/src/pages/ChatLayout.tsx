@@ -31,6 +31,8 @@ import { usePresenceSocket } from '../hooks/usePresenceSocket';
 import { MemberContextMenu } from "../components/MemberContextMenu";
 
 export function ChatLayout() {
+  const [ctxMenu, setCtxMenu] = useState<{ member: ServerMember; x: number; y: number } | null>(null);
+
   const queryClient = useQueryClient();
   const [selectedServerId, setSelectedServerId] = useState<number | null>(null);
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(
@@ -44,6 +46,8 @@ export function ChatLayout() {
   const { data: servers = [] } = useServers();
   const { data: channels = [] } = useChannels(selectedServerId);
   const { data: roles = [] } = useServerRoles(selectedServerId);
+  const { data: members = [] } = useServerMembers(selectedServerId);
+  const { onlineUserIds } = usePresence(selectedServerId);
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
   const leaveServer = useLeaveServer();
@@ -186,7 +190,7 @@ export function ChatLayout() {
                 onLeaveServer={handleLeaveServer}
               />
             </div>
-            {showMemberList && (() => {
+            {(() => {
               const grouped = members.reduce((acc: Record<string, ServerMember[]>, member: ServerMember) => {
                 const roleName = member.roleName ?? "Membres";
                 if (!acc[roleName]) acc[roleName] = [];
@@ -250,6 +254,18 @@ export function ChatLayout() {
         onCreateServer={handleCreateServerFromWizard}
         onGoToServer={handleGoToServer}
       />
+      {ctxMenu && (
+        <MemberContextMenu
+          member={ctxMenu.member}
+          serverId={selectedServerId!}
+          isOwner={isServerOwner}
+          currentUserId={user!.id}
+          position={{ x: ctxMenu.x, y: ctxMenu.y }}
+          onClose={() => setCtxMenu(null)}
+          onKick={(m) => console.log("kick", m)}
+          onBan={(m) => console.log("ban", m)}
+        />
+      )}
     </div>
   );
 }

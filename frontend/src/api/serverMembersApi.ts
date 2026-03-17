@@ -1,5 +1,5 @@
 import { api } from "./client";
-import type { ServerMember } from "../types/shared";
+import type { ServerMember, ServerRole } from "../types/shared";
 
 export type { ServerMember };
 
