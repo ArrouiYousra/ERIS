@@ -2,6 +2,7 @@ package fourthargument.eris.api.services;
 
 import java.util.List;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import fourthargument.eris.api.dto.ServerMemberDTO;
@@ -32,6 +33,7 @@ public class ServerMemberService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final ServerService serverService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public void createServerMember(Server server, User user, Role role) throws ServerMemberException {
         ServerMember serverMember = serverMemberRepository.findServerMemberByUserAndServer(user, server);
@@ -86,12 +88,15 @@ public class ServerMemberService {
         }
 
         Role role = setMemberRoleById(serverMember, dto.getRoleId());
+        messagingTemplate.convertAndSend("/topic/server_member/" + serverId, serverMemberMapper.toDTO(serverMember));
 
         if (role.getName() == "OWNER") {
             User ownerUser = userService.getUserEntityByEmail(email);
             ServerMember ownerMember = serverMemberRepository.findServerMemberByUserAndServer(ownerUser, server);
             setMemberRoleByName(ownerMember, "ADMIN");
             serverService.changeOwner(server, user);
+
+            messagingTemplate.convertAndSend("/topic/server_member/" + serverId, serverMemberMapper.toDTO(ownerMember));
         }
     }
 

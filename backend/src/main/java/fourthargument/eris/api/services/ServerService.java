@@ -8,6 +8,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import fourthargument.eris.api.dto.ServerDTO;
+import fourthargument.eris.api.dto.response.RoleResponseDTO;
+import fourthargument.eris.api.mapper.RoleMapper;
 import fourthargument.eris.api.mapper.ServerMapper;
 import fourthargument.eris.api.model.Channel;
 import fourthargument.eris.api.model.Role;
@@ -20,6 +22,7 @@ import fourthargument.eris.api.repository.MessageRepository;
 import fourthargument.eris.api.repository.RoleRepository;
 import fourthargument.eris.api.repository.ServerMemberRepository;
 import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.exceptions.RoleException;
 import fourthargument.eris.exceptions.ServerException;
 import fourthargument.eris.exceptions.UserException;
 
@@ -31,6 +34,7 @@ public class ServerService {
 
     private final ServerRepository serverRepository;
     private final ServerMapper serverMapper;
+    private final RoleMapper roleMapper;
     private final ServerMemberRepository serverMemberRepository;
     private final ChannelRepository channelRepository;
     private final RoleRepository roleRepository;
@@ -137,4 +141,17 @@ public class ServerService {
         serverRepository.save(server);
     }
 
+    public List<RoleResponseDTO> getServerRoles(Long id) throws RoleException {
+        List<Role> roles = roleRepository.findAll();
+
+        if (roles == null) {
+            throw new RoleException("No role found");
+        }
+
+        List<RoleResponseDTO> roleDTOs = roles.stream()
+                .map(role -> roleMapper.toDTO(role))
+                .toList();
+
+        return roleDTOs;
+    }
 }
