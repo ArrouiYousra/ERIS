@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerRoles, useUpdateMemberRole } from "../hooks/useServers";
 import type { ServerMember } from "../api/serverMembersApi";
  
@@ -25,7 +25,6 @@ export function MemberContextMenu({
 }: MemberContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [submenuOpen, setSubmenuOpen] = useState(false);
-  const [adjustedPos, setAdjustedPos] = useState(position);
  
   const { data: roles = [] } = useServerRoles(serverId);
   const updateRole = useUpdateMemberRole();
@@ -33,18 +32,20 @@ export function MemberContextMenu({
   const isSelf = member.userId === currentUserId;
   const canManage = isOwner && !isSelf;
  
-  // Adjust menu position to stay within viewport
-  useEffect(() => {
-    if (!menuRef.current) return;
-    const rect = menuRef.current.getBoundingClientRect();
+  // Keep the menu visible with a best-effort clamp without effect state updates.
+  const adjustedPos = useMemo(() => {
+    const MENU_WIDTH = 224; // w-56
+    const MENU_HEIGHT_ESTIMATE = 380;
+    const PADDING = 8;
+
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     let { x, y } = position;
-    if (x + rect.width > vw) x = vw - rect.width - 8;
-    if (y + rect.height > vh) y = vh - rect.height - 8;
-    if (x < 8) x = 8;
-    if (y < 8) y = 8;
-    setAdjustedPos({ x, y });
+    if (x + MENU_WIDTH > vw) x = vw - MENU_WIDTH - PADDING;
+    if (y + MENU_HEIGHT_ESTIMATE > vh) y = vh - MENU_HEIGHT_ESTIMATE - PADDING;
+    if (x < PADDING) x = PADDING;
+    if (y < PADDING) y = PADDING;
+    return { x, y };
   }, [position]);
  
   // Close on outside click or Escape
