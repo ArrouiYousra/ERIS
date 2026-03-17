@@ -3,12 +3,16 @@ import type { ServerMember, ServerRole } from "../types/shared";
 
 export type { ServerMember };
 
+export interface UpdateMemberPayload {
+  roleId: number;
+}
+
 export async function getServerMembers(serverId: number) {
   const { data } = await api.get<ServerMember[]>(`/api/servers/${serverId}/members`);
   return data;
 }
 
-export async function updateMemberRole(serverId: number, memberId: number, roleId: number) {
+export async function updateMemberRole(serverId: number, memberId: number, roleId: UpdateMemberPayload) {
   const { data } = await api.put<ServerMember[]>(`/api/servers/${serverId}/members/${memberId}`, roleId);
   return data;
 }

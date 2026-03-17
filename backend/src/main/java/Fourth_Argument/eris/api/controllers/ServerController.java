@@ -153,7 +153,7 @@ public class ServerController {
     }
 
     @GetMapping("/{serverId}/roles")
-    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#serverId, authentication.name)")
     public ResponseEntity<List<RoleResponseDTO>> getServerRoles(@PathVariable Long serverId,
             @AuthenticationPrincipal UserDetails userDetails) throws RoleException {
 

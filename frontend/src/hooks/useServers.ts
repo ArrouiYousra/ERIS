@@ -9,7 +9,12 @@ import {
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
-import { getServerMembers, updateMemberRole, getServerRoles } from "../api/serverMembersApi";
+import {
+  getServerMembers,
+  updateMemberRole,
+  getServerRoles,
+  type UpdateMemberPayload,
+} from "../api/serverMembersApi";
 
 import { useAuth } from "./useAuth";
 
@@ -91,12 +96,12 @@ export function useUpdateMemberRole() {
     mutationFn: ({
       serverId,
       memberId,
-      roleId,
+      payload,
     }: {
       serverId: number;
       memberId: number;
-      roleId: number;
-    }) => updateMemberRole(serverId, memberId, roleId),
+      payload: UpdateMemberPayload;
+    }) => updateMemberRole(serverId, memberId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["servers"] });
     },
