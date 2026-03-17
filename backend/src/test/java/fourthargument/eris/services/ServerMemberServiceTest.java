@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import fourthargument.eris.api.dto.ServerMemberDTO;
 import fourthargument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
@@ -48,6 +49,8 @@ class ServerMemberServiceTest {
     private ServerMemberService serverMemberService;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     private User user;
     private Server server;
