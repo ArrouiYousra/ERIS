@@ -6,12 +6,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
-
 import fourthargument.eris.api.model.Channel;
 import fourthargument.eris.api.model.Server;
 
 public interface ChannelRepository extends CrudRepository<Channel, Long> {
-
     @Query(value = "SELECT * FROM channel WHERE server_id=?1", nativeQuery = true)
     List<Channel> findByServerId(Long serverId);
 

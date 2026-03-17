@@ -30,8 +30,3 @@ export interface ServerMember {
   typingStatus: boolean;
   joinedAt: string;
 }
-
-export interface ServerRole {
-  id: number;
-  name: string;
-}
