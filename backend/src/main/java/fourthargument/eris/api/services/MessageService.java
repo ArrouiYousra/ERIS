@@ -2,6 +2,7 @@ package fourthargument.eris.api.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -70,6 +71,9 @@ public class MessageService {
                 .orElseThrow(() -> new MessageException("Pas de message trouvé"));
 
         messageRepository.delete(message);
+
+        messagingTemplate.convertAndSend("/topic/channels/" + message.getChannel().getId(),
+                (Object) Map.of("type", "DELETED", "messageId", messageId));
 
     }
 

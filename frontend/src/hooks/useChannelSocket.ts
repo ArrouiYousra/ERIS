@@ -18,6 +18,9 @@ export function useChannelSocket(channelId: number | null) {
       queryClient.setQueryData(
         ["messages", channelId],
         (old: Message[] = []) => {
+          if (data.type === "DELETED") {
+            return old.filter((m) => m.id !== data.messageId);
+          }
           const exists = old.find((m) => m.id === data.id);
 
           if (exists) {

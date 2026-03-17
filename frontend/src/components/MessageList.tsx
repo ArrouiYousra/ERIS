@@ -5,6 +5,7 @@ import {
   Search,
   Plus,
   LogOut,
+  Trash,
   Pencil,
   Settings,
   SlidersHorizontal,
@@ -14,7 +15,7 @@ import { useMessages } from "../hooks/useMessages";
 import type { Message } from "../hooks/useMessages";
 import { useChannelSocket } from "../hooks/useChannelSocket";
 import { useTyping } from "../hooks/useTyping";
-import { editMessage } from "../api/messageApi";
+import { deleteMessage, editMessage } from "../api/messageApi";
 import { useAuth } from "../hooks/useAuth";
 
 interface MessageListProps {
@@ -61,6 +62,15 @@ export function MessageList({
       setEditingId(null);
     } catch (error) {
       console.error("Erreur lors de la modif :", error);
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: number) => {
+    try {
+      // On appelle l'API pour modifier en base de données
+      await deleteMessage(messageId);
+    } catch (error) {
+      console.error("Erreur lors de la suppresion :", error);
     }
   };
 
@@ -255,6 +265,14 @@ export function MessageList({
                       }}
                     >
                       <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      className="text-gray-400 hover:text-gray-200 transition-colors opacity-0 group-hover:opacity-100 p-1"
+                      onClick={() => {
+                        handleDeleteMessage(message.id);
+                      }}
+                    >
+                      <Trash className="w-4 h-4" />
                     </button>
                   </div>
                 )}
