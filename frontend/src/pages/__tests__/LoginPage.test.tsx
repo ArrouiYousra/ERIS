@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
-import { LoginPage } from "../LoginPage";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
+import { LoginPage } from '../LoginPage';
 
 const mockLogin = vi.fn();
 const mockNavigate = vi.fn();
@@ -80,7 +80,7 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: "Log In" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid credentials")).toBeInTheDocument();
+      expect(screen.getByText(/Erreur de connexion\./)).toBeInTheDocument();
     });
   });
 

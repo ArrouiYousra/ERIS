@@ -2,6 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSocket } from '../api/wsApi';
 import { useAuth } from './useAuth';
+import type { Message } from './useMessages';
 
 export function useChannelSocket(channelId: number | null) {
   const { subscribe, publish, connected } = useSocket();
@@ -13,12 +14,9 @@ export function useChannelSocket(channelId: number | null) {
     if (!channelId || !connected) return;
 
     const sub = subscribe(`/topic/channels/${channelId}`, (msg) => {
-      const newMessage = JSON.parse(msg.body);
-      queryClient.setQueryData(['messages', channelId], (old: any[] = []) => {
-        const existingMessage = (old.some((m) => m.id === newMessage.id));
-        if (existingMessage) {
-          return old.map((m) => m.id === newMessage.id ? newMessage : m);
-        }
+      const newMessage = JSON.parse(msg.body) as Message;
+      queryClient.setQueryData(['messages', channelId], (old: Message[] = []) => {
+        if (old.some((m) => m.id === newMessage.id)) return old;
         return [...old, newMessage];
       });
     });
@@ -37,7 +35,7 @@ export function useChannelSocket(channelId: number | null) {
       }
       publish('/app/chat', { senderId: user.id, channelId, content });
     },
-    [channelId, connected, user?.id, publish],
+    [channelId, connected, user, publish],
   );
 
   return { sendMessage, connected };

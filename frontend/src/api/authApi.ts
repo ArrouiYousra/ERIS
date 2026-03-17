@@ -10,7 +10,6 @@ export interface SignupPayload {
   password: string;
   username: string;
   displayName: string;
-  birthDate?: string;
 }
 
 export async function login(payload: LoginPayload) {
@@ -19,9 +18,7 @@ export async function login(payload: LoginPayload) {
 }
 
 export async function signup(payload: SignupPayload) {
-  // Le backend n'attend pas birthDate dans UserRequestDTO, on l'enlève
-  const { birthDate, ...payloadWithoutBirthDate } = payload;
-  const { data } = await api.post("/api/auth/signup", payloadWithoutBirthDate);
+  const { data } = await api.post("/api/auth/signup", payload);
   return data;
 }
 

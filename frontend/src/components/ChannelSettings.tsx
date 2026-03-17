@@ -32,7 +32,7 @@ export function ChannelSettings({
   useEffect(() => {
     if (channel) {
       setName(channel.name);
-      setTopic(channel.topic ?? "");
+      setTopic(channel.topic || "");
       setHasChanges(false);
     }
   }, [channel]);
@@ -64,13 +64,13 @@ export function ChannelSettings({
   const handleNameChange = (value: string) => {
     const formatted = value.toLowerCase().replace(/\s+/g, "-");
     setName(formatted);
-    setHasChanges(formatted !== channel.name || topic !== (channel.topic ?? ""));
+    setHasChanges(formatted !== channel.name || topic !== (channel.topic || ""));
   };
 
   const handleTopicChange = (value: string) => {
     if (value.length <= MAX_TOPIC_LENGTH) {
       setTopic(value);
-      setHasChanges(name !== channel.name || value !== (channel.topic ?? ""));
+      setHasChanges(name !== channel.name || value !== (channel.topic || ""));
     }
   };
 
@@ -214,7 +214,7 @@ export function ChannelSettings({
               <button
                 onClick={() => {
                   setName(channel.name);
-                  setTopic(channel.topic ?? "");
+                  setTopic(channel.topic || "");
                   setHasChanges(false);
                 }}
                 className="px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:underline transition-colors"

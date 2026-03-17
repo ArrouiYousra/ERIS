@@ -5,13 +5,25 @@ import {
   createServer,
   updateServer,
   deleteServer as deleteServerApi,
-  leaveServer,
+  leaveServer as leaveServerApi,
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
-import { getServerMembers } from "../api/serverMembersApi";
+import { getServerMembers, updateMemberRole } from "../api/serverMembersApi";
 
 import { useAuth } from "./useAuth";
+
+export interface ServerRole {
+  id: number;
+  name: string;
+}
+
+// Mirrors seeded backend roles in migrations.
+const DEFAULT_SERVER_ROLES: ServerRole[] = [
+  { id: 1, name: "MEMBER" },
+  { id: 2, name: "ADMIN" },
+  { id: 3, name: "OWNER" },
+];
 
 export function useServers() {
   const { isAuthenticated } = useAuth();
@@ -70,9 +82,11 @@ export function useDeleteServer() {
 export function useLeaveServer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => leaveServer(id),
-    onSuccess: () => {
+    mutationFn: (serverId: number) => leaveServerApi(serverId),
+    onSuccess: (_, serverId) => {
       queryClient.invalidateQueries({ queryKey: ["servers"] });
+      queryClient.invalidateQueries({ queryKey: ["serverMembers", serverId] });
+      queryClient.invalidateQueries({ queryKey: ["channels", serverId] });
     },
   });
 }
@@ -82,5 +96,33 @@ export function useServerMembers(serverId: number | null) {
     queryKey: ["serverMembers", serverId],
     queryFn: () => (serverId ? getServerMembers(serverId) : []),
     enabled: !!serverId,
+  });
+}
+
+export function useServerRoles(serverId: number | null) {
+  return useQuery({
+    queryKey: ["serverRoles", serverId],
+    queryFn: async () => DEFAULT_SERVER_ROLES,
+    enabled: !!serverId,
+  });
+}
+
+export function useUpdateMemberRole() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      serverId,
+      memberId,
+      roleId,
+    }: {
+      serverId: number;
+      memberId: number;
+      roleId: number;
+    }) => updateMemberRole(serverId, memberId, { roleId }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["serverMembers", variables.serverId],
+      });
+    },
   });
 }

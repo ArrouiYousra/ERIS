@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { ServerMembers } from "../ServersMembers";
 
 vi.mock("../../hooks/useServers", () => ({
-  useServerMember: vi.fn(),
+  useServerMembers: vi.fn(),
 }));
 
 import { useServerMembers } from "../../hooks/useServers";

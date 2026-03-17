@@ -114,13 +114,13 @@ describe('MessageList', () => {
     expect(mockSendMessage).not.toHaveBeenCalled();
   });
 
-  it('shows member list toggle button', () => {
+  it('accepts optional sidebar toggle prop', () => {
     const onToggle = vi.fn();
     render(
       <MessageList
         channelId={1}
         channelName="general"
-        onToggleMemberList={onToggle}
+        onToggleSidebar={onToggle}
       />,
     );
 
