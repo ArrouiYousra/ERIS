@@ -2,6 +2,7 @@ import { useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "../api/wsApi";
 import { useAuth } from "./useAuth";
+import type { Message } from "./useMessages";
 
 export function useChannelSocket(channelId: number | null) {
   const { subscribe, publish, connected } = useSocket();
@@ -14,15 +15,18 @@ export function useChannelSocket(channelId: number | null) {
 
     const sub = subscribe(`/topic/channels/${channelId}`, (msg) => {
       const data = JSON.parse(msg.body);
-      queryClient.setQueryData(["messages", channelId], (old: any[] = []) => {
-        const exists = old.find((m) => m.id === data.id);
+      queryClient.setQueryData(
+        ["messages", channelId],
+        (old: Message[] = []) => {
+          const exists = old.find((m) => m.id === data.id);
 
-        if (exists) {
-          return old.map((m) => (m.id === data.id ? data : m));
-        } else {
-          return [...old, data];
-        }
-      });
+          if (exists) {
+            return old.map((m) => (m.id === data.id ? data : m));
+          } else {
+            return [...old, data];
+          }
+        },
+      );
     });
 
     return () => {
