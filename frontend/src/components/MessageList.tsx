@@ -199,7 +199,7 @@ export function MessageList({
         {messages.length > 0 ? (
           <div className="p-4 space-y-4">
             {messages.map((message: Message) => (
-              <div key={message.id} className="flex gap-3">
+              <div key={message.id} className="flex gap-3 group">
                 <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-medium shrink-0">
                   {(message.senderUsername || "U").charAt(0).toUpperCase()}
                 </div>
