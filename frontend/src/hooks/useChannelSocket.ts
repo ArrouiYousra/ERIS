@@ -3,10 +3,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "../api/wsApi";
 import { useAuth } from "./useAuth";
 
+interface RealtimeMessage {
+  id: number;
+  senderId: number;
+  content: string;
+  createdAt: string;
+  senderUsername?: string;
+}
+
 export function useChannelSocket(channelId: number | null) {
   const { subscribe, publish, connected } = useSocket();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const userId = user?.id ?? null;
 
   // Subscribe aux messages du channel
   useEffect(() => {
@@ -14,7 +23,9 @@ export function useChannelSocket(channelId: number | null) {
 
     const sub = subscribe(`/topic/channels/${channelId}`, (msg) => {
       const data = JSON.parse(msg.body);
-      queryClient.setQueryData(["messages", channelId], (old: any[] = []) => {
+      queryClient.setQueryData<RealtimeMessage[]>(
+        ["messages", channelId],
+        (old = []) => {
         const exists = old.find((m) => m.id === data.id);
 
         if (exists) {
@@ -22,7 +33,8 @@ export function useChannelSocket(channelId: number | null) {
         } else {
           return [...old, data];
         }
-      });
+        },
+      );
     });
 
     return () => {
@@ -33,17 +45,13 @@ export function useChannelSocket(channelId: number | null) {
   // Envoyer un message
   const sendMessage = useCallback(
     (content: string) => {
-      if (!channelId || !connected || !user?.id) {
-        console.warn("sendMessage bloqué:", {
-          channelId,
-          connected,
-          userId: user?.id,
-        });
+      if (!channelId || !connected || !userId) {
+        console.warn("sendMessage bloque:", { channelId, connected, userId });
         return;
       }
-      publish("/app/chat", { senderId: user.id, channelId, content });
+      publish("/app/chat", { senderId: userId, channelId, content });
     },
-    [channelId, connected, user?.id, publish],
+    [channelId, connected, userId, publish],
   );
 
   return { sendMessage, connected };

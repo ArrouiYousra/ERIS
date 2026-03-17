@@ -1,33 +1,28 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ServerMembers } from "../ServersMembers";
-import { vi, type Mock } from 'vitest';
 
-vi.mock("../../hooks/useServers", async (importOriginal) => {
-  const actual = (await importOriginal()) as Record<string, unknown>;
-  return {
-    ...actual,
-    useServerMembers: vi.fn(),
-  };
-});
+vi.mock("../../hooks/useServers", () => ({
+  useServerMembers: vi.fn(),
+}));
 
 import { useServerMembers } from "../../hooks/useServers";
 
 describe("ServerMembers", () => {
   it("shows loading state", () => {
-    (useServerMembers as Mock).mockReturnValue({ data: [], isLoading: true });
+    (useServerMembers as any).mockReturnValue({ data: [], isLoading: true });
     render(<ServerMembers serverId={1} />);
     expect(screen.getByText("Loading members...")).toBeInTheDocument();
   });
 
   it("shows no members message", () => {
-    (useServerMembers as Mock).mockReturnValue({ data: [], isLoading: false });
+    (useServerMembers as any).mockReturnValue({ data: [], isLoading: false });
     render(<ServerMembers serverId={1} />);
     expect(screen.getByText("No members found")).toBeInTheDocument();
   });
 
   it("renders member list", () => {
-    (useServerMembers as Mock).mockReturnValue({
+    (useServerMembers as any).mockReturnValue({
       data: [
         {
           id: 1,

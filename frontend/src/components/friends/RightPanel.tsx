@@ -9,7 +9,7 @@ export function RightPanel({ collapsed = false, onToggle }: RightPanelProps) {
   if (collapsed) {
     return (
       <aside
-        className="h-screen w-12 shrink-0 flex flex-col items-center justify-center py-4 bg-[#1a1d24] border-l border-white/[0.06] cursor-pointer hover:bg-[#202432] transition-colors"
+        className="hidden lg:flex h-full w-12 shrink-0 flex-col items-center justify-center py-4 bg-[#1a1d24] border-l border-white/[0.06] cursor-pointer hover:bg-[#202432] transition-colors"
         onClick={onToggle}
         role="button"
         tabIndex={0}
@@ -23,7 +23,7 @@ export function RightPanel({ collapsed = false, onToggle }: RightPanelProps) {
 
   return (
     <aside
-      className="h-screen w-[340px] min-w-[340px] shrink-0 flex flex-col bg-[#1a1d24] border-l border-white/[0.06] lg:w-[320px] lg:min-w-[320px]"
+      className="hidden lg:flex h-full w-[280px] min-w-[280px] xl:w-[320px] xl:min-w-[320px] shrink-0 flex-col bg-[#1a1d24] border-l border-white/[0.06]"
       aria-label="Panneau droit"
     >
       <div className="shrink-0 px-4 py-3 border-b border-white/[0.06]">

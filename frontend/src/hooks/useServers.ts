@@ -1,15 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAllServers,
   getServerById,
   createServer,
   updateServer,
   deleteServer as deleteServerApi,
-  leaveServer,
+  leaveServer as leaveServerApi,
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
-import { getServerMembers } from "../api/serverMembersApi";
+import { getServerMembers, updateMemberRole, getServerRoles } from "../api/serverMembersApi";
 
 import { useAuth } from "./useAuth";
 
@@ -70,9 +70,11 @@ export function useDeleteServer() {
 export function useLeaveServer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => leaveServer(id),
-    onSuccess: () => {
+    mutationFn: (serverId: number) => leaveServerApi(serverId),
+    onSuccess: (_, serverId) => {
       queryClient.invalidateQueries({ queryKey: ["servers"] });
+      queryClient.invalidateQueries({ queryKey: ["serverMembers", serverId] });
+      queryClient.invalidateQueries({ queryKey: ["channels", serverId] });
     },
   });
 }
@@ -81,6 +83,32 @@ export function useServerMembers(serverId: number | null) {
   return useQuery({
     queryKey: ["serverMembers", serverId],
     queryFn: () => (serverId ? getServerMembers(serverId) : []),
+    enabled: !!serverId,
+  });
+}
+
+export function useUpdateMemberRole() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      serverId,
+      memberId,
+      roleId,
+    }: {
+      serverId: number;
+      memberId: number;
+      roleId: number;
+    }) => updateMemberRole(serverId, memberId, roleId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+    },
+  });
+}
+
+export function useServerRoles(serverId: number | null) {
+  return useQuery({
+    queryKey: ["serverRoles", serverId],
+    queryFn: () => (serverId ? getServerRoles(serverId) : []),
     enabled: !!serverId,
   });
 }

@@ -23,7 +23,8 @@ describe("ServerGate", () => {
 
   it("renders choice step by default", () => {
     render(<ServerGate {...defaultProps} />);
-    expect(screen.getByText(/créer ou rejoindre/i)).toBeInTheDocument();
+    expect(screen.getByText(/créer un serveur/i)).toBeInTheDocument();
+    expect(screen.getByText(/rejoindre un serveur/i)).toBeInTheDocument();
   });
 
   it("navigates to create step", async () => {
@@ -47,7 +48,8 @@ describe("ServerGate", () => {
     const createButtons = screen.getAllByText(/créer un serveur/i);
     await user.click(createButtons[0]);
     await user.click(screen.getByText(/retour/i));
-    expect(screen.getByText(/créer ou rejoindre/i)).toBeInTheDocument();
+    expect(screen.getByText(/créer un serveur/i)).toBeInTheDocument();
+    expect(screen.getByText(/rejoindre un serveur/i)).toBeInTheDocument();
   });
 
   it("shows error when creating with empty name", async () => {

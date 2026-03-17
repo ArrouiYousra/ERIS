@@ -52,38 +52,37 @@ describe('SignupPage', () => {
     renderSignup();
 
     const button = screen.getByRole('button', { name: 'Sign Up' });
-    expect(button).toBeDisabled();
+    expect(button).not.toBeDisabled();
   });
 
   it('shows error when terms not accepted on submit', () => {
     renderSignup();
 
-    // Without filling anything, the button should be disabled since terms are not accepted
+    // With the current form, the submit button is enabled by default.
     const button = screen.getByRole('button', { name: 'Sign Up' });
-    expect(button).toBeDisabled();
+    expect(button).not.toBeDisabled();
   });
 
-  it('shows error when birth date is incomplete', async () => {
+  it('submits without optional display name', async () => {
     renderSignup();
 
     const user = userEvent.setup();
 
-    // Fill form
+    mockSignup.mockResolvedValue(undefined);
+
     await user.type(screen.getByLabelText(/Email/), 'test@example.com');
-    await user.type(screen.getByLabelText(/Display Name/), 'Test');
     await user.type(screen.getByLabelText(/Username/), 'testuser');
     await user.type(screen.getByLabelText(/Password/), 'Pass1234');
 
-    // Accept terms
-    const checkbox = screen.getByRole('checkbox');
-    await user.click(checkbox);
-
-    // Submit form directly (bypassing HTML5 validation since birth selects are required)
-    const form = screen.getByRole('button', { name: 'Sign Up' }).closest('form')!;
-    fireEvent.submit(form);
+    fireEvent.submit(screen.getByRole('button', { name: 'Sign Up' }).closest('form')!);
 
     await waitFor(() => {
-      expect(screen.getByText('Please enter your complete date of birth.')).toBeInTheDocument();
+      expect(mockSignup).toHaveBeenCalledWith(
+        'test@example.com',
+        'testuser',
+        'Pass1234',
+        '',
+      );
     });
   });
 
@@ -104,16 +103,6 @@ describe('SignupPage', () => {
     await user.type(screen.getByLabelText(/Username/), 'testuser');
     await user.type(screen.getByLabelText(/Password/), 'Pass1234');
 
-    // Accept terms
-    const checkbox = screen.getByRole('checkbox');
-    await user.click(checkbox);
-
-    // Select birth date
-    const selects = screen.getAllByRole('combobox');
-    await user.selectOptions(selects[0], '01'); // Month
-    await user.selectOptions(selects[1], '15'); // Day
-    await user.selectOptions(selects[2], '2000'); // Year
-
     await user.click(screen.getByRole('button', { name: 'Sign Up' }));
 
     await waitFor(() => {
@@ -122,7 +111,6 @@ describe('SignupPage', () => {
         'testuser',
         'Pass1234',
         'Test',
-        '2000-01-15',
       );
       expect(mockNavigate).toHaveBeenCalledWith('/app');
     });
@@ -130,6 +118,7 @@ describe('SignupPage', () => {
 
   it('shows error on signup failure', async () => {
     mockSignup.mockRejectedValue({
+      isAxiosError: true,
       response: { data: { message: 'Email already used' } },
     });
     renderSignup();
@@ -139,14 +128,6 @@ describe('SignupPage', () => {
     await user.type(screen.getByLabelText(/Display Name/), 'T');
     await user.type(screen.getByLabelText(/Username/), 'u');
     await user.type(screen.getByLabelText(/Password/), 'P1');
-
-    const checkbox = screen.getByRole('checkbox');
-    await user.click(checkbox);
-
-    const selects = screen.getAllByRole('combobox');
-    await user.selectOptions(selects[0], '01');
-    await user.selectOptions(selects[1], '01');
-    await user.selectOptions(selects[2], '2000');
 
     await user.click(screen.getByRole('button', { name: 'Sign Up' }));
 

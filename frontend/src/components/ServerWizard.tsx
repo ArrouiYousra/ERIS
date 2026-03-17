@@ -12,21 +12,21 @@ export interface ServerWizardData {
 interface ServerWizardProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateServer: (data: ServerWizardData) => Promise<number | null>; // Returns server ID
+  onCreateServer: (data: ServerWizardData) => Promise<number | null>; // Renvoie l'identifiant du serveur
   onGoToServer: (serverId: number) => void;
 }
 
 const TOTAL_STEPS = 4;
 
 const TOPIC_OPTIONS = [
-  "Gaming",
-  "Music",
+  "Jeux",
+  "Musique",
   "Art",
   "Tech",
   "Education",
-  "Sports",
-  "Movies",
-  "Books",
+  "Sport",
+  "Cinema",
+  "Livres",
 ];
 
 export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: ServerWizardProps) {
@@ -42,7 +42,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
   const [isCreating, setIsCreating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset state when modal opens
+  // Reinitialise l'etat a l'ouverture de la fenetre
   useEffect(() => {
     if (isOpen) {
       setStep(1);
@@ -58,7 +58,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
     }
   }, [isOpen]);
 
-  // Handle escape key
+  // Gestion de la touche Echap
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) onClose();
@@ -122,7 +122,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
       setCreatedServerId(serverId);
       setStep(4);
     } catch (error) {
-      console.error("Failed to create server:", error);
+      console.error("Echec de creation du serveur :", error);
     } finally {
       setIsCreating(false);
     }
@@ -156,9 +156,9 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
           <X className="w-5 h-5" />
         </button>
 
-        {/* Step content with animations */}
+          {/* Contenu des etapes avec animations */}
         <div className="relative min-h-[400px] overflow-hidden">
-          {/* Step 1: Purpose Selection */}
+          {/* Etape 1 : choix du type de serveur */}
           <div
             className={`absolute inset-0 p-6 pt-12 flex flex-col transition-all duration-300 ease-out ${
               step === 1
@@ -206,7 +206,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
             </div>
           </div>
 
-          {/* Step 2: Customize Server */}
+          {/* Etape 2 : personnalisation du serveur */}
           <div
             className={`absolute inset-0 p-6 pt-10 pb-4 flex flex-col transition-all duration-300 ease-out ${
               step === 2
@@ -223,7 +223,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
               </p>
             </div>
 
-            {/* Icon Upload */}
+            {/* Ajout de l'icone */}
             <div className="flex justify-center mb-4">
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -232,13 +232,13 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
                 {data.iconPreview ? (
                   <img
                     src={data.iconPreview}
-                    alt="Server icon preview"
+                    alt="Apercu de l'icone du serveur"
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <div className="flex flex-col items-center text-gray-400 group-hover:text-[#5865F2] transition-colors">
                     <Upload className="w-5 h-5 mb-0.5" />
-                    <span className="text-[10px] font-medium">UPLOAD</span>
+                    <span className="text-[10px] font-medium">AJOUTER</span>
                   </div>
                 )}
                 {data.iconPreview && (
@@ -256,7 +256,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
               />
             </div>
 
-            {/* Server Name Input */}
+            {/* Saisie du nom du serveur */}
             <div className="mb-4 flex-1">
               <label className="block text-xs font-semibold text-gray-300 uppercase mb-2">
                 Nom du serveur
@@ -273,7 +273,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
               </p>
             </div>
 
-            {/* Navigation buttons */}
+            {/* Boutons de navigation */}
             <div className="flex gap-3">
               <button
                 onClick={goBack}
@@ -291,7 +291,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
             </div>
           </div>
 
-          {/* Step 3: Topics (Optional) */}
+          {/* Etape 3 : themes (optionnel) */}
           <div
             className={`absolute inset-0 p-6 pt-8 pb-4 flex flex-col transition-all duration-300 ease-out ${
               step === 3
@@ -311,7 +311,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
               </p>
             </div>
 
-            {/* Topics Grid */}
+            {/* Grille des themes */}
             <div className="flex-1 overflow-y-auto min-h-0">
               <div className="flex flex-wrap gap-2 justify-center">
                 {TOPIC_OPTIONS.map((topic) => (
@@ -330,7 +330,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
               </div>
             </div>
 
-            {/* Navigation buttons */}
+            {/* Boutons de navigation */}
             <div className="flex gap-3 mt-4">
               <button
                 onClick={goBack}
@@ -348,7 +348,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
               </button>
             </div>
 
-            {/* Skip option */}
+            {/* Option pour ignorer */}
             <button
               onClick={handleCreate}
               disabled={isCreating}
@@ -358,7 +358,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
             </button>
           </div>
 
-          {/* Step 4: Success / Welcome */}
+          {/* Etape 4 : succes / bienvenue */}
           <div
             className={`absolute inset-0 p-6 pt-8 pb-4 flex flex-col items-center justify-center transition-all duration-300 ease-out ${
               step === 4
@@ -367,12 +367,12 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
             }`}
           >
             <div className="text-center">
-              {/* Celebration icon */}
+              {/* Icone de celebration */}
               <div className="relative inline-flex items-center justify-center mb-4">
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#5865F2] to-[#3ba55d] flex items-center justify-center animate-pulse">
                   <PartyPopper className="w-10 h-10 text-white" />
                 </div>
-                {/* Sparkle decorations */}
+                {/* Decorations */}
                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-bounce" />
                 <Sparkles className="absolute -bottom-1 -left-3 w-5 h-5 text-yellow-400 animate-bounce" style={{ animationDelay: "0.2s" }} />
               </div>
@@ -387,7 +387,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
                 Invite tes amis et commence à discuter !
               </p>
 
-              {/* Go to server button */}
+              {/* Bouton d'acces au serveur */}
               <button
                 onClick={handleGoToServer}
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-md transition-all duration-200 hover:scale-[1.02]"
@@ -399,7 +399,7 @@ export function ServerWizard({ isOpen, onClose, onCreateServer, onGoToServer }: 
           </div>
         </div>
 
-        {/* Progress dots */}
+        {/* Points de progression */}
         <div className="flex justify-center gap-2 pb-6">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <div

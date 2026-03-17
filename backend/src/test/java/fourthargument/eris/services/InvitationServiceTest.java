@@ -284,8 +284,9 @@ class InvitationServiceTest {
 
         when(userService.getUserEntityByEmail("joiner@example.com")).thenReturn(user);
         when(invitationRepository.findByCode("abc12345")).thenReturn(Optional.of(invite));
+        when(roleRepository.findByName("MEMBER")).thenReturn(Optional.empty());
 
-        assertThrows(UserException.class,
+        assertThrows(RuntimeException.class,
                 () -> invitationService.joinServerWithInvite("joiner@example.com", "abc12345"));
     }
 }

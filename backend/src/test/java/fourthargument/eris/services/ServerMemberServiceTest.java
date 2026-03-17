@@ -15,13 +15,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import fourthargument.eris.api.dto.ServerMemberDTO;
+import fourthargument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
 import fourthargument.eris.api.mapper.ServerMemberMapper;
 import fourthargument.eris.api.model.Role;
 import fourthargument.eris.api.model.Server;
 import fourthargument.eris.api.model.ServerMember;
 import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.repository.RoleRepository;
 import fourthargument.eris.api.repository.ServerMemberRepository;
 import fourthargument.eris.api.repository.ServerRepository;
+import fourthargument.eris.api.repository.UserRepository;
+import fourthargument.eris.api.services.ServerService;
 import fourthargument.eris.api.services.ServerMemberService;
 import fourthargument.eris.api.services.UserService;
 import fourthargument.eris.exceptions.ServerException;
@@ -38,6 +42,12 @@ class ServerMemberServiceTest {
     private ServerRepository serverRepository;
     @Mock
     private UserService userService;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private RoleRepository roleRepository;
+    @Mock
+    private ServerService serverService;
 
     @InjectMocks
     private ServerMemberService serverMemberService;
@@ -89,6 +99,8 @@ class ServerMemberServiceTest {
 
     @Test
     void deleteServerMember_success() throws Exception {
+        when(userService.getUserEntityByEmail(user.getEmail())).thenReturn(user);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
         serverMemberService.deleteServerMember(user.getEmail(), server.getId());
@@ -97,7 +109,9 @@ class ServerMemberServiceTest {
     }
 
     @Test
-    void deleteServerMember_notFound() {
+    void deleteServerMember_notFound() throws Exception {
+        when(userService.getUserEntityByEmail(user.getEmail())).thenReturn(user);
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
 
         assertThrows(ServerMemberException.class,
@@ -132,12 +146,14 @@ class ServerMemberServiceTest {
 
     @Test
     void updateServerMember_success() throws Exception {
-        Role newRole = new Role();
-        newRole.setName("ADMIN");
+        UpdateMemberRoleRequestDTO dto = new UpdateMemberRoleRequestDTO();
+        dto.setRoleId(1L);
 
+        when(serverRepository.findById(server.getId())).thenReturn(Optional.of(server));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(serverMember);
 
-        serverMemberService.updateServerMember(server, user, newRole);
+        serverMemberService.updateServerMember(user.getEmail(), server.getId(), user.getId(), dto);
 
         assertEquals("ADMIN", serverMember.getRole().getName());
         verify(serverMemberRepository).save(serverMember);
@@ -145,9 +161,12 @@ class ServerMemberServiceTest {
 
     @Test
     void updateServerMember_notFound() {
+        UpdateMemberRoleRequestDTO dto = new UpdateMemberRoleRequestDTO();
+        dto.setRoleId(1L);
+
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
 
         assertThrows(ServerMemberException.class,
-                () -> serverMemberService.updateServerMember(server, user, role));
+                () -> serverMemberService.updateServerMember(user.getEmail(), server.getId(), user.getId(), dto));
     }
 }

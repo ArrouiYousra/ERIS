@@ -1,9 +1,9 @@
 /* ======================================================
-   SERVER GATE / ADD SERVER – PANEL VERSION
-   (Modal behavior removed)
+   PORTE SERVEUR / AJOUT SERVEUR - VERSION PANNEAU
+   (Comportement modal retire)
    ====================================================== */
 
-/* Main container – replaces MainContent */
+/* Conteneur principal - remplace MainContent */
 .server-gate {
   background: #313338;
   width: 100%;
@@ -18,9 +18,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
-/* Inner content width */
+/* Largeur du contenu interne */
 .server-gate > * {
   width: 100%;
   max-width: 440px;
@@ -47,7 +48,7 @@
 }
 
 /* ------------------------------------------------------
-   Titles
+   Titres
    ------------------------------------------------------ */
 
 .server-gate-title {
@@ -66,7 +67,7 @@
 }
 
 /* ------------------------------------------------------
-   Choices
+   Choix
    ------------------------------------------------------ */
 
 .server-gate-choices {
@@ -99,11 +100,6 @@
   transform: scale(0.98);
 }
 
-.server-gate-choice-icon {
-  font-size: 26px;
-  margin-bottom: 4px;
-}
-
 .server-gate-choice-label {
   font-size: 16px;
   font-weight: 600;
@@ -117,7 +113,7 @@
 }
 
 /* ------------------------------------------------------
-   Forms
+   Formulaires
    ------------------------------------------------------ */
 
 .server-gate-form {
@@ -155,7 +151,7 @@
 }
 
 /* ------------------------------------------------------
-   Errors
+   Erreurs
    ------------------------------------------------------ */
 
 .server-gate-error {
@@ -165,7 +161,7 @@
 }
 
 /* ------------------------------------------------------
-   Submit button
+   Bouton de validation
    ------------------------------------------------------ */
 
 .server-gate-submit {
@@ -191,4 +187,50 @@
 .server-gate-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .server-gate {
+    padding: 20px 16px;
+  }
+
+  .server-gate > * {
+    max-width: 380px;
+  }
+
+  .server-gate-choice {
+    padding: 16px;
+  }
+
+  .server-gate-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .server-gate {
+    padding: 16px 12px;
+  }
+
+  .server-gate > * {
+    max-width: 100%;
+  }
+
+  .server-gate-choice {
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  .server-gate-choice-label {
+    font-size: 15px;
+  }
+
+  .server-gate-choice-desc {
+    font-size: 12px;
+  }
+
+  .server-gate-submit {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
 }

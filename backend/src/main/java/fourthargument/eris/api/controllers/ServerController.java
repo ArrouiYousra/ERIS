@@ -20,7 +20,9 @@ import fourthargument.eris.api.dto.InvitationDTO;
 import fourthargument.eris.api.dto.ServerDTO;
 import fourthargument.eris.api.dto.ServerMemberDTO;
 import fourthargument.eris.api.dto.request.JoinInviteRequestDTO;
+import fourthargument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
 import fourthargument.eris.api.dto.response.JoinInviteResponseDTO;
+import fourthargument.eris.api.dto.response.RoleResponseDTO;
 import fourthargument.eris.api.model.User;
 import fourthargument.eris.api.services.InvitationService;
 import fourthargument.eris.api.services.ServerMemberService;
@@ -136,5 +138,27 @@ public class ServerController {
         serverMemberService.deleteServerMember(email, id);
 
         return ResponseEntity.status(HttpStatus.OK).body("Server left");
+    }
+
+    @PutMapping("/{serverId}/members/{memberId}")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isServerOwner(#serverId, authentication.name)")
+    public ResponseEntity<String> updateMemberRole(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long serverId, @PathVariable Long memberId, @RequestBody UpdateMemberRoleRequestDTO dto)
+            throws RoleException, ServerException, ServerMemberException, UserException {
+
+        String email = userDetails.getUsername();
+        serverMemberService.updateServerMember(email, serverId, memberId, dto);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Member role updated");
+    }
+
+    @GetMapping("/{serverId}/roles")
+    @PreAuthorize("isAuthenticated() and @serverSecurityService.isMemberOfServer(#id, authentication.name)")
+    public ResponseEntity<List<RoleResponseDTO>> getServerRoles(@PathVariable Long serverId,
+            @AuthenticationPrincipal UserDetails userDetails) throws RoleException {
+
+        List<RoleResponseDTO> roles = serverService.getServerRoles(serverId);
+
+        return ResponseEntity.ok(roles);
     }
 }
