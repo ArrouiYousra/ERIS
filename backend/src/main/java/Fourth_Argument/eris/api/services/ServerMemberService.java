@@ -92,7 +92,7 @@ public class ServerMemberService {
         }
 
         Role role = setMemberRoleById(serverMember, dto.getRoleId());
-        messagingTemplate.convertAndSend("/topic/server_member", serverMemberMapper.toDTO(serverMember));
+        messagingTemplate.convertAndSend("/topic/server_member/" + serverId, serverMemberMapper.toDTO(serverMember));
 
         if ("OWNER".equals(role.getName())) {
             User ownerUser = userService.getUserEntityByEmail(email);
@@ -100,7 +100,7 @@ public class ServerMemberService {
             setMemberRoleByName(ownerMember, "ADMIN");
             serverService.changeOwner(server, user);
 
-            messagingTemplate.convertAndSend("/topic/server_member", serverMemberMapper.toDTO(ownerMember));
+            messagingTemplate.convertAndSend("/topic/server_member/" + serverId, serverMemberMapper.toDTO(ownerMember));
         }
     }
 

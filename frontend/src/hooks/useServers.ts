@@ -102,7 +102,8 @@ export function useUpdateMemberRole() {
       memberId: number;
       payload: UpdateMemberPayload;
     }) => updateMemberRole(serverId, memberId, payload),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["serverMembers", variables.serverId] });
       queryClient.invalidateQueries({ queryKey: ["servers"] });
     },
   });
