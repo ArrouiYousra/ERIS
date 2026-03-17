@@ -8,11 +8,7 @@ import {
 } from "../hooks/useServers";
 import { useAuth } from "../hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  ServerBar,
-  RightPanel,
-  UserBar,
-} from "../components/friends";
+import { ServerBar, RightPanel, UserBar } from "../components/friends";
 import { ChannelList } from "../components/ChannelList";
 import { MessageList } from "../components/MessageList";
 import { ServerGate } from "../components/ServerGate";
@@ -28,13 +24,17 @@ import { usePresence } from "../hooks/usePresence";
 import type { Channel } from "../api/channelsApi";
 import type { Server } from "../api/serversApi";
 import type { ServerMember } from "../api/serverMembersApi";
-import { useServerSocket } from '../hooks/useServerSocket';
-import { usePresenceSocket } from '../hooks/usePresenceSocket';
+import { useServerSocket } from "../hooks/useServerSocket";
+import { usePresenceSocket } from "../hooks/usePresenceSocket";
 
 import { MemberContextMenu } from "../components/MemberContextMenu";
 
 export function ChatLayout() {
-  const [ctxMenu, setCtxMenu] = useState<{ member: ServerMember; x: number; y: number } | null>(null);
+  const [ctxMenu, setCtxMenu] = useState<{
+    member: ServerMember;
+    x: number;
+    y: number;
+  } | null>(null);
 
   const queryClient = useQueryClient();
   const [selectedServerId, setSelectedServerId] = useState<number | null>(null);
@@ -44,10 +44,11 @@ export function ChatLayout() {
 
   const { data: members = [] } = useServerMembers(selectedServerId);
   const { onlineUserIds } = usePresence(selectedServerId);
-  const [, setSelectedDMId] = useState<string | null>(null);
+  // const [, setSelectedDMId] = useState<string | null>(null);
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [serverModalOpen, setServerModalOpen] = useState(false);
-  const [showMemberList, setShowMemberList] = useState(true);
+  // Enlever le showMemberList
+  const [showMemberList] = useState(true);
 
   const { user } = useAuth();
   const { data: servers = [] } = useServers();
@@ -55,7 +56,7 @@ export function ChatLayout() {
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
   const leaveServer = useLeaveServer();
-  
+
   useServerSocket();
   usePresenceSocket(selectedServerId);
 
@@ -68,7 +69,11 @@ export function ChatLayout() {
 
   // Check if current user is the owner of the selected server
   const currentServer = servers.find((s: Server) => s.id === selectedServerId);
-  const isServerOwner = !!(currentServer && user && currentServer.ownerId === user.id);
+  const isServerOwner = !!(
+    currentServer &&
+    user &&
+    currentServer.ownerId === user.id
+  );
   const selectedChannel = channels.find(
     (channel: Channel) => channel.id === selectedChannelId,
   );
@@ -183,7 +188,9 @@ export function ChatLayout() {
                 channelName={selectedChannel?.name}
                 channelTopic={selectedChannel?.topic}
                 isPrivate={selectedChannel?.isPrivate}
-                serverName={selectedServerId ? serverNames[selectedServerId] : "Serveur"}
+                serverName={
+                  selectedServerId ? serverNames[selectedServerId] : "Serveur"
+                }
                 onToggleSidebar={() => setSelectedChannelId(null)}
                 onLeaveServer={handleLeaveServer}
               />
@@ -212,7 +219,11 @@ export function ChatLayout() {
                                 className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer"
                                 onContextMenu={(e) => {
                                   e.preventDefault();
-                                  setCtxMenu({ member, x: e.clientX, y: e.clientY });
+                                  setCtxMenu({
+                                    member,
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                  });
                                 }}
                               >
                                 <div className="relative">
@@ -246,7 +257,11 @@ export function ChatLayout() {
                                 className="flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer opacity-40"
                                 onContextMenu={(e) => {
                                   e.preventDefault();
-                                  setCtxMenu({ member, x: e.clientX, y: e.clientY });
+                                  setCtxMenu({
+                                    member,
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                  });
                                 }}
                               >
                                 <div className="relative">
