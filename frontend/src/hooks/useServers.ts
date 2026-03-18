@@ -9,7 +9,12 @@ import {
   type CreateServerPayload,
   type UpdateServerPayload,
 } from "../api/serversApi";
-import { getServerMembers, updateMemberRole } from "../api/serverMembersApi";
+import {
+  getServerMembers,
+  updateMemberRole,
+  getServerRoles,
+  type UpdateMemberPayload,
+} from "../api/serverMembersApi";
 
 import { useAuth } from "./useAuth";
 
@@ -17,13 +22,6 @@ export interface ServerRole {
   id: number;
   name: string;
 }
-
-// Mirrors seeded backend roles in migrations.
-const DEFAULT_SERVER_ROLES: ServerRole[] = [
-  { id: 1, name: "MEMBER" },
-  { id: 2, name: "ADMIN" },
-  { id: 3, name: "OWNER" },
-];
 
 export function useServers() {
   const { isAuthenticated } = useAuth();
@@ -102,7 +100,7 @@ export function useServerMembers(serverId: number | null) {
 export function useServerRoles(serverId: number | null) {
   return useQuery({
     queryKey: ["serverRoles", serverId],
-    queryFn: async () => DEFAULT_SERVER_ROLES,
+    queryFn: () => (serverId ? getServerRoles(serverId) : []),
     enabled: !!serverId,
   });
 }
@@ -113,16 +111,15 @@ export function useUpdateMemberRole() {
     mutationFn: ({
       serverId,
       memberId,
-      roleId,
+      payload,
     }: {
       serverId: number;
       memberId: number;
-      roleId: number;
-    }) => updateMemberRole(serverId, memberId, { roleId }),
+      payload: UpdateMemberPayload;
+    }) => updateMemberRole(serverId, memberId, payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["serverMembers", variables.serverId],
-      });
+      queryClient.invalidateQueries({ queryKey: ["serverMembers", variables.serverId] });
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
     },
   });
 }

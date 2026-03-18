@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import fourthargument.eris.api.dto.ServerMemberDTO;
 import fourthargument.eris.api.dto.request.UpdateMemberRoleRequestDTO;
@@ -43,11 +44,13 @@ class ServerMemberServiceTest {
     private UserService userService;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private RoleRepository roleRepository;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks
     private ServerMemberService serverMemberService;
-    @Mock
-    private RoleRepository roleRepository;
 
     private User user;
     private Server server;
@@ -71,6 +74,7 @@ class ServerMemberServiceTest {
         role.setName("MEMBER");
 
         serverMember = new ServerMember(user, server, role);
+        serverMember.setId(1L);
     }
 
     // ── createServerMember ──
@@ -78,6 +82,10 @@ class ServerMemberServiceTest {
     @Test
     void createServerMember_success() throws Exception {
         when(serverMemberRepository.findServerMemberByUserAndServer(user, server)).thenReturn(null);
+
+        ServerMember serverMember = new ServerMember(user, server, role);
+        serverMember.setId(42L);
+        when(serverMemberRepository.save(any(ServerMember.class))).thenReturn(serverMember);
 
         serverMemberService.createServerMember(server, user, role);
 

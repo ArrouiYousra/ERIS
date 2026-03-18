@@ -5,6 +5,8 @@ import {
   useCreateServer,
   useDeleteServer,
   useLeaveServer,
+  useServerMembers,
+  useServerRoles
 } from "../hooks/useServers";
 import { useAuth } from "../hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,8 +23,16 @@ import {
 import "../styles/chat.css";
 import "../styles/serverWizard.css";
 import { joinWithInvitation } from "../api/invitationApi";
+import { usePresence } from "../hooks/usePresence";
+import type { ServerMember } from "../api/serverMembersApi";
+import { useServerSocket } from '../hooks/useServerSocket';
+import { usePresenceSocket } from '../hooks/usePresenceSocket';
+
+import { MemberContextMenu } from "../components/MemberContextMenu";
 
 export function ChatLayout() {
+  const [ctxMenu, setCtxMenu] = useState<{ member: ServerMember; x: number; y: number } | null>(null);
+
   const queryClient = useQueryClient();
   const [selectedServerId, setSelectedServerId] = useState<number | null>(null);
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(
@@ -35,9 +45,15 @@ export function ChatLayout() {
   const { user } = useAuth();
   const { data: servers = [] } = useServers();
   const { data: channels = [] } = useChannels(selectedServerId);
+  const { data: roles = [] } = useServerRoles(selectedServerId);
+  const { data: members = [] } = useServerMembers(selectedServerId);
+  const { onlineUserIds } = usePresence(selectedServerId);
   const createServer = useCreateServer();
   const deleteServer = useDeleteServer();
   const leaveServer = useLeaveServer();
+
+  useServerSocket();
+  usePresenceSocket(selectedServerId);
 
   const serverIds = servers.map((s: Server) => s.id);
   const serverNames = Object.fromEntries(
@@ -174,6 +190,59 @@ export function ChatLayout() {
                 onLeaveServer={handleLeaveServer}
               />
             </div>
+            {(() => {
+              const grouped = members.reduce((acc: Record<string, ServerMember[]>, member: ServerMember) => {
+                const roleName = member.roleName ?? "Membres";
+                if (!acc[roleName]) acc[roleName] = [];
+                acc[roleName].push(member);
+                return acc;
+              }, {});
+
+              return (
+                <div className="w-60 h-full bg-[#2b2d31] border-l border-black/20 overflow-y-auto shrink-0">
+                  <div className="p-4 space-y-3">
+                    {Object.entries(grouped)
+                      .sort(([nameA], [nameB]) => {
+                        const roleA = roles.find((r) => r.name === nameA)?.id ?? 999;
+                        const roleB = roles.find((r) => r.name === nameB)?.id ?? 999;
+                        return roleB - roleA;
+                      })
+                      .map(([roleName, roleMembers]) => (
+                        <div key={roleName}>
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                            {roleName} — {roleMembers.length}
+                          </h3>
+                          <div className="space-y-0.5">
+                            {(roleMembers as ServerMember[]).map((member: ServerMember) => {
+                              const isOnline = onlineUserIds.has(member.userId);
+                              return (
+                                <div
+                                  key={member.userId}
+                                  className={`flex items-center gap-3 p-1.5 rounded hover:bg-white/5 cursor-pointer ${!isOnline ? "opacity-40" : ""}`}
+                                  onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    setCtxMenu({ member, x: e.clientX, y: e.clientY });
+                                  }}
+                                >
+                                  <div className="relative">
+                                    <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-medium">
+                                      {(member.nickname || member.username || "U").charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#2b2d31] ${isOnline ? "bg-[#23a559]" : "bg-[#80848e]"}`} />
+                                  </div>
+                                  <span className="text-gray-300 text-sm">
+                                    {member.nickname || member.username || `User ${member.userId}`}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
@@ -185,6 +254,18 @@ export function ChatLayout() {
         onCreateServer={handleCreateServerFromWizard}
         onGoToServer={handleGoToServer}
       />
+      {ctxMenu && (
+        <MemberContextMenu
+          member={ctxMenu.member}
+          serverId={selectedServerId!}
+          isOwner={isServerOwner}
+          currentUserId={user!.id}
+          position={{ x: ctxMenu.x, y: ctxMenu.y }}
+          onClose={() => setCtxMenu(null)}
+          onKick={(m) => console.log("kick", m)}
+          onBan={(m) => console.log("ban", m)}
+        />
+      )}
     </div>
   );
 }
