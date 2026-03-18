@@ -1,8 +1,10 @@
 package fourthargument.eris.api.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import fourthargument.eris.api.dto.MessageDTO;
@@ -25,6 +27,7 @@ public class MessageService {
     private final UserRepository userRepository;
     private final ChannelRepository channelRepository;
     private final MessageMapper messageMapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public MessageDTO sendMessage(MessageDTO dto, Long channelId) throws ChannelException, UserException {
 
@@ -73,6 +76,27 @@ public class MessageService {
     public void deleteMessages(List<Message> messages) {
 
         messageRepository.deleteAll(messages);
+
+    }
+
+    public Message editMessage(String email, MessageDTO messageDTO, Long messageId) throws MessageException {
+
+        Message updatedMessage = messageRepository.findById(messageId)
+                .orElseThrow(() -> new MessageException("Pas de message trouvé"));
+
+        if (!updatedMessage.getSender().getEmail().equals(email)) {
+            throw new MessageException("Vous n'êtes pas autorisé à modifier ce message");
+        }
+
+        updatedMessage.setContent(messageDTO.content());
+        updatedMessage.setUpdatedAt(LocalDateTime.now());
+
+        messageRepository.save(updatedMessage);
+
+        messagingTemplate.convertAndSend("/topic/channels/" + updatedMessage.getChannel().getId(),
+                messageMapper.toDTO(updatedMessage));
+
+        return updatedMessage;
 
     }
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerRoles, useUpdateMemberRole } from "../hooks/useServers";
 import type { ServerMember } from "../api/serverMembersApi";
- 
+
 interface MemberContextMenuProps {
   member: ServerMember;
   serverId: number;
@@ -12,7 +12,7 @@ interface MemberContextMenuProps {
   onKick?: (member: ServerMember) => void;
   onBan?: (member: ServerMember) => void;
 }
- 
+
 export function MemberContextMenu({
   member,
   serverId,
@@ -25,10 +25,10 @@ export function MemberContextMenu({
 }: MemberContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [submenuOpen, setSubmenuOpen] = useState(false);
- 
+
   const { data: roles = [] } = useServerRoles(serverId);
   const updateRole = useUpdateMemberRole();
- 
+
   const isSelf = member.userId === currentUserId;
   const canManage = isOwner && !isSelf;
  
@@ -47,7 +47,7 @@ export function MemberContextMenu({
     if (y < PADDING) y = PADDING;
     return { x, y };
   }, [position]);
- 
+
   // Close on outside click or Escape
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -65,16 +65,15 @@ export function MemberContextMenu({
       document.removeEventListener("keydown", handleKey);
     };
   }, [onClose]);
- 
+
   const handleRoleChange = async (roleId: number) => {
-    await updateRole.mutateAsync({ serverId, memberId: member.userId, roleId });
+    await updateRole.mutateAsync({ serverId, memberId: member.userId, payload: { roleId } });
     setSubmenuOpen(false);
     onClose();
   };
- 
+
   const displayName = member.nickname || member.username || `User ${member.userId}`;
-  const initial = displayName.charAt(0).toUpperCase();
- 
+
   return (
     <div
       ref={menuRef}
@@ -82,68 +81,22 @@ export function MemberContextMenu({
       className="fixed z-50 w-56 select-none"
       onContextMenu={(e) => e.preventDefault()}
     >
-      <div className="rounded-md overflow-hidden shadow-2xl border border-white/5"
+      <div className="rounded-md overflow-visible shadow-2xl border border-white/5"
         style={{ background: "#111214" }}>
- 
-        {/* Member header */}
-        <div className="px-3 py-3 flex items-center gap-2.5 border-b border-white/5">
-          <div className="w-9 h-9 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-sm font-semibold shrink-0">
-            {initial}
-          </div>
-          <div className="overflow-hidden">
-            <p className="text-white text-sm font-semibold truncate leading-tight">
-              {displayName}
-            </p>
-            {member.nickname && member.username && (
-              <p className="text-gray-500 text-xs truncate leading-tight">
-                {member.username}
-              </p>
-            )}
-          </div>
-        </div>
- 
+
         {/* Actions */}
         <div className="py-1">
-          {/* Mention */}
-          <MenuButton
-            icon={
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-              </svg>
-            }
-            label="Mentionner"
-            onClick={() => {
-              navigator.clipboard.writeText(`<@${member.userId}>`);
-              onClose();
-            }}
-          />
- 
-          {/* Profile — always visible */}
-          <MenuButton
-            icon={
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            }
-            label="Voir le profil"
-            onClick={onClose}
-          />
- 
+
           {/* Owner-only actions */}
           {canManage && (
             <>
-              <div className="my-1 border-t border-white/5" />
- 
               {/* Change role submenu */}
               {roles.length > 0 && (
                 <div className="relative">
                   <MenuButton
                     icon={
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}/>
                       </svg>
                     }
                     label="Modifier le rôle"
@@ -172,7 +125,7 @@ export function MemberContextMenu({
                   )}
                 </div>
               )}
- 
+
               {/* Kick */}
               {onKick && (
                 <MenuButton
@@ -190,7 +143,7 @@ export function MemberContextMenu({
                   }}
                 />
               )}
- 
+
               {/* Ban */}
               {onBan && (
                 <MenuButton
@@ -215,9 +168,9 @@ export function MemberContextMenu({
     </div>
   );
 }
- 
+
 /* ─── Sub-component ─── */
- 
+
 interface MenuButtonProps {
   icon: React.ReactNode;
   label: string;
@@ -225,7 +178,7 @@ interface MenuButtonProps {
   hasSubmenu?: boolean;
   onClick: () => void;
 }
- 
+
 function MenuButton({ icon, label, danger, hasSubmenu, onClick }: MenuButtonProps) {
   return (
     <button

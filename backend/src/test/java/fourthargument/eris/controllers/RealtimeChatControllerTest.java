@@ -3,6 +3,8 @@ package fourthargument.eris.controllers;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +34,7 @@ class RealtimeChatControllerTest {
     @Test
     void processMessage_success() throws Exception {
         MessageDTO inputDTO = new MessageDTO(null, 1L, null, "Hello", 5L, null);
-        MessageDTO savedDTO = new MessageDTO(1L, 1L, "user@test.com", "Hello", 5L, "2026-01-01");
+        MessageDTO savedDTO = new MessageDTO(1L, 1L, "user@test.com", "Hello", 5L, LocalDateTime.now());
 
         when(messageService.sendMessage(inputDTO, 5L)).thenReturn(savedDTO);
 
