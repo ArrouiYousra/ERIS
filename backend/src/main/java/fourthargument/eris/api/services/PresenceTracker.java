@@ -128,4 +128,22 @@ public class PresenceTracker {
 
     public record PresencePayload(Long userId) {
     }
+
+    @MessageMapping("/presence.request")
+    public void requestPresence(@Payload PresenceRequestPayload payload, StompHeaderAccessor accessor) {
+        Long serverId = payload.serverId();
+        String sessionId = accessor.getSessionId();
+
+        if (serverId == null || sessionId == null)
+            return;
+
+        Set<Long> onlineIds = getOnlineUserIdsForServer(serverId);
+
+        // Envoyer uniquement à cette session, pas à tout le monde
+        messagingTemplate.convertAndSend(
+                "/topic/servers/" + serverId + "/presence", onlineIds);
+    }
+
+    public record PresenceRequestPayload(Long serverId) {
+    }
 }
