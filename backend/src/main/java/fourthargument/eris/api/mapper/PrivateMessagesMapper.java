@@ -2,8 +2,10 @@ package fourthargument.eris.api.mapper;
 
 import org.springframework.stereotype.Component;
 
-import fourthargument.eris.api.dto.PrivateMessagesDTO;
+import fourthargument.eris.api.dto.response.PrivateMessagesDTO;
+import fourthargument.eris.api.model.Conversation;
 import fourthargument.eris.api.model.PrivateMessage;
+import fourthargument.eris.api.model.User;
 
 @Component
 public class PrivateMessagesMapper {
@@ -11,9 +13,9 @@ public class PrivateMessagesMapper {
         return new PrivateMessagesDTO(
             privateMessage.getId(),
             privateMessage.getSender().getId(),
-            privateMessage.getSender().getUsername(),
-            privateMessage.getReceiver().getId(),
-            privateMessage.getReceiver().getUsername(),
+            privateMessage.getSender().getUser(),
+            privateMessage.getConversation().getReceiver().getId(),
+            privateMessage.getConversation().getReceiver().getUser(),
             privateMessage.getConversation().getId(),
             privateMessage.getContent(),
             privateMessage.getCreatedAt(),
@@ -21,11 +23,16 @@ public class PrivateMessagesMapper {
         );
     }
 
-    public PrivateMessage toEntity(PrivateMessagesDTO privateMessagesDTO) {
+    public PrivateMessage toEntity(
+            PrivateMessagesDTO privateMessagesDTO,
+            User sender,
+            Conversation conversation) {
         PrivateMessage privateMessage = new PrivateMessage();
         privateMessage.setId(privateMessagesDTO.id());
-        privateMessage.setSender(privateMessagesDTO.senderId());
-        privateMessage.setReceiver(privateMessagesDTO.receiverId());
+        privateMessage.setSender(sender);
+        privateMessage.setConversation(conversation);
+        privateMessage.setContent(privateMessagesDTO.content());
+        return privateMessage;
     }
 
 }

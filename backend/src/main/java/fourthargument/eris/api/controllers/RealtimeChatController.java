@@ -1,5 +1,7 @@
 package fourthargument.eris.api.controllers;
 
+import java.security.Principal;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -7,7 +9,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import fourthargument.eris.api.dto.MessageDTO;
+import fourthargument.eris.api.dto.response.PrivateMessagesDTO;
 import fourthargument.eris.api.services.MessageService;
+import fourthargument.eris.api.services.PrivateMessageService;
+import fourthargument.eris.exceptions.ConversationException;
+import fourthargument.eris.exceptions.PrivateMessageException;
 import fourthargument.eris.exceptions.ChannelException;
 import fourthargument.eris.exceptions.UserException;
 
@@ -17,6 +23,7 @@ public class RealtimeChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
+    private final PrivateMessageService privateMessageService;
 
     // ── Messages ──
     @MessageMapping("/chat")
@@ -29,6 +36,23 @@ public class RealtimeChatController {
                 "/topic/channels/" + messageDTO.channelId(), saved);
     }
 
+    // ── Private messages ──
+    @MessageMapping("/private.chat")
+    public void processPrivateMessage(@Payload PrivateChatPayload payload, Principal principal)
+            throws UserException, ConversationException, PrivateMessageException {
+        if (principal == null) {
+            throw new PrivateMessageException("Unauthenticated websocket session");
+        }
+
+        PrivateMessagesDTO saved = privateMessageService.sendPrivateMessage(
+                payload.conversationId(),
+                payload.content(),
+                principal.getName());
+
+        messagingTemplate.convertAndSend(
+                "/topic/private/" + payload.conversationId(), saved);
+    }
+
     // ── Typing ──
     @MessageMapping("/typing")
     public void handleTyping(@Payload TypingPayload payload) {
@@ -38,5 +62,8 @@ public class RealtimeChatController {
     }
 
     public record TypingPayload(Long userId, String username, Long channelId, boolean typing) {
+    }
+
+    public record PrivateChatPayload(Long conversationId, String content) {
     }
 }

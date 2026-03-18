@@ -30,6 +30,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
     const stomp = new Client({
       webSocketFactory: () => new SockJS(WS_URL),
+      connectHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
       reconnectDelay: 5000,
       debug: (str) => console.log('[STOMP]', str),
       onConnect: () => {
