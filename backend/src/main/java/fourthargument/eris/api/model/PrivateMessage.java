@@ -1,4 +1,4 @@
-package main.java.fourthargument.eris.api.model;
+package fourthargument.eris.api.model;
 
 import java.time.LocalDateTime;
 
@@ -25,11 +25,11 @@ public class PrivateMessage {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "conversation_id")
+    @JoinColumn(name = "conversation_id", nullable = false)
     private Conversation conversation;
     
     @ManyToOne
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
     @NonNull

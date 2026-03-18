@@ -1,4 +1,4 @@
-package main.java.fourthargument.eris.api.model;
+package fourthargument.eris.api.model;
 
 import java.time.LocalDateTime;
 
@@ -24,9 +24,15 @@ public class Conversation {
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;
-    
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
+    public Conversation() {
+    }
 }
