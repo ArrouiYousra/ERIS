@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import fourthargument.eris.api.dto.MessageDTO;
 import fourthargument.eris.api.mapper.MessageMapper;
@@ -39,6 +40,8 @@ class MessageServiceTest {
     private ChannelRepository channelRepository;
     @Mock
     private MessageMapper messageMapper;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks
     private MessageService messageService;
