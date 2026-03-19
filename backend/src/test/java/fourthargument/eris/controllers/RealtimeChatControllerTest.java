@@ -15,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import fourthargument.eris.api.controllers.RealtimeChatController;
 import fourthargument.eris.api.dto.MessageDTO;
 import fourthargument.eris.api.services.MessageService;
+import fourthargument.eris.api.services.PrivateMessageService;
 
 @ExtendWith(MockitoExtension.class)
 class RealtimeChatControllerTest {
@@ -23,12 +24,14 @@ class RealtimeChatControllerTest {
     private SimpMessagingTemplate messagingTemplate;
     @Mock
     private MessageService messageService;
+    @Mock
+    private PrivateMessageService privateMessageService;
 
     private RealtimeChatController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new RealtimeChatController(messagingTemplate, messageService);
+        controller = new RealtimeChatController(messagingTemplate, messageService, privateMessageService);
     }
 
     @Test
