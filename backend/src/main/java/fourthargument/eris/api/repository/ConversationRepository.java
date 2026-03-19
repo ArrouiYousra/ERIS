@@ -1,17 +1,16 @@
 package fourthargument.eris.api.repository;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import fourthargument.eris.api.model.Conversation;
 import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.model.Conversation;
 
-public interface ConversationRepository extends CrudRepository<Conversation, Long> {
-    List<Conversation> findBySender(User sender);
-    List<Conversation> findByReceiver(User receiver);
-    Optional<Conversation> findBySenderAndReceiver(User sender, User receiver); // Création d'une conv unique
+public interface ConversationRepository extends JpaRepository<Conversation, Long> {
+    List<Conversation> findByParticipantsContaining(User user);
 
-    void deleteById(Long id);
+    @Query(value = "SELECT user_id FROM conversation_participants WHERE conversation_id = ?1", nativeQuery = true)
+    List<Long> findParticipantIdsByConversationId(Long conversationId); // récupère les ids des participants d'une conversation
 }
