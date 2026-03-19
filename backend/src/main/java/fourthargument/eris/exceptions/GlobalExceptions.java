@@ -22,16 +22,24 @@ public class GlobalExceptions {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(RoleException.class)
-    public ResponseEntity<ErrorDetails> channelExceptionHandler(RoleException e, WebRequest request) {
+    @ExceptionHandler(MessageException.class)
+    public ResponseEntity<ErrorDetails> messageExceptionHandler(MessageException e, WebRequest request) {
         ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(),
                 LocalDateTime.now());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(MessageException.class)
-    public ResponseEntity<ErrorDetails> messageExceptionHandler(MessageException e, WebRequest request) {
+    @ExceptionHandler(ReactionException.class)
+    public ResponseEntity<ErrorDetails> reactionExceptionHandler(ReactionException e, WebRequest request) {
+        ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(),
+                LocalDateTime.now());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RoleException.class)
+    public ResponseEntity<ErrorDetails> roleExceptionHandler(RoleException e, WebRequest request) {
         ErrorDetails error = new ErrorDetails(request.getDescription(false), e.getMessage(),
                 LocalDateTime.now());
 
