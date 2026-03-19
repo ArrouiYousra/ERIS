@@ -16,6 +16,7 @@ import fourthargument.eris.api.controllers.RealtimeChatController;
 import fourthargument.eris.api.dto.MessageDTO;
 import fourthargument.eris.api.services.MessageService;
 import fourthargument.eris.api.services.PrivateMessageService;
+import fourthargument.eris.api.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class RealtimeChatControllerTest {
@@ -26,12 +27,18 @@ class RealtimeChatControllerTest {
     private MessageService messageService;
     @Mock
     private PrivateMessageService privateMessageService;
+    @Mock
+    private UserService userService;
 
     private RealtimeChatController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new RealtimeChatController(messagingTemplate, messageService, privateMessageService);
+        controller = new RealtimeChatController(
+                messagingTemplate,
+                messageService,
+                privateMessageService,
+                userService);
     }
 
     @Test
