@@ -9,30 +9,23 @@ import fourthargument.eris.api.model.User;
 
 @Component
 public class PrivateMessagesMapper {
-    public PrivateMessagesDTO toDTO(PrivateMessage privateMessage) {
+
+    public PrivateMessage toEntity(String content, User sender, Conversation conversation) {
+        PrivateMessage pm = new PrivateMessage();
+        pm.setConversation(conversation);
+        pm.setSender(sender);
+        pm.setContent(content);
+        return pm;
+    }
+
+    public PrivateMessagesDTO toDTO(PrivateMessage pm) {
         return new PrivateMessagesDTO(
-            privateMessage.getId(),
-            privateMessage.getSender().getId(),
-            privateMessage.getSender().getUser(),
-            privateMessage.getConversation().getReceiver().getId(),
-            privateMessage.getConversation().getReceiver().getUser(),
-            privateMessage.getConversation().getId(),
-            privateMessage.getContent(),
-            privateMessage.getCreatedAt(),
-            privateMessage.getUpdatedAt()
+            pm.getId(),
+            pm.getConversation().getId(),
+            new PrivateMessagesDTO.SenderDTO(pm.getSender().getId(), pm.getSender().getUser()),
+            pm.getContent(),
+            pm.getCreatedAt(),
+            pm.getUpdatedAt()
         );
     }
-
-    public PrivateMessage toEntity(
-            PrivateMessagesDTO privateMessagesDTO,
-            User sender,
-            Conversation conversation) {
-        PrivateMessage privateMessage = new PrivateMessage();
-        privateMessage.setId(privateMessagesDTO.id());
-        privateMessage.setSender(sender);
-        privateMessage.setConversation(conversation);
-        privateMessage.setContent(privateMessagesDTO.content());
-        return privateMessage;
-    }
-
 }
