@@ -14,6 +14,19 @@ export interface ChatMessage {
   channelId?: number;
 }
 
+export interface PrivateMessage {
+  senderId: number;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Conversation {
+  id: number;
+  userId: number;
+  privateMessage: PrivateMessage;
+}
+
 export interface Server {
   id: number;
   name: string;
