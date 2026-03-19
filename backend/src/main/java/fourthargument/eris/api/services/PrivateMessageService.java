@@ -22,48 +22,35 @@ public class PrivateMessageService {
 
     private final PrivateMessageRepository privateMessageRepository;
     private final PrivateMessagesMapper privateMessagesMapper;
-    private final UserService userService;
     private final ConversationService conversationService;
 
-    public PrivateMessagesDTO sendPrivateMessage(Long conversationId, String content, String requesterEmail)
+    public PrivateMessagesDTO sendPrivateMessage(Long conversationId, String content, User sender)
             throws UserException, ConversationException, PrivateMessageException {
         if (content == null || content.isBlank()) {
             throw new PrivateMessageException("Message payload is invalid");
         }
 
-        User sender = userService.getUserEntityByEmail(requesterEmail);
-        Conversation conversation = conversationService.getConversationForUser(conversationId, requesterEmail);
-        PrivateMessagesDTO dto = new PrivateMessagesDTO(
-                null,
-                sender.getId(),
-                sender.getUser(),
-                conversation.getReceiver().getId(),
-                conversation.getReceiver().getUser(),
-                conversationId,
-                content,
-                null,
-                null);
-        PrivateMessage message = privateMessagesMapper.toEntity(dto, sender, conversation);
+        Conversation conversation = conversationService.getConversationForUser(conversationId, sender.getId());
+        PrivateMessage message = privateMessagesMapper.toEntity(content, sender, conversation);
         PrivateMessage saved = privateMessageRepository.save(message);
         return privateMessagesMapper.toDTO(saved);
     }
 
-    public List<PrivateMessagesDTO> getPrivateMessageHistory(Long conversationId, String requesterEmail)
+    public List<PrivateMessagesDTO> getPrivateMessageHistory(Long conversationId, User requester)
             throws ConversationException, PrivateMessageException, UserException {
-        Conversation conversation = conversationService.getConversationForUser(conversationId, requesterEmail);
+        Conversation conversation = conversationService.getConversationForUser(conversationId, requester.getId());
 
         return privateMessageRepository.findByConversationOrderByCreatedAtAsc(conversation).stream()
                 .map(privateMessagesMapper::toDTO)
                 .toList();
     }
 
-    public PrivateMessagesDTO editPrivateMessage(Long messageId, String content, String requesterEmail)
+    public PrivateMessagesDTO editPrivateMessage(Long messageId, String content, User requester)
             throws UserException, PrivateMessageException {
         if (content == null || content.isBlank()) {
             throw new PrivateMessageException("Message content cannot be empty");
         }
 
-        User requester = userService.getUserEntityByEmail(requesterEmail);
         PrivateMessage message = privateMessageRepository.findById(messageId)
                 .orElseThrow(() -> new PrivateMessageException("Private message not found"));
 
@@ -76,9 +63,8 @@ public class PrivateMessageService {
         return privateMessagesMapper.toDTO(saved);
     }
 
-    public void deletePrivateMessage(Long messageId, String requesterEmail)
+    public void deletePrivateMessage(Long messageId, User requester)
             throws UserException, PrivateMessageException {
-        User requester = userService.getUserEntityByEmail(requesterEmail);
         PrivateMessage message = privateMessageRepository.findById(messageId)
                 .orElseThrow(() -> new PrivateMessageException("Private message not found"));
 
