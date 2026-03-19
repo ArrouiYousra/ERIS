@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fourthargument.eris.api.dto.request.CreateConversationRequestDTO;
-import fourthargument.eris.api.dto.response.ConversationDTO;
+import fourthargument.eris.api.dto.response.ConversationPreviewDTO;
 import fourthargument.eris.api.services.ConversationService;
 import fourthargument.eris.exceptions.ConversationException;
 import fourthargument.eris.exceptions.PrivateMessageException;
 import fourthargument.eris.exceptions.UserException;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.services.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,25 +31,28 @@ import lombok.RequiredArgsConstructor;
 public class ConversationController {
 
     private final ConversationService conversationService;
+    private final UserService userService;
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ConversationDTO> createOrGetConversation(
+    public ResponseEntity<ConversationPreviewDTO> createOrGetConversation(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody CreateConversationRequestDTO request)
             throws UserException, ConversationException {
-        ConversationDTO conversation = conversationService.getOrCreateConversation(
-                userDetails.getUsername(),
-                request.getReceiverId());
+        User requester = userService.getUserEntityByEmail(userDetails.getUsername());
+        ConversationPreviewDTO conversation = conversationService.getOrCreateConversation(
+            requester.getId(),
+            request.getReceiverId());
         return ResponseEntity.status(HttpStatus.CREATED).body(conversation);
     }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ConversationDTO>> getConversations(
+    public ResponseEntity<List<ConversationPreviewDTO>> getConversations(
             @AuthenticationPrincipal UserDetails userDetails)
             throws UserException {
-        return ResponseEntity.ok(conversationService.getUserConversations(userDetails.getUsername()));
+        User requester = userService.getUserEntityByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(conversationService.getUserConversations(requester.getId()));
     }
 
     @DeleteMapping("/{conversationId}")
@@ -56,7 +61,8 @@ public class ConversationController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long conversationId)
             throws UserException, ConversationException, PrivateMessageException {
-        conversationService.deleteConversation(conversationId, userDetails.getUsername());
+        User requester = userService.getUserEntityByEmail(userDetails.getUsername());
+        conversationService.deleteConversation(conversationId, requester.getId());
         return ResponseEntity.ok("Conversation deleted");
     }
 }

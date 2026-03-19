@@ -23,6 +23,8 @@ import fourthargument.eris.api.services.PrivateMessageService;
 import fourthargument.eris.exceptions.ConversationException;
 import fourthargument.eris.exceptions.PrivateMessageException;
 import fourthargument.eris.exceptions.UserException;
+import fourthargument.eris.api.model.User;
+import fourthargument.eris.api.services.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class PrivateMessageController {
 
     private final PrivateMessageService privateMessageService;
+    private final UserService userService;
 
     @GetMapping("/conversations/{conversationId}/messages")
     @PreAuthorize("isAuthenticated()")
@@ -38,7 +41,8 @@ public class PrivateMessageController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long conversationId)
             throws UserException, ConversationException, PrivateMessageException {
-        return ResponseEntity.ok(privateMessageService.getPrivateMessageHistory(conversationId, userDetails.getUsername()));
+        User requester = userService.getUserEntityByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(privateMessageService.getPrivateMessageHistory(conversationId, requester));
     }
 
     @PostMapping("/conversations/{conversationId}/messages")
@@ -48,10 +52,11 @@ public class PrivateMessageController {
             @PathVariable Long conversationId,
             @RequestBody SendPrivateMessageRequestDTO request)
             throws UserException, ConversationException, PrivateMessageException {
+        User requester = userService.getUserEntityByEmail(userDetails.getUsername());
         PrivateMessagesDTO sent = privateMessageService.sendPrivateMessage(
                 conversationId,
                 request.getContent(),
-                userDetails.getUsername());
+                requester);
         return ResponseEntity.status(HttpStatus.CREATED).body(sent);
     }
 
@@ -62,7 +67,8 @@ public class PrivateMessageController {
             @PathVariable Long messageId,
             @RequestBody UpdatePrivateMessageRequestDTO request)
             throws UserException, PrivateMessageException {
-        return ResponseEntity.ok(privateMessageService.editPrivateMessage(messageId, request.getContent(), userDetails.getUsername()));
+        User requester = userService.getUserEntityByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(privateMessageService.editPrivateMessage(messageId, request.getContent(), requester));
     }
 
     @DeleteMapping("/messages/{messageId}")
@@ -71,7 +77,8 @@ public class PrivateMessageController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long messageId)
             throws UserException, PrivateMessageException {
-        privateMessageService.deletePrivateMessage(messageId, userDetails.getUsername());
+        User requester = userService.getUserEntityByEmail(userDetails.getUsername());
+        privateMessageService.deletePrivateMessage(messageId, requester);
         return ResponseEntity.ok("Private message deleted");
     }
 }

@@ -16,6 +16,8 @@ import fourthargument.eris.exceptions.ConversationException;
 import fourthargument.eris.exceptions.PrivateMessageException;
 import fourthargument.eris.exceptions.ChannelException;
 import fourthargument.eris.exceptions.UserException;
+import fourthargument.eris.api.services.UserService;
+import fourthargument.eris.api.model.User;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class RealtimeChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
     private final PrivateMessageService privateMessageService;
+    private final UserService userService;
 
     // ── Messages ──
     @MessageMapping("/chat")
@@ -44,10 +47,11 @@ public class RealtimeChatController {
             throw new PrivateMessageException("Unauthenticated websocket session");
         }
 
+        User requester = userService.getUserEntityByEmail(principal.getName());
         PrivateMessagesDTO saved = privateMessageService.sendPrivateMessage(
                 payload.conversationId(),
                 payload.content(),
-                principal.getName());
+                requester);
 
         messagingTemplate.convertAndSend(
                 "/topic/private/" + payload.conversationId(), saved);
