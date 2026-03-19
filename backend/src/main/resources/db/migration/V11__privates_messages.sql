@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS conversations (
+CREATE TABLE IF NOT EXISTS private_messages (
     id                  bigserial primary key,
 	conversation_id     integer references conversations(id),
     sender_id           integer references users(id),

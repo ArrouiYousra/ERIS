@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import "../styles/serverGate.css";
+import { LockKeyhole } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export type ServerModalStep = "choice" | "create" | "join";
 
@@ -15,6 +17,7 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
   const [inviteLink, setInviteLink] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const getErrorMessage = (errorValue: unknown) => {
     if (axios.isAxiosError<{ message?: string }>(errorValue)) {
@@ -79,7 +82,18 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
         <>
           <div className="server-gate-choices">
             <button
-              className="server-gate-choice"
+              className="server-gate-choice justify-between"
+              // Ajouter un navigate vers la page des DMS
+              onClick={() => navigate("/chat")}
+            >
+              <span className="server-gate-choice-label flex-row">
+                Voir mes messages privés
+              </span>
+              <LockKeyhole />
+            </button>
+
+            <button
+              className="server-gate-choice flex-col"
               onClick={() => setStep("create")}
             >
               <span className="server-gate-choice-label">Créer un serveur</span>
@@ -90,7 +104,7 @@ export function ServerGate({ onCreateServer, onJoinServer }: ServerGateProps) {
             </button>
 
             <button
-              className="server-gate-choice"
+              className="server-gate-choice  flex-col"
               onClick={() => setStep("join")}
             >
               <span className="server-gate-choice-label">

@@ -3,6 +3,7 @@ import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
 import { SignupPage } from "../pages/SignupPage";
 import { ChatLayout } from "../pages/ChatLayout";
+import { PrivateChatLayout } from "../pages/PrivateChatLayout";
 import { useAuth } from "../hooks/useAuth";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -10,14 +11,16 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: "flex", 
-        alignItems: "center", 
-        justifyContent: "center", 
-        height: "100vh", 
-        background: "#000", 
-        color: "#fff" 
-      }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          background: "#000",
+          color: "#fff",
+        }}
+      >
         Loading...
       </div>
     );
@@ -58,6 +61,15 @@ export function AppRouter() {
           element={
             <ProtectedRoute>
               <ChatLayout />
+            </ProtectedRoute>
+          }
+        />
+        {/* Route to private         */}
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <PrivateChatLayout />
             </ProtectedRoute>
           }
         />

@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { SearchInput } from "./SearchInput";
 import { UserBar } from "./UserBar";
-import { DMRow } from "./DMRow";
 import { MOCK_DMS } from "../../data/mockFriends";
 
 interface MainSidebarProps {
@@ -11,7 +10,7 @@ interface MainSidebarProps {
   onAddDM?: () => void;
 }
 
-export function MainSidebar({ selectedDMId, onSelectDM, onAddDM }: MainSidebarProps) {
+export function MainSidebar({ onAddDM }: MainSidebarProps) {
   const [search, setSearch] = useState("");
 
   const filteredDMs = useMemo(() => {
@@ -20,7 +19,7 @@ export function MainSidebar({ selectedDMId, onSelectDM, onAddDM }: MainSidebarPr
     return MOCK_DMS.filter(
       (dm) =>
         dm.friend.displayName.toLowerCase().includes(q) ||
-        dm.friend.username.toLowerCase().includes(q)
+        dm.friend.username.toLowerCase().includes(q),
     );
   }, [search]);
 
@@ -67,19 +66,12 @@ export function MainSidebar({ selectedDMId, onSelectDM, onAddDM }: MainSidebarPr
       <div className="flex-1 min-h-0 overflow-y-auto py-2">
         {filteredDMs.length === 0 ? (
           <div className="px-4 py-6 text-center text-sm text-[#949ba4]">
-            {search.trim() ? "Aucune conversation ne correspond à la recherche." : "Aucun message privé."}
+            {search.trim()
+              ? "Aucune conversation ne correspond à la recherche."
+              : "Aucun message privé."}
           </div>
         ) : (
-          <div className="px-2 space-y-0.5">
-            {filteredDMs.map((dm) => (
-              <DMRow
-                key={dm.id}
-                dm={dm}
-                selected={selectedDMId === dm.id}
-                onClick={() => onSelectDM(selectedDMId === dm.id ? null : dm.id)}
-              />
-            ))}
-          </div>
+          <div className="px-2 space-y-0.5"></div>
         )}
       </div>
 
