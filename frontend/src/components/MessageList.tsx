@@ -17,6 +17,7 @@ import { useChannelSocket } from "../hooks/useChannelSocket";
 import { useTyping } from "../hooks/useTyping";
 import { editMessage } from "../api/messageApi";
 import { useAuth } from "../hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface MessageListProps {
   channelId?: number | null;
@@ -52,6 +53,7 @@ export function MessageList({
   const { typingText, onInputChange, stopTyping } = useTyping(
     channelId ?? null,
   );
+  const { t } = useTranslation();
 
   const handleUpdateMessage = async (messageId: number) => {
     if (!editValue.trim()) return;
@@ -100,8 +102,7 @@ export function MessageList({
               {serverName}
             </h2>
             <p className="text-sm text-gray-300 mb-5">
-              Clique sur un salon dans la colonne de gauche pour voir les
-              messages.
+              {t("chat.clickChannel")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button
@@ -110,7 +111,7 @@ export function MessageList({
                 className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-red-500/85 hover:bg-red-500 text-white text-sm font-medium transition-colors"
               >
                 <LogOut className="w-4 h-4" />
-                Quitter le serveur
+                {t("chat.leaveServer")}
               </button>
               <button
                 type="button"
@@ -119,7 +120,7 @@ export function MessageList({
                 title="Les options arriveront bientôt"
               >
                 <Settings className="w-4 h-4" />
-                Options (bientot)
+                {t("chat.optionsSoon")}
               </button>
             </div>
             {showFutureCard && (
@@ -140,7 +141,7 @@ export function MessageList({
     return (
       <div className="flex flex-col h-full bg-[#313338]">
         <div className="flex-1 flex items-center justify-center text-gray-500">
-          Sélectionnez un canal ou une conversation
+          {t("chat.selectChannel")}
         </div>
       </div>
     );
@@ -198,7 +199,7 @@ export function MessageList({
           <div className="relative hidden sm:block">
             <input
               type="text"
-              placeholder={`Rechercher dans ${serverName}`}
+              placeholder={t("chat.searchIn", { server: serverName })}
               className="w-36 lg:w-48 px-2 py-1 pl-8 bg-[#1e1f22] rounded text-sm text-gray-300 placeholder-gray-500 outline-none focus:w-52 transition-all"
             />
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
@@ -246,7 +247,7 @@ export function MessageList({
                       />
                       <div className="flex gap-2 text-xs">
                         <span className="text-gray-400">
-                          Échap pour annuler • Entrée pour enregistrer
+                          {t("chat.editHint")}
                         </span>
                       </div>
                     </div>
@@ -298,11 +299,10 @@ export function MessageList({
               )}
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              Bienvenue sur #{channelName || "général"}
+              {t("chat.welcomeChannel", { channel: channelName || "général" })}
             </h1>
             <p className="text-gray-400 text-center max-w-md">
-              C'est le début du salon #{channelName || "général"}. Commence à
-              discuter !
+              {t("chat.startChatting", { channel: channelName || "général" })}
             </p>
           </div>
         )}
@@ -329,7 +329,7 @@ export function MessageList({
               if (e.target.value.length > 0) onInputChange();
             }}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-            placeholder={`Envoyer un message dans #${channelName || "général"}`}
+            placeholder={t("chat.sendMessage", { channel: channelName || "général" })}
             className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 outline-none"
           />
         </div>

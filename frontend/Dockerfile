@@ -14,6 +14,7 @@ ENV VITE_WS_URL=$VITE_WS_URL
 ENV VITE_WS_BASE_URL=$VITE_WS_BASE_URL
 
 RUN npm i
+RUN npm install react-i18next i18next i18next-browser-languagedetector
 
 RUN npm run build
 

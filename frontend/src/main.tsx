@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { AuthProvider } from "./hooks/useAuth";
 import { SocketProvider } from "./api/wsApi";
+import './i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: {

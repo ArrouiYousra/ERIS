@@ -20,6 +20,7 @@ import {
 } from "../api/invitationApi";
 import { InviteModal } from "./InviteModal";
 import { UserBar } from "./friends/UserBar";
+import { useTranslation } from "react-i18next";
 
 interface ChannelListProps {
   serverId: number | null;
@@ -55,6 +56,7 @@ export function ChannelList({
   const [showServerDropdown, setShowServerDropdown] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -72,7 +74,7 @@ export function ChannelList({
   if (!serverId) {
     return (
       <div className="channel-list">
-        <div className="channel-list-empty">Messages prives</div>
+        <div className="channel-list-empty">{t("chat.privateMessages")}</div>
       </div>
     );
   }
@@ -168,7 +170,7 @@ export function ChannelList({
               style={{ width: "calc(100% - 8px)" }}
             >
               <UserPlus className="w-4 h-4" />
-              Inviter des personnes
+              {t("chat.invite")}
             </button>
             {isOwner && (
               <>
@@ -179,7 +181,7 @@ export function ChannelList({
                   style={{ width: "calc(100% - 8px)" }}
                 >
                   <Trash2 className="w-4 h-4" />
-                  Supprimer le serveur
+                  {t("chat.deleteServer")}
                 </button>
               </>
             )}
@@ -192,7 +194,7 @@ export function ChannelList({
                   style={{ width: "calc(100% - 8px)" }}
                 >
                   <Trash2 className="w-4 h-4" />
-                  Quitter le serveur
+                  {t("chat.leaveServer")}
                 </button>
               </>
             )}
@@ -213,7 +215,7 @@ export function ChannelList({
                 onClick={() => setShowDeleteConfirm(false)}
                 className="px-4 py-2 text-sm text-white hover:underline"
               >
-                Annuler
+                {t("chat.cancel")}
               </button>
               <button
                 onClick={() => {
@@ -222,7 +224,7 @@ export function ChannelList({
                 }}
                 className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded transition-colors font-medium"
               >
-                Supprimer le serveur
+                {t("chat.deleteServer")}
               </button>
             </div>
           </div>
@@ -243,7 +245,7 @@ export function ChannelList({
               }`}
             />
             <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-200 uppercase tracking-wide transition-colors">
-              Salons textuels
+              {t("chat.textChannels")}
             </span>
             <button
               onClick={(e) => {
@@ -251,7 +253,7 @@ export function ChannelList({
                 setShowChannelWizard(true);
               }}
               className="icon-btn ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-200 transition-all"
-              title="Créer un salon"
+              title={t("chat.createChannel")}
             >
               <Plus className="w-[18px] h-[18px]" />
             </button>
@@ -308,7 +310,7 @@ export function ChannelList({
               })
             ) : (
               <p className="text-gray-500 text-sm text-center py-4">
-                Aucun salon
+                {t("chat.noChannels")}
               </p>
             )}
           </div>

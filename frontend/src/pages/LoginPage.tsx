@@ -1,11 +1,14 @@
 import { type SubmitEventHandler, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import "../styles/auth.css";
 import "../styles/login.css";
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,17 +16,16 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const getErrorMessage = (error: unknown) => {
-    if (axios.isAxiosError<{ message?: string }>(error)) {
-      return error.response?.data?.message || "Erreur de connexion. Vérifiez vos identifiants.";
+  const getErrorMessage = (err: unknown) => {
+    if (axios.isAxiosError<{ message?: string }>(err)) {
+      return err.response?.data?.message || t("login.error");
     }
-    return "Erreur de connexion. Vérifiez vos identifiants.";
+    return t("login.error");
   };
 
   const onSubmit: SubmitEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       await login(email, password);
       navigate("/app");
@@ -43,53 +45,31 @@ export function LoginPage() {
       </div>
       <div className="auth-card auth-card--login">
         <div className="auth-header">
-          <h1 className="auth-title">Welcome back!</h1>
-          <p className="auth-subtitle">We're so excited to see you again!</p>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h1 className="auth-title">{t("login.title")}</h1>
+            <LanguageSwitcher />
+          </div>
+          <p className="auth-subtitle">{t("login.subtitle")}</p>
         </div>
-
         {error && <div className="auth-error">{error}</div>}
-
         <form className="auth-form" onSubmit={onSubmit}>
           <div className="auth-form-group">
-            <label className="auth-form-label" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              className="auth-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-            />
+            <label className="auth-form-label" htmlFor="email">{t("login.email")}</label>
+            <input id="email" type="email" className="auth-input" value={email}
+              onChange={(e) => setEmail(e.target.value)} required disabled={loading} />
           </div>
-
           <div className="auth-form-group">
-            <label className="auth-form-label" htmlFor="password">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              className="auth-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
+            <label className="auth-form-label" htmlFor="password">{t("login.password")}</label>
+            <input id="password" type="password" className="auth-input" value={password}
+              onChange={(e) => setPassword(e.target.value)} required disabled={loading} />
           </div>
-
           <button type="submit" className="auth-submit-button" disabled={loading}>
-            {loading ? "Connexion..." : "Log In"}
+            {loading ? t("login.loading") : t("login.submit")}
           </button>
         </form>
-
         <div className="auth-footer">
-          <span>Need an account? </span>
-          <Link to="/signup" className="auth-link">
-            Register
-          </Link>
+          <span>{t("login.noAccount")} </span>
+          <Link to="/signup" className="auth-link">{t("login.register")}</Link>
         </div>
       </div>
     </div>
