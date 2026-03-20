@@ -40,28 +40,24 @@ describe("LoginPage", () => {
 
   it("renders login form", () => {
     renderLogin();
-
-    expect(screen.getByText("Welcome back!")).toBeInTheDocument();
+    expect(screen.getByText("Bon retour !")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
-    expect(screen.getByLabelText("Password")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Log In" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Mot de passe")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Se connecter" })).toBeInTheDocument();
   });
 
   it("shows register link", () => {
     renderLogin();
-
-    expect(screen.getByText("Register")).toBeInTheDocument();
+    expect(screen.getByText("S'inscrire")).toBeInTheDocument();
   });
 
   it("submits form and navigates on success", async () => {
     mockLogin.mockResolvedValue(undefined);
     renderLogin();
-
     const user = userEvent.setup();
     await user.type(screen.getByLabelText("Email"), "test@example.com");
-    await user.type(screen.getByLabelText("Password"), "Password1");
-    await user.click(screen.getByRole("button", { name: "Log In" }));
-
+    await user.type(screen.getByLabelText("Mot de passe"), "Password1");
+    await user.click(screen.getByRole("button", { name: "Se connecter" }));
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith("test@example.com", "Password1");
       expect(mockNavigate).toHaveBeenCalledWith("/app");
@@ -73,12 +69,10 @@ describe("LoginPage", () => {
       response: { data: { message: "Invalid credentials" } },
     });
     renderLogin();
-
     const user = userEvent.setup();
     await user.type(screen.getByLabelText("Email"), "test@example.com");
-    await user.type(screen.getByLabelText("Password"), "wrong");
-    await user.click(screen.getByRole("button", { name: "Log In" }));
-
+    await user.type(screen.getByLabelText("Mot de passe"), "wrong");
+    await user.click(screen.getByRole("button", { name: "Se connecter" }));
     await waitFor(() => {
       expect(screen.getByText(/Erreur de connexion\./)).toBeInTheDocument();
     });
@@ -87,12 +81,10 @@ describe("LoginPage", () => {
   it("shows fallback error message when no message in response", async () => {
     mockLogin.mockRejectedValue(new Error("Network Error"));
     renderLogin();
-
     const user = userEvent.setup();
     await user.type(screen.getByLabelText("Email"), "test@example.com");
-    await user.type(screen.getByLabelText("Password"), "pass");
-    await user.click(screen.getByRole("button", { name: "Log In" }));
-
+    await user.type(screen.getByLabelText("Mot de passe"), "pass");
+    await user.click(screen.getByRole("button", { name: "Se connecter" }));
     await waitFor(() => {
       expect(screen.getByText(/Erreur de connexion/)).toBeInTheDocument();
     });
@@ -100,24 +92,16 @@ describe("LoginPage", () => {
 
   it("shows loading state during submission", async () => {
     let resolveLogin: () => void;
-    mockLogin.mockReturnValue(
-      new Promise<void>((resolve) => {
-        resolveLogin = resolve;
-      }),
-    );
+    mockLogin.mockReturnValue(new Promise<void>((resolve) => { resolveLogin = resolve; }));
     renderLogin();
-
     const user = userEvent.setup();
     await user.type(screen.getByLabelText("Email"), "a@b.c");
-    await user.type(screen.getByLabelText("Password"), "pass");
-    await user.click(screen.getByRole("button", { name: "Log In" }));
-
+    await user.type(screen.getByLabelText("Mot de passe"), "pass");
+    await user.click(screen.getByRole("button", { name: "Se connecter" }));
     expect(screen.getByText("Connexion...")).toBeInTheDocument();
-
-    // Resolve to cleanup
     resolveLogin!();
     await waitFor(() => {
-      expect(screen.getByText("Log In")).toBeInTheDocument();
+      expect(screen.getByText("Se connecter")).toBeInTheDocument();
     });
   });
 });
