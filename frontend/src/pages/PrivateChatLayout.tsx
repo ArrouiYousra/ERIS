@@ -12,7 +12,7 @@ import { useState } from "react";
 // import { useQueryClient } from "@tanstack/react-query";
 // import type { Channel } from "../api/channelsApi";
 // import type { Server } from "../api/serversApi";
-import { RightPanel, UserBar, DMRow } from "../components/friends";
+import { RightPanel, UserBar, DMRows } from "../components/friends";
 // import { ChannelList } from "../components/ChannelList";
 // import { MessageList } from "../components/MessageList";
 // import { ServerGate } from "../components/ServerGate";
@@ -129,7 +129,7 @@ export function PrivateChatLayout() {
   return (
     <div className="chat-layout-root">
       {/* Zone 1: Server bar — 72px */}
-      <DMRow />
+      <DMRows />
       <div className="chat-dm-wrapper">
         {/* Sidebar DM avec UserBar en bas */}
         <div className="chat-dm-sidebar shrink-0 h-full hidden md:flex flex-col bg-[#2b2d31]">

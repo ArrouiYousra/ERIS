@@ -1,4 +1,4 @@
-export function DMRows({}) {
+export function DMRows() {
   return (
     <div className="dm-bar relative h-full w-14 flex items-center flex-col">
       <button
