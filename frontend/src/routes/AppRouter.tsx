@@ -3,7 +3,7 @@ import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
 import { SignupPage } from "../pages/SignupPage";
 import { ChatLayout } from "../pages/ChatLayout";
-import { PrivateChatLayout } from "../pages/PrivateChatLayout";
+import { PrivateChatLayout } from "../pages/PrivateChat";
 import { useAuth } from "../hooks/useAuth";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {

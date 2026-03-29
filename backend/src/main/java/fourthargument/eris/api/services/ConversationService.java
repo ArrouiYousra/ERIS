@@ -40,32 +40,32 @@ public class ConversationService {
                 .orElseThrow(() -> new UserException("Receiver not found"));
 
         Conversation conversation = conversationRepository.findByParticipantsContaining(sender)
-            .stream()
-            .filter(c -> c.getParticipants()
-                .stream().map(User::getId).anyMatch(id -> id.equals(receiverId)))
-            .findFirst()
-            .orElseGet(() -> conversationRepository.save(conversationMapper
-                    .toEntity(sender, receiver)));
-            
-            PrivateMessage lastMessage = privateMessageRepository
-            .findTopByConversationOrderByCreatedAtDesc(conversation)
-            .orElse(null);
+                .stream()
+                .filter(c -> c.getParticipants()
+                        .stream().map(User::getId).anyMatch(id -> id.equals(receiverId)))
+                .findFirst()
+                .orElseGet(() -> conversationRepository.save(conversationMapper
+                        .toEntity(sender, receiver)));
 
-            return conversationMapper.toPreviewDTO(conversation, lastMessage);
+        PrivateMessage lastMessage = privateMessageRepository
+                .findTopByConversationOrderByCreatedAtDesc(conversation)
+                .orElse(null);
+
+        return conversationMapper.toPreviewDTO(conversation, lastMessage);
     }
 
     public List<ConversationPreviewDTO> getUserConversations(Long userId) throws UserException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException("User not found"));
 
-            return conversationRepository.findByParticipantsContaining(user).stream()
-            .map(c -> {
-                PrivateMessage lastMessage = privateMessageRepository
-                    .findTopByConversationOrderByCreatedAtDesc(c)
-                    .orElse(null);
-                return conversationMapper.toPreviewDTO(c, lastMessage);
-            })
-            .toList();
+        return conversationRepository.findByParticipantsContaining(user).stream()
+                .map(c -> {
+                    PrivateMessage lastMessage = privateMessageRepository
+                            .findTopByConversationOrderByCreatedAtDesc(c)
+                            .orElse(null);
+                    return conversationMapper.toPreviewDTO(c, lastMessage);
+                })
+                .toList();
     }
 
     public Conversation getConversationForUser(Long conversationId, Long userId)
