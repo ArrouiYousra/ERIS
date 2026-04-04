@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, X, MessageCircle } from "lucide-react";
+import { Plus, X, MessageCircle } from "lucide-react";
 import { UserBar } from "../components/friends/UserBar";
 import { DMRows } from "../components/friends";
 import { RightPanel } from "../components/friends";
@@ -179,8 +179,6 @@ function DMSidebar({
   onSelect,
   onClose,
   searchQuery,
-  onSearchChange,
-  onNewDM,
   isLoading,
 }: {
   conversations: ConversationPreview[];
@@ -201,19 +199,20 @@ function DMSidebar({
       {/* Header */}
       <div className="h-12 px-3 flex items-center border-b border-black/20 shadow-sm shrink-0">
         <div className="relative flex-1">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
+          <h3 className="text-sm font-semibold text-white">Messages privés</h3>
+          {/* <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Trouver une conversation"
             className="w-full bg-[#1e1f22] text-gray-300 text-sm placeholder-gray-600 rounded pl-7 pr-2 py-1 outline-none focus:ring-1 focus:ring-[#5865F2]/50 transition"
-          />
+          /> */}
         </div>
       </div>
 
       {/* Section label + new DM */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-1">
+      {/* <div className="flex items-center justify-between px-4 pt-4 pb-1">
         <span className="text-xs font-semibold uppercase tracking-widest text-gray-500">
           Messages privés
         </span>
@@ -224,7 +223,7 @@ function DMSidebar({
         >
           <Plus className="w-4 h-4" />
         </button>
-      </div>
+      </div> */}
 
       {/* List */}
       <div className="flex-1 overflow-y-auto py-1 space-y-0.5">
@@ -447,7 +446,7 @@ export function PrivateChatLayout() {
         {/* Zone 3 : Chatroom principale */}
         <div
           className={`
-            flex-1 min-w-0 overflow-hidden
+            flex-1 min-w-0 min-h-0 overflow-hidden
             ${!showSidebar || selectedConversation ? "flex" : "hidden"}
             md:flex
           `}

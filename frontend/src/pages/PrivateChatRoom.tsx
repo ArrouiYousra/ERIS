@@ -255,9 +255,6 @@ function MessageBubble({
               }`}
             >
               {message.content}
-              {message.updatedAt && (
-                <span className="text-[10px] opacity-60 ml-1">(modifié)</span>
-              )}
             </div>
           </div>
         )}
@@ -292,7 +289,8 @@ export function PrivateChatRoom({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Hooks React Query
-  const { data: messagesDTO = [], isLoading: loading } = useConversationMessages(conversationId);
+  const { data: messagesDTO = [], isLoading: loading } =
+    useConversationMessages(conversationId);
   const sendMessageMutation = useSendMessage();
   const editMessageMutation = useEditMessage();
   const deleteMessageMutation = useDeleteMessage();
@@ -318,7 +316,10 @@ export function PrivateChatRoom({
     if (!trimmed) return;
     setInput("");
     try {
-      await sendMessageMutation.mutateAsync({ conversationId, content: trimmed });
+      await sendMessageMutation.mutateAsync({
+        conversationId,
+        content: trimmed,
+      });
     } catch (err) {
       console.error("Erreur envoi :", err);
     }
@@ -369,7 +370,7 @@ export function PrivateChatRoom({
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#313338]">
+    <div className="flex flex-col flex-1 min-h-0 bg-[#313338]">
       {/* ── Header ── */}
       <div className="h-12 px-3 sm:px-4 flex items-center gap-2 border-b border-black/20 shadow-sm shrink-0">
         {/* Retour mobile */}
