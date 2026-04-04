@@ -14,6 +14,45 @@ export interface ChatMessage {
   channelId?: number;
 }
 
+// ─── Private Messages / Conversations ───────────────────────────────────────
+
+export interface ParticipantDTO {
+  userId: number;
+  username: string;
+}
+
+export interface LastPrivateMessageDTO {
+  messageId: number;
+  senderId: number;
+  content: string;
+  createdAt: string;
+}
+
+export interface ConversationPreviewDTO {
+  conversationId: number;
+  participants: ParticipantDTO[];
+  lastPrivateMessage: LastPrivateMessageDTO | null;
+}
+
+export interface PrivateMessageDTO {
+  messageId: number;
+  conversationId: number;
+  sender: {
+    userId: number;
+    username: string;
+  };
+  content: string;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface ConversationDetailsDTO {
+  conversationId: number;
+  participants: ParticipantDTO[];
+  privateMessages: PrivateMessageDTO[];
+}
+
+// Legacy types (pour compatibilité si utilisés ailleurs)
 export interface PrivateMessage {
   senderId: number;
   content: string;

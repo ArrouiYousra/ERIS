@@ -12,10 +12,17 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import {
+  useConversationMessages,
+  useSendMessage,
+  useEditMessage,
+  useDeleteMessage,
+} from "../hooks/useConversations";
+import type { PrivateMessageDTO } from "../types/shared";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface PrivateMessage {
+interface PrivateMessage {
   id: number;
   conversationId: number;
   senderId: number;
@@ -36,83 +43,19 @@ interface PrivateChatRoomProps {
   onBack?: () => void; // bouton retour mobile
 }
 
-// ─── Placeholders API — à remplacer par tes vrais hooks/appels ────────────────
-//
-// GET  /api/private/conversations/{conversationId}/messages
-// POST /api/private/conversations/{conversationId}/messages  { content }
-// PUT  /api/private/messages/{messageId}                     { content }
-// DELETE /api/private/messages/{messageId}
-//
-// import { api } from "../api/client";
-async function fetchMessages(
-  conversationId: number,
-): Promise<PrivateMessage[]> {
-  // const { data } = await api.get(`/api/private/conversations/${conversationId}/messages`);
-  // return data;
-  // — MOCK pour les tests —
-  return [
-    {
-      id: 1,
-      conversationId,
-      senderId: 42,
-      senderUsername: "Alice",
-      content: "Salut ! T'as eu le temps de regarder le bug ?",
-      createdAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
-    },
-    {
-      id: 2,
-      conversationId,
-      senderId: 99, // currentUser
-      senderUsername: "Moi",
-      content: "Oui je regardais justement, c'est lié au useEffect je pense",
-      createdAt: new Date(Date.now() - 1000 * 60 * 8).toISOString(),
-    },
-    {
-      id: 3,
-      conversationId,
-      senderId: 42,
-      senderUsername: "Alice",
-      content: "Ah oui je vois, la dépendance manquante. Je push le fix ?",
-      createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-    },
-    {
-      id: 4,
-      conversationId,
-      senderId: 99,
-      senderUsername: "Moi",
-      content: "Go, je review après",
-      createdAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
-    },
-  ];
-}
+// ─── Mapper DTO → UI ─────────────────────────────────────────────────────────
 
-async function sendPrivateMessage(
-  conversationId: number,
-  content: string,
-): Promise<PrivateMessage> {
-  // const { data } = await api.post(`/api/private/conversations/${conversationId}/messages`, { content });
-  // return data;
+function mapMessageDTOToUIMessage(dto: PrivateMessageDTO): PrivateMessage {
   return {
-    id: Date.now(),
-    conversationId,
-    senderId: 99,
-    senderUsername: "Moi",
-    content,
-    createdAt: new Date().toISOString(),
+    id: dto.messageId,
+    conversationId: dto.conversationId,
+    senderId: dto.sender.userId,
+    senderUsername: dto.sender.username,
+    senderAvatarUrl: null, // Pas encore d'avatar dans le DTO
+    content: dto.content,
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
   };
-}
-
-async function editPrivateMessage(
-  messageId: number,
-  _content: string,
-): Promise<PrivateMessage> {
-  // const { data } = await api.put(`/api/private/messages/${messageId}`, { content });
-  // return data;
-  return { id: messageId } as PrivateMessage; // mock
-}
-
-async function deletePrivateMessage(_messageId: number): Promise<void> {
-  // await api.delete(`/api/private/messages/${messageId}`);
 }
 
 // ─── Utilitaires ──────────────────────────────────────────────────────────────
@@ -337,10 +280,8 @@ export function PrivateChatRoom({
   onBack,
 }: PrivateChatRoomProps) {
   const { user } = useAuth();
-  const currentUserId = user?.id ?? 99; // fallback mock
+  const currentUserId = user?.id ?? 0;
 
-  const [messages, setMessages] = useState<PrivateMessage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -350,15 +291,16 @@ export function PrivateChatRoom({
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Chargement initial
-  useEffect(() => {
-    setLoading(true);
-    fetchMessages(conversationId)
-      .then(setMessages)
-      .finally(() => setLoading(false));
-  }, [conversationId]);
+  // Hooks React Query
+  const { data: messagesDTO = [], isLoading: loading } = useConversationMessages(conversationId);
+  const sendMessageMutation = useSendMessage();
+  const editMessageMutation = useEditMessage();
+  const deleteMessageMutation = useDeleteMessage();
 
-  // Scroll automatique vers le bas
+  // Transforme les DTOs en format UI
+  const messages = messagesDTO.map(mapMessageDTOToUIMessage);
+
+  // Scroll automatique vers le bas quand les messages changent
   useEffect(() => {
     if (!loading) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -376,8 +318,7 @@ export function PrivateChatRoom({
     if (!trimmed) return;
     setInput("");
     try {
-      const sent = await sendPrivateMessage(conversationId, trimmed);
-      setMessages((prev) => [...prev, sent]);
+      await sendMessageMutation.mutateAsync({ conversationId, content: trimmed });
     } catch (err) {
       console.error("Erreur envoi :", err);
     }
@@ -392,18 +333,14 @@ export function PrivateChatRoom({
   const handleEditSubmit = async () => {
     if (!editingId || !editValue.trim()) return;
     try {
-      await editPrivateMessage(editingId, editValue);
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === editingId
-            ? { ...m, content: editValue, updatedAt: new Date().toISOString() }
-            : m,
-        ),
-      );
+      await editMessageMutation.mutateAsync({
+        messageId: editingId,
+        conversationId,
+        content: editValue,
+      });
+      setEditingId(null);
     } catch (err) {
       console.error("Erreur édition :", err);
-    } finally {
-      setEditingId(null);
     }
   };
 
@@ -412,8 +349,7 @@ export function PrivateChatRoom({
     const confirmed = window.confirm("Supprimer ce message ?");
     if (!confirmed) return;
     try {
-      await deletePrivateMessage(messageId);
-      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      await deleteMessageMutation.mutateAsync({ messageId, conversationId });
     } catch (err) {
       console.error("Erreur suppression :", err);
     }

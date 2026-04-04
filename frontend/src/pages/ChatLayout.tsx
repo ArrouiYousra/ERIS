@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useChannels } from "../hooks/useChannels";
 import {
   useServers,
@@ -27,6 +28,7 @@ import { usePresence } from "../hooks/usePresence";
 import type { ServerMember } from "../api/serverMembersApi";
 import { useServerSocket } from '../hooks/useServerSocket';
 import { usePresenceSocket } from '../hooks/usePresenceSocket';
+import { useCreateConversation } from "../hooks/useConversations";
 
 import { MemberContextMenu } from "../components/MemberContextMenu";
 
@@ -34,6 +36,7 @@ export function ChatLayout() {
   const [ctxMenu, setCtxMenu] = useState<{ member: ServerMember; x: number; y: number } | null>(null);
 
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedServerId, setSelectedServerId] = useState<number | null>(null);
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(
     null,
@@ -43,6 +46,7 @@ export function ChatLayout() {
   const [serverModalOpen, setServerModalOpen] = useState(false);
 
   const { user } = useAuth();
+  const createConversation = useCreateConversation();
   const { data: servers = [] } = useServers();
   const { data: channels = [] } = useChannels(selectedServerId);
   const { data: roles = [] } = useServerRoles(selectedServerId);
@@ -97,6 +101,20 @@ export function ChatLayout() {
   const handleGoToServer = (serverId: number) => {
     setSelectedServerId(serverId);
     setSelectedChannelId(null);
+  };
+
+  // Handler pour démarrer une conversation privée avec un membre
+  const handleNewMessage = async (member: ServerMember) => {
+    try {
+      // Crée ou récupère la conversation
+      const conversation = await createConversation.mutateAsync(member.userId);
+      // Redirige vers la page des messages privés avec l'ID de la conversation
+      navigate("/chat", {
+        state: { selectedConversationId: conversation.conversationId },
+      });
+    } catch (error) {
+      console.error("Erreur lors de la création de la conversation:", error);
+    }
   };
 
   // Handler for ServerGate (simple string name - legacy)
@@ -264,6 +282,7 @@ export function ChatLayout() {
           onClose={() => setCtxMenu(null)}
           onKick={(m) => console.log("kick", m)}
           onBan={(m) => console.log("ban", m)}
+          onNewMessage={handleNewMessage}
         />
       )}
     </div>

@@ -3,12 +3,20 @@ import { Search, Plus, X, MessageCircle } from "lucide-react";
 import { UserBar } from "../components/friends/UserBar";
 import { DMRows } from "../components/friends";
 import { RightPanel } from "../components/friends";
-import { useServerSocket } from "../hooks/useServerSocket";
 import { PrivateChatRoom } from "../pages/PrivateChatRoom";
+import { useServerSocket } from "../hooks/useServerSocket";
+import {
+  useConversations,
+  useDeleteConversation,
+  useCreateConversation,
+} from "../hooks/useConversations";
+import type { ConversationPreviewDTO } from "../types/shared";
 import "../styles/chat.css";
+import { useAuth } from "../hooks/useAuth";
 
-// ─── Types alignés sur ConversationPreviewDTO backend ─────────────────────────
-export interface ConversationPreview {
+// ─── Types adaptés pour le composant ──────────────────────────────────────────
+
+interface ConversationPreview {
   id: number;
   otherUserId: number;
   otherUsername: string;
@@ -18,41 +26,31 @@ export interface ConversationPreview {
   unreadCount?: number;
 }
 
-// ─── Hook placeholder — à remplacer par ton vrai useConversations ──────────────
-// import { useConversations } from "../hooks/useConversations";
-function useMockConversations(): ConversationPreview[] {
-  return [
-    {
-      id: 1,
-      otherUserId: 42,
-      otherUsername: "Alice",
-      otherUserAvatarUrl: null,
-      lastMessageContent: "T'as vu le bug sur le chat ?",
-      lastMessageAt: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
-      unreadCount: 2,
-    },
-    {
-      id: 2,
-      otherUserId: 43,
-      otherUsername: "Bob",
-      otherUserAvatarUrl: null,
-      lastMessageContent: "Ok je push ce soir 👍",
-      lastMessageAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-      unreadCount: 0,
-    },
-    {
-      id: 3,
-      otherUserId: 44,
-      otherUsername: "Camille",
-      otherUserAvatarUrl: null,
-      lastMessageContent: "Salut !",
-      lastMessageAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-      unreadCount: 0,
-    },
-  ];
+// ─── Fonction utilitaire pour transformer le DTO ──────────────────────────────
+
+function mapConversationDTOToPreview(
+  dto: ConversationPreviewDTO,
+  currentUserId: number | null,
+): ConversationPreview {
+  // Si on n'a pas l'ID de l'utilisateur courant, on prend le premier participant
+  // (normalement ça ne devrait pas arriver si l'API renvoie bien les conversations de l'utilisateur)
+  const otherParticipant = currentUserId
+    ? dto.participants.find((p) => p.userId !== currentUserId)
+    : dto.participants[0];
+
+  return {
+    id: dto.conversationId,
+    otherUserId: otherParticipant?.userId ?? 0,
+    otherUsername: otherParticipant?.username ?? "Utilisateur",
+    otherUserAvatarUrl: null, // Le backend ne fournit pas encore d'avatar
+    lastMessageContent: dto.lastPrivateMessage?.content ?? null,
+    lastMessageAt: dto.lastPrivateMessage?.createdAt ?? null,
+    unreadCount: 0, // À implémenter côté backend si besoin
+  };
 }
 
 // ─── Utilitaires ──────────────────────────────────────────────────────────────
+
 function formatPreviewTime(iso?: string | null): string {
   if (!iso) return "";
   const date = new Date(iso);
@@ -71,6 +69,7 @@ function getInitial(name: string): string {
 }
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
+
 function Avatar({
   username,
   avatarUrl,
@@ -108,6 +107,7 @@ function Avatar({
 }
 
 // ─── ConversationRow ──────────────────────────────────────────────────────────
+
 function ConversationRow({
   conversation,
   isSelected,
@@ -172,6 +172,7 @@ function ConversationRow({
 }
 
 // ─── DMSidebar ────────────────────────────────────────────────────────────────
+
 function DMSidebar({
   conversations,
   selectedId,
@@ -180,6 +181,7 @@ function DMSidebar({
   searchQuery,
   onSearchChange,
   onNewDM,
+  isLoading,
 }: {
   conversations: ConversationPreview[];
   selectedId: number | null;
@@ -188,6 +190,7 @@ function DMSidebar({
   searchQuery: string;
   onSearchChange: (v: string) => void;
   onNewDM: () => void;
+  isLoading: boolean;
 }) {
   const filtered = conversations.filter((c) =>
     c.otherUsername.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -225,7 +228,12 @@ function DMSidebar({
 
       {/* List */}
       <div className="flex-1 overflow-y-auto py-1 space-y-0.5">
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <div className="w-8 h-8 border-2 border-[#5865F2] border-t-transparent rounded-full animate-spin mb-2" />
+            <p className="text-xs text-gray-500">Chargement...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
             <MessageCircle className="w-8 h-8 text-gray-600 mb-2" />
             <p className="text-xs text-gray-500">Aucune conversation trouvée</p>
@@ -253,6 +261,7 @@ function DMSidebar({
 }
 
 // ─── EmptyState ───────────────────────────────────────────────────────────────
+
 function EmptyState({ onNewDM }: { onNewDM: () => void }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-[#313338] p-8">
@@ -275,7 +284,72 @@ function EmptyState({ onNewDM }: { onNewDM: () => void }) {
   );
 }
 
+// ─── NewDMModal ───────────────────────────────────────────────────────────────
+
+function NewDMModal({
+  isOpen,
+  onClose,
+  onSubmit,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (userId: number) => void;
+}) {
+  const [userId, setUserId] = useState("");
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const id = parseInt(userId, 10);
+    if (!isNaN(id) && id > 0) {
+      onSubmit(id);
+      setUserId("");
+      onClose();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-[#313338] rounded-lg p-6 w-80">
+        <h3 className="text-lg font-semibold text-white mb-4">
+          Nouveau message
+        </h3>
+        <form onSubmit={handleSubmit}>
+          <label className="block text-sm text-gray-400 mb-2">
+            ID de l'utilisateur
+          </label>
+          <input
+            type="number"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            placeholder="Entrez l'ID..."
+            className="w-full bg-[#1e1f22] text-white rounded px-3 py-2 mb-4 outline-none focus:ring-1 focus:ring-[#5865F2]"
+            autoFocus
+          />
+          <div className="flex gap-2 justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-[#5865F2] hover:bg-[#4752c4] text-white text-sm rounded transition-colors"
+            >
+              Démarrer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ─── PrivateChatLayout (composant principal) ───────────────────────────────────
+
 export function PrivateChatLayout() {
   const [selectedConversationId, setSelectedConversationId] = useState<
     number | null
@@ -283,9 +357,23 @@ export function PrivateChatLayout() {
   const [searchQuery, setSearchQuery] = useState("");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isNewDMModalOpen, setIsNewDMModalOpen] = useState(false);
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
 
-  // Remplace useMockConversations() par useConversations() quand le hook est prêt
-  const conversations = useMockConversations();
+  // Récupère l'ID de l'utilisateur courant
+  const currentUserId = user?.id ?? null;
+
+  // Hooks React Query - désactivé tant que l'utilisateur n'est pas authentifié
+  const { data: conversationsDTO = [], isLoading } = useConversations(
+    isAuthenticated && !authLoading,
+  );
+  const deleteConversationMutation = useDeleteConversation();
+  const createConversationMutation = useCreateConversation();
+
+  // Transforme les DTOs en format utilisé par le composant
+  const conversations = conversationsDTO.map((dto) =>
+    mapConversationDTOToPreview(dto, currentUserId),
+  );
 
   useServerSocket();
 
@@ -294,20 +382,37 @@ export function PrivateChatLayout() {
 
   const handleSelectConversation = (id: number) => {
     setSelectedConversationId(id);
-    // Sur mobile : masquer la sidebar quand on entre dans une conv
     setShowSidebar(false);
   };
 
-  const handleCloseConversation = (id: number) => {
+  const handleCloseConversation = async (id: number) => {
     if (selectedConversationId === id) {
       setSelectedConversationId(null);
     }
-    // Ici tu peux appeler deleteConversation() si tu veux vraiment supprimer côté backend
+    try {
+      await deleteConversationMutation.mutateAsync(id);
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
+    }
   };
 
   const handleBackToList = () => {
     setShowSidebar(true);
     setSelectedConversationId(null);
+  };
+
+  const handleNewDM = async (receiverId: number) => {
+    try {
+      const conversation =
+        await createConversationMutation.mutateAsync(receiverId);
+      // Transforme et sélectionne la nouvelle conversation
+      const preview = mapConversationDTOToPreview(conversation, currentUserId);
+      setSelectedConversationId(preview.id);
+      setShowSidebar(false);
+    } catch (error) {
+      console.error("Erreur lors de la création de conversation:", error);
+      alert("Impossible de créer la conversation. Vérifiez l'ID utilisateur.");
+    }
   };
 
   return (
@@ -334,10 +439,8 @@ export function PrivateChatLayout() {
             onClose={handleCloseConversation}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            onNewDM={() => {
-              /* TODO: ouvrir un modal de recherche d'utilisateur */
-              alert("Nouveau DM — à connecter avec la recherche d'utilisateur");
-            }}
+            onNewDM={() => setIsNewDMModalOpen(true)}
+            isLoading={isLoading}
           />
         </div>
 
@@ -358,13 +461,7 @@ export function PrivateChatLayout() {
               onBack={handleBackToList}
             />
           ) : (
-            <EmptyState
-              onNewDM={() =>
-                alert(
-                  "Nouveau DM — à connecter avec la recherche d'utilisateur",
-                )
-              }
-            />
+            <EmptyState onNewDM={() => setIsNewDMModalOpen(true)} />
           )}
         </div>
 
@@ -379,6 +476,13 @@ export function PrivateChatLayout() {
           <UserBar />
         </div>
       </div>
+
+      {/* Modal pour nouveau DM */}
+      <NewDMModal
+        isOpen={isNewDMModalOpen}
+        onClose={() => setIsNewDMModalOpen(false)}
+        onSubmit={handleNewDM}
+      />
     </div>
   );
 }

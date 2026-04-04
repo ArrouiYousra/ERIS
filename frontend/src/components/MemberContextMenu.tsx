@@ -11,6 +11,7 @@ interface MemberContextMenuProps {
   onClose: () => void;
   onKick?: (member: ServerMember) => void;
   onBan?: (member: ServerMember) => void;
+  onNewMessage?: (member: ServerMember) => void;
 }
 
 export function MemberContextMenu({
@@ -22,6 +23,7 @@ export function MemberContextMenu({
   onClose,
   onKick,
   onBan,
+  onNewMessage,
 }: MemberContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [submenuOpen, setSubmenuOpen] = useState(false);
@@ -31,7 +33,7 @@ export function MemberContextMenu({
 
   const isSelf = member.userId === currentUserId;
   const canManage = isOwner && !isSelf;
- 
+
   // Keep the menu visible with a best-effort clamp without effect state updates.
   const adjustedPos = useMemo(() => {
     const MENU_WIDTH = 224; // w-56
@@ -67,12 +69,17 @@ export function MemberContextMenu({
   }, [onClose]);
 
   const handleRoleChange = async (roleId: number) => {
-    await updateRole.mutateAsync({ serverId, memberId: member.userId, payload: { roleId } });
+    await updateRole.mutateAsync({
+      serverId,
+      memberId: member.userId,
+      payload: { roleId },
+    });
     setSubmenuOpen(false);
     onClose();
   };
 
-  const displayName = member.nickname || member.username || `User ${member.userId}`;
+  const displayName =
+    member.nickname || member.username || `User ${member.userId}`;
 
   return (
     <div
@@ -81,11 +88,42 @@ export function MemberContextMenu({
       className="fixed z-50 w-56 select-none"
       onContextMenu={(e) => e.preventDefault()}
     >
-      <div className="rounded-md overflow-visible shadow-2xl border border-white/5"
-        style={{ background: "#111214" }}>
-
+      <div
+        className="rounded-md overflow-visible shadow-2xl border border-white/5"
+        style={{ background: "#111214" }}
+      >
         {/* Actions */}
         <div className="py-1">
+          {/* Message action - disponible pour tous sauf soi-même */}
+          {!isSelf && onNewMessage && (
+            <MenuButton
+              icon={
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+              }
+              label={`Envoyer un message à ${displayName}`}
+              onClick={() => {
+                onNewMessage(member);
+                onClose();
+              }}
+            />
+          )}
+
+          {/* Separator if there are owner actions */}
+          {canManage && (
+            <div className="h-px bg-white/10 my-1 mx-2" />
+          )}
 
           {/* Owner-only actions */}
           {canManage && (
@@ -95,8 +133,17 @@ export function MemberContextMenu({
                 <div className="relative">
                   <MenuButton
                     icon={
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}/>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                        />
                       </svg>
                     }
                     label="Modifier le rôle"
@@ -108,19 +155,25 @@ export function MemberContextMenu({
                       className="absolute right-full top-0 w-44 mr-1 rounded-md shadow-2xl border border-white/5 py-1"
                       style={{ background: "#111214" }}
                     >
-                      {roles.map((role: { id: number; name: string; color?: string }) => (
-                        <button
-                          key={role.id}
-                          onClick={() => handleRoleChange(role.id)}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                        >
-                          <span
-                            className="w-2.5 h-2.5 rounded-full shrink-0"
-                            style={{ background: role.color || "#5865F2" }}
-                          />
-                          {role.name}
-                        </button>
-                      ))}
+                      {roles.map(
+                        (role: {
+                          id: number;
+                          name: string;
+                          color?: string;
+                        }) => (
+                          <button
+                            key={role.id}
+                            onClick={() => handleRoleChange(role.id)}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+                          >
+                            <span
+                              className="w-2.5 h-2.5 rounded-full shrink-0"
+                              style={{ background: role.color || "#5865F2" }}
+                            />
+                            {role.name}
+                          </button>
+                        ),
+                      )}
                     </div>
                   )}
                 </div>
@@ -130,9 +183,18 @@ export function MemberContextMenu({
               {onKick && (
                 <MenuButton
                   icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
                     </svg>
                   }
                   label={`Expulser ${displayName}`}
@@ -148,9 +210,18 @@ export function MemberContextMenu({
               {onBan && (
                 <MenuButton
                   icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                      />
                     </svg>
                   }
                   label={`Bannir ${displayName}`}
@@ -179,14 +250,21 @@ interface MenuButtonProps {
   onClick: () => void;
 }
 
-function MenuButton({ icon, label, danger, hasSubmenu, onClick }: MenuButtonProps) {
+function MenuButton({
+  icon,
+  label,
+  danger,
+  hasSubmenu,
+  onClick,
+}: MenuButtonProps) {
   return (
     <button
       onClick={onClick}
       className={`w-full flex items-center justify-between gap-2 px-2 py-1.5 mx-1 rounded text-sm transition-colors
-        ${danger
-          ? "text-[#f23f43] hover:bg-[#f23f43] hover:text-white"
-          : "text-gray-300 hover:bg-[#5865F2] hover:text-white"
+        ${
+          danger
+            ? "text-[#f23f43] hover:bg-[#f23f43] hover:text-white"
+            : "text-gray-300 hover:bg-[#5865F2] hover:text-white"
         }`}
       style={{ width: "calc(100% - 8px)" }}
     >
@@ -195,8 +273,18 @@ function MenuButton({ icon, label, danger, hasSubmenu, onClick }: MenuButtonProp
         {label}
       </span>
       {hasSubmenu && (
-        <svg className="w-3 h-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <svg
+          className="w-3 h-3 opacity-60"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       )}
     </button>
