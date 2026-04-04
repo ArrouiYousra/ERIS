@@ -5,6 +5,8 @@ import { DMRows } from "../components/friends";
 import { RightPanel } from "../components/friends";
 import { PrivateChatRoom } from "../pages/PrivateChatRoom";
 import { useServerSocket } from "../hooks/useServerSocket";
+import { useLocation } from "react-router-dom";
+
 import {
   useConversations,
   useDeleteConversation,
@@ -350,14 +352,19 @@ function NewDMModal({
 // ─── PrivateChatLayout (composant principal) ───────────────────────────────────
 
 export function PrivateChatLayout() {
-  const [selectedConversationId, setSelectedConversationId] = useState<
-    number | null
-  >(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
   const [isNewDMModalOpen, setIsNewDMModalOpen] = useState(false);
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  const location = useLocation();
+
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    number | null
+  >(location.state?.selectedConversationId ?? null);
+  const [showSidebar, setShowSidebar] = useState(
+    location.state?.selectedConversationId == null,
+  );
 
   // Récupère l'ID de l'utilisateur courant
   const currentUserId = user?.id ?? null;

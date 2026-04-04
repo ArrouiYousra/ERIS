@@ -2,8 +2,10 @@ package fourthargument.eris.api.services;
 
 import java.util.List;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import fourthargument.eris.api.dto.response.PrivateMessageEvent;
 import fourthargument.eris.api.dto.response.PrivateMessagesDTO;
 import fourthargument.eris.api.mapper.PrivateMessagesMapper;
 import fourthargument.eris.api.model.Conversation;
@@ -23,6 +25,7 @@ public class PrivateMessageService {
     private final PrivateMessageRepository privateMessageRepository;
     private final PrivateMessagesMapper privateMessagesMapper;
     private final ConversationService conversationService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public PrivateMessagesDTO sendPrivateMessage(Long conversationId, String content, User sender)
             throws UserException, ConversationException, PrivateMessageException {
@@ -33,7 +36,14 @@ public class PrivateMessageService {
         Conversation conversation = conversationService.getConversationForUser(conversationId, sender.getId());
         PrivateMessage message = privateMessagesMapper.toEntity(content, sender, conversation);
         PrivateMessage saved = privateMessageRepository.save(message);
-        return privateMessagesMapper.toDTO(saved);
+        PrivateMessagesDTO dto = privateMessagesMapper.toDTO(saved);
+
+        // ← broadcast
+        messagingTemplate.convertAndSend(
+                "/topic/conversation/" + conversationId,
+                new PrivateMessageEvent("NEW", dto));
+
+        return dto;
     }
 
     public List<PrivateMessagesDTO> getPrivateMessageHistory(Long conversationId, User requester)
@@ -60,7 +70,14 @@ public class PrivateMessageService {
 
         message.setContent(content);
         PrivateMessage saved = privateMessageRepository.save(message);
-        return privateMessagesMapper.toDTO(saved);
+        PrivateMessagesDTO dto = privateMessagesMapper.toDTO(saved);
+
+        // ← broadcast
+        messagingTemplate.convertAndSend(
+                "/topic/conversation/" + message.getConversation().getId(),
+                new PrivateMessageEvent("EDIT", dto));
+
+        return dto;
     }
 
     public void deletePrivateMessage(Long messageId, User requester)
@@ -72,7 +89,13 @@ public class PrivateMessageService {
             throw new PrivateMessageException("You can only delete your own private message");
         }
 
+        Long conversationId = message.getConversation().getId();
+
         privateMessageRepository.delete(message);
+
+        messagingTemplate.convertAndSend(
+                "/topic/conversation/" + conversationId,
+                new PrivateMessageEvent("DELETE", messageId));
     }
 
 }

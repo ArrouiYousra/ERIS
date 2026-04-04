@@ -19,6 +19,7 @@ import {
   useDeleteMessage,
 } from "../hooks/useConversations";
 import type { PrivateMessageDTO } from "../types/shared";
+import { usePrivateMessageSocket } from "../hooks/usePrivateMessageSocket";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -278,6 +279,7 @@ export function PrivateChatRoom({
 }: PrivateChatRoomProps) {
   const { user } = useAuth();
   const currentUserId = user?.id ?? 0;
+  usePrivateMessageSocket(conversationId);
 
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
