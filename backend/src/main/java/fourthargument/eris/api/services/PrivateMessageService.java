@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fourthargument.eris.api.dto.response.PrivateMessageEvent;
 import fourthargument.eris.api.dto.response.PrivateMessagesDTO;
@@ -27,6 +28,7 @@ public class PrivateMessageService {
     private final ConversationService conversationService;
     private final SimpMessagingTemplate messagingTemplate;
 
+    @Transactional
     public PrivateMessagesDTO sendPrivateMessage(Long conversationId, String content, User sender)
             throws UserException, ConversationException, PrivateMessageException {
         if (content == null || content.isBlank()) {
@@ -38,10 +40,14 @@ public class PrivateMessageService {
         PrivateMessage saved = privateMessageRepository.save(message);
         PrivateMessagesDTO dto = privateMessagesMapper.toDTO(saved);
 
+        System.out.println("[WS] Broadcast sur /topic/conversation/" + conversationId);
+
         // ← broadcast
         messagingTemplate.convertAndSend(
                 "/topic/conversation/" + conversationId,
                 new PrivateMessageEvent("NEW", dto));
+
+        System.out.println("[WS] Broadcast terminé");
 
         return dto;
     }

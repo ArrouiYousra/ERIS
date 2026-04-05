@@ -46,6 +46,11 @@ export interface PrivateMessageDTO {
   updatedAt: string | null;
 }
 
+export type PrivateMessageEvent =
+  | { type: "NEW"; data: PrivateMessageDTO }
+  | { type: "EDIT"; data: PrivateMessageDTO }
+  | { type: "DELETE"; data: number };
+
 export interface ConversationDetailsDTO {
   conversationId: number;
   participants: ParticipantDTO[];

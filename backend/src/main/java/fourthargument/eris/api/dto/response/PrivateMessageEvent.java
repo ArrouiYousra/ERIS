@@ -7,5 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PrivateMessageEvent {
 	private String type; // "NEW" | "EDIT" | "DELETE"
-	private Object data; // PrivateMessagesDTO ou Long (messageId)
+	private Object data;
 }

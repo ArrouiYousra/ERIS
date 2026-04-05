@@ -9,7 +9,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import fourthargument.eris.api.dto.MessageDTO;
-import fourthargument.eris.api.dto.response.PrivateMessagesDTO;
 import fourthargument.eris.api.services.MessageService;
 import fourthargument.eris.api.services.PrivateMessageService;
 import fourthargument.eris.exceptions.ConversationException;
@@ -43,18 +42,19 @@ public class RealtimeChatController {
     @MessageMapping("/private.chat")
     public void processPrivateMessage(@Payload PrivateChatPayload payload, Principal principal)
             throws UserException, ConversationException, PrivateMessageException {
+
+        System.out.println("[WS] /private.chat reçu - conversationId: " + payload.conversationId()
+                + ", principal: " + (principal != null ? principal.getName() : "NULL"));
+
         if (principal == null) {
             throw new PrivateMessageException("Unauthenticated websocket session");
         }
 
         User requester = userService.getUserEntityByEmail(principal.getName());
-        PrivateMessagesDTO saved = privateMessageService.sendPrivateMessage(
-                payload.conversationId(),
-                payload.content(),
-                requester);
+        System.out.println("[WS] Requester trouvé: " + requester.getId());
 
-        messagingTemplate.convertAndSend(
-                "/topic/private/" + payload.conversationId(), saved);
+        privateMessageService.sendPrivateMessage(payload.conversationId(), payload.content(), requester);
+        System.out.println("[WS] Message envoyé et broadcast effectué");
     }
 
     // ── Typing ──

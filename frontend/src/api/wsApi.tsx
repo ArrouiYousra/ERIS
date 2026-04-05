@@ -1,13 +1,23 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import { useAuth } from '../hooks/useAuth';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
+import { Client, type IMessage, type StompSubscription } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { useAuth } from "../hooks/useAuth";
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:8081/ws';
+const WS_URL = import.meta.env.VITE_WS_URL || "http://localhost:8081/ws";
 
 interface SocketContextValue {
   connected: boolean;
-  subscribe: (dest: string, cb: (msg: IMessage) => void) => StompSubscription | null;
+  subscribe: (
+    dest: string,
+    cb: (msg: IMessage) => void,
+  ) => StompSubscription | null;
   publish: (dest: string, body: object) => void;
 }
 
@@ -25,7 +35,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem("access_token");
     if (!token || !isAuthenticated) return;
 
     const stomp = new Client({
@@ -34,25 +44,26 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         Authorization: `Bearer ${token}`,
       },
       reconnectDelay: 5000,
-      debug: (str) => console.log('[STOMP]', str),
+      debug: (str) => console.log("[STOMP]", str),
       onConnect: () => {
-        console.log('✅ STOMP connected');
+        console.log("✅ STOMP connected");
         setConnected(true);
 
-        // Enregistrer la présence si on a le user.id 
+        // Enregistrer la présence si on a le user.id
+        // C'est ici qu'on détecte la cpnnexion d'un user et sa présence en ligne
         if (user?.id) {
           stomp.publish({
-            destination: '/app/presence.connect',
+            destination: "/app/presence.connect",
             body: JSON.stringify({ userId: user.id }),
           });
         }
       },
       onDisconnect: () => {
-        console.log('❌ STOMP disconnected');
+        console.log("❌ STOMP disconnected");
         setConnected(false);
       },
       onStompError: (frame) => {
-        console.error('STOMP error:', frame.headers['message']);
+        console.error("STOMP error:", frame.headers["message"]);
       },
     });
 
@@ -72,13 +83,16 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       return clientRef.current.subscribe(dest, cb);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [connected],
+    [],
   );
 
   const publish = useCallback(
     (dest: string, body: object) => {
       if (!clientRef.current?.connected) return;
-      clientRef.current.publish({ destination: dest, body: JSON.stringify(body) });
+      clientRef.current.publish({
+        destination: dest,
+        body: JSON.stringify(body),
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [connected],

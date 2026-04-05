@@ -7,9 +7,5 @@ import lombok.Setter;
 @Setter
 public class SendPrivateMessageRequestDTO {
     private String content;
-
-    public Long getConversationId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getConversationId'");
-    }
+    private Long conversationId;
 }

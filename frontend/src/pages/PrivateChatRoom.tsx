@@ -14,7 +14,6 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import {
   useConversationMessages,
-  useSendMessage,
   useEditMessage,
   useDeleteMessage,
 } from "../hooks/useConversations";
@@ -279,7 +278,7 @@ export function PrivateChatRoom({
 }: PrivateChatRoomProps) {
   const { user } = useAuth();
   const currentUserId = user?.id ?? 0;
-  usePrivateMessageSocket(conversationId);
+  const { sendMessage } = usePrivateMessageSocket(conversationId ?? null);
 
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -293,9 +292,17 @@ export function PrivateChatRoom({
   // Hooks React Query
   const { data: messagesDTO = [], isLoading: loading } =
     useConversationMessages(conversationId);
-  const sendMessageMutation = useSendMessage();
   const editMessageMutation = useEditMessage();
   const deleteMessageMutation = useDeleteMessage();
+
+  // Debug: log quand les messages changent
+  useEffect(() => {
+    console.log(
+      "[PrivateChatRoom] Messages reçus:",
+      messagesDTO.length,
+      messagesDTO,
+    );
+  }, [messagesDTO]);
 
   // Transforme les DTOs en format UI
   const messages = messagesDTO.map(mapMessageDTOToUIMessage);
@@ -313,18 +320,12 @@ export function PrivateChatRoom({
   }, [conversationId]);
 
   // ── Envoi ──
-  const handleSend = async () => {
+  const handleSend = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
     setInput("");
-    try {
-      await sendMessageMutation.mutateAsync({
-        conversationId,
-        content: trimmed,
-      });
-    } catch (err) {
-      console.error("Erreur envoi :", err);
-    }
+    // Envoi via WebSocket (temps réel)
+    sendMessage(trimmed);
   };
 
   // ── Édition ──
